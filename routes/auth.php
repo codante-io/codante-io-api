@@ -21,9 +21,9 @@ Route::get('/teste', function () {
   // request()->session()->regenerate();
   return auth()->user();
   // dd(request()->session());
-})
-  // ->middleware('auth')
-  ->name('login');
+});
+// ->middleware('auth')
+
 
 
 // Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
