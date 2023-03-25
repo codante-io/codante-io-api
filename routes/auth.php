@@ -25,6 +25,10 @@ Route::get('/teste', function () {
 // ->middleware('auth')
 
 
+Route::post('github-login', [AuthenticatedSessionController::class, 'githubLogin'])
+  ->middleware('guest.api')
+  ->name('github.login');
+
 
 // Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
 //   ->middleware('guest')

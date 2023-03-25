@@ -10,7 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 
-class AuthenticatedSessionController extends Controller
+class GithubLogin extends AuthenticatedSessionController
 {
     /**
      * Handle an incoming authentication request.
@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
 
         $githubUser = Socialite::driver('github')->userFromToken($token['github_token']);
 
-        dd($user);
+        // dd($user);
         // Auth::login($user);
 
 
