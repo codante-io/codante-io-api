@@ -30,31 +30,6 @@ class AuthenticatedSessionController extends Controller
     }
 
 
-    public function githubLogin(Request $request): JsonResponse
-    {
-        $token = $request->validate([
-            'github_token' => 'required',
-        ]);
-
-        $githubUser = Socialite::driver('github')->userFromToken($token['github_token']);
-
-        dd($user);
-        // Auth::login($user);
-
-
-        // $request->session()->regenerate();
-
-        // $this->deleteUserTokens($request);
-        // $token = $this->createUserToken($request);
-
-
-        // return response()
-        //     ->json([
-        //         'token' => $token
-        //     ]);
-    }
-
-
     /**
      * Destroy an authenticated session.
      */

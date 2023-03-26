@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\GithubLogin;
+use App\Http\Controllers\Auth\GithubLoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -17,15 +19,12 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
   ->name('login');
 
 Route::get('/teste', function () {
-
-  // request()->session()->regenerate();
   return auth()->user();
-  // dd(request()->session());
 });
 // ->middleware('auth')
 
 
-Route::post('github-login', [AuthenticatedSessionController::class, 'githubLogin'])
+Route::post('github-login', [GithubLoginController::class, 'githubLogin'])
   ->middleware('guest.api')
   ->name('github.login');
 
