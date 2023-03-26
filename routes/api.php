@@ -15,12 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
     if ($request->user()) {
         return $request->user();
     }
     return ["message" => "Não autenticado"];
-});
+})->middleware('auth:sanctum');
 
 Route::get('/courses', function () {
     return \App\Models\Course::all();
