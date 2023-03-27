@@ -21,17 +21,15 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::get('/teste', function () {
   return auth()->user();
 });
-// ->middleware('auth')
-
 
 Route::post('github-login', [GithubLoginController::class, 'githubLogin'])
   ->middleware('guest.api')
   ->name('github.login');
 
 
-// Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-//   ->middleware('guest')
-//   ->name('password.email');
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+  ->middleware('guest.api')
+  ->name('password.email');
 
 // Route::post('/reset-password', [NewPasswordController::class, 'store'])
 //   ->middleware('guest')

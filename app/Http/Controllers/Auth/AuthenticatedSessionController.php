@@ -51,7 +51,7 @@ class AuthenticatedSessionController extends Controller
     protected function createUserToken($request)
     {
         // Create a new token and get only the token
-        $fullToken = auth()->user()->createToken('api_token')->plainTextToken;
+        $fullToken = Auth::user()->createToken('api_token')->plainTextToken;
         $token = explode('|', $fullToken)[1];
 
         return $token;
