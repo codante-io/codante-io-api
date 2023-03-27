@@ -32,5 +32,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->save();
+
+        $user2 = new User([
+            'name' => 'Icaro Harry',
+            'email' => 'icaropc17@gmail.com',
+            'password' => bcrypt('Codante2023'),
+        ]);
+
+        $user2->save();
     }
 }
