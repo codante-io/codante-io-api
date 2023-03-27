@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,10 +21,10 @@ Route::get('/user', function (Request $request) {
     return ["message" => "Não autenticado"];
 })->middleware('auth:sanctum');
 
-Route::get('/courses', function () {
-    return \App\Models\Course::all();
+Route::get('/workshops', function () {
+    return \App\Models\Workshop::all();
 });
 
-Route::get('/courses/{slug}', function ($slug) {
-    return \App\Models\Course::where('slug', $slug)->firstOrFail();
+Route::get('/workshops/{slug}', function ($slug) {
+    return \App\Models\Workshop::where('slug', $slug)->firstOrFail();
 });

@@ -11,8 +11,8 @@ class Lesson extends Model
 
     protected $guarded = ['id'];
 
-    public function course()
+    public function workshop()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Workshop::class);
     }
 }
