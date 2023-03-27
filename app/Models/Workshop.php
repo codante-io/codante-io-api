@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Lesson extends Model
+class Workshop extends Model
 {
     use HasFactory;
 
     protected $guarded = ['id'];
 
-    public function workshop()
+    public function lessons()
     {
-        return $this->belongsTo(Workshop::class);
+        return $this->hasMany(Lesson::class);
     }
 }
