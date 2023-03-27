@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Models\Lesson;
 use App\Models\User;
-use Database\Factories\LessonFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,7 +18,7 @@ class DatabaseSeeder extends Seeder
 
 
         \App\Models\User::factory(10)->create();
-        \App\Models\Course::factory(10)->has(Lesson::factory()->count(4))->create();
+        \App\Models\Workshop::factory(10)->has(Lesson::factory()->count(4))->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
