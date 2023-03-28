@@ -18,7 +18,8 @@ Route::get('/user', function (Request $request) {
     if ($request->user()) {
         return $request->user();
     }
-    return ["message" => "Não autenticado"];
+
+    return ['message' => 'Não autenticado'];
 })->middleware('auth:sanctum');
 
 Route::get('/workshops', function () {
