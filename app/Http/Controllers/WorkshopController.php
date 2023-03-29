@@ -11,14 +11,22 @@ class WorkshopController extends Controller
     public function index()
     {
         return WorkshopResource::collection(
-            Workshop::all()
+            Workshop::query()
+                ->with('lessons')
+                ->with('instructor')
+                ->with('categories')
+                ->get()
         );
     }
 
     public function show($slug)
     {
         return new WorkshopResource(
-            Workshop::where('slug', $slug)->with('lessons')->with('instructor')->firstOrFail()
+            Workshop::where('slug', $slug)
+                ->with('lessons')
+                ->with('instructor')
+                ->with('categories')
+                ->firstOrFail()
         );
     }
 }
