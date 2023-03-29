@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WorkshopController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,5 +18,8 @@ Route::get('/', function () {
     return ['Laravel' => app()->version()];
 });
 
+Route::get('/workshops', [WorkshopController::class, 'index']);
+
+Route::get('/workshops/{slug}', [WorkshopController::class, 'show']);
 
 require __DIR__ . '/auth.php';
