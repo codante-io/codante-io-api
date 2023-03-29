@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\WorkshopController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,10 @@ Route::get('/', function () {
 });
 
 Route::get('/workshops', [WorkshopController::class, 'index']);
-
 Route::get('/workshops/{slug}', [WorkshopController::class, 'show']);
+
+Route::get('/instructors', [InstructorController::class, 'index']);
+Route::get('/instructors/{slug}', [InstructorController::class, 'show']);
+
 
 require __DIR__ . '/auth.php';
