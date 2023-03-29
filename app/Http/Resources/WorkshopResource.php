@@ -23,6 +23,7 @@ class WorkshopResource extends JsonResource
             'description' => $this->description,
             'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
