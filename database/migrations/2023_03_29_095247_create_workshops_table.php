@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->string('imageUrl')->nullable();
-            $table->string('slug');
+            $table->string('slug')->unique();
             $table->boolean('isPublished')->default(false);
             $table->integer('difficulty')->default(1);
             $table->integer('duration_in_minutes')->nullable();
