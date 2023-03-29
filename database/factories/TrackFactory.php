@@ -18,7 +18,8 @@ class TrackFactory extends Factory
     {
         return [
             'name' => fake()->words(3, true),
-            'description' => fake()->paragraphs(2, true),
+            'short_description' => fake()->paragraphs(1, true),
+            'description' => fake()->paragraphs(4, true),
             'slug' => fake()->slug(4),
         ];
     }
