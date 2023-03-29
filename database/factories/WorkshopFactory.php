@@ -34,7 +34,7 @@ class WorkshopFactory extends Factory
     {
         return [
             'name' => fake()->words(3, true),
-            'short_description' => fake()->paragraphs(1, true),
+            'short_description' => fake()->paragraph(2, true),
             'description' => fake()->paragraphs(4, true),
             'slug' => fake()->slug(4),
             'imageUrl' => fake()->imageUrl(640, 480, 'Avatar', true),

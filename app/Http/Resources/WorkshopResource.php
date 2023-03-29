@@ -19,6 +19,7 @@ class WorkshopResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
+            'short_description' => $this->short_description,
             'description' => $this->description,
             'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
