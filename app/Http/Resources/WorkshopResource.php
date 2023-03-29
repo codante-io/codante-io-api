@@ -17,10 +17,13 @@ class WorkshopResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'name' => $this->name,
             'slug' => $this->slug,
             'short_description' => $this->short_description,
             'description' => $this->description,
+            'imageURL' => $this->imageURL,
+            'difficulty' => $this->difficulty,
+            'duration_in_minutes' => $this->duration_in_minutes,
             'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
