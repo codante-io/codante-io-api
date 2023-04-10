@@ -15,6 +15,7 @@ class WorkshopController extends Controller
                 ->with('lessons')
                 ->with('instructor')
                 ->with('categories')
+                ->visible()
                 ->get()
         );
     }
