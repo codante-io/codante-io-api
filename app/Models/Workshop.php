@@ -15,4 +15,14 @@ class Workshop extends Model
     {
         return $this->hasMany(Lesson::class);
     }
+
+    public function instructor()
+    {
+        return $this->belongsTo(Instructor::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 }

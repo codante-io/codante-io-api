@@ -36,7 +36,7 @@
     "This password reset link will expire in :count minutes.": "Este link de redefinição de senha expirará em :count minutos.",
     "Please confirm your password before continuing.": "Por favor, confirme sua senha para continuar.",
     "Hello!": "Olá!",
-    "Regards": "Saudações",
+    "Regards": "Até breve",
     "Reset Password Notification": "Notificação de redefinição de senha",
     "All rights reserved.": "Todos os direitos reservados.",
     "The :attribute must be at least :length characters and contain at least one uppercase character.": "O campo :attribute deve ter pelo menos :length e conter pelo menos um caractere maiúsculo.",
@@ -126,7 +126,7 @@
     "Click here to re-send the verification email.": "Clique aqui para reenviar o e-mail de verificação.",
     "A new verification link has been sent to your email address.": "Um novo link de verificação foi enviado para seu endereço de e-mail.",
     "Saved.": "Salvou",
-    "The given data was invalid." : "Os dados fornecidos são inválidos.",
+    "The given data was invalid.": "Os dados fornecidos são inválidos.",
     "(and :count more error)": "(e mais :count erro)",
     "(and :count more errors)": "(e mais :count erros)"
 }

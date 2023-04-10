@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -28,7 +27,6 @@ class AuthenticatedSessionController extends Controller
                 'token' => $token,
             ])->withCookie(cookie('user_token', $token, 60 * 24 * 30));
     }
-
 
     /**
      * Destroy an authenticated session.
