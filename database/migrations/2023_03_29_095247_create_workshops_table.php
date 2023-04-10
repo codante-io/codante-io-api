@@ -14,9 +14,14 @@ return new class extends Migration
         Schema::create('workshops', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('short_description')->nullable();
             $table->text('description')->nullable();
-            $table->string('imageUrl')->nullable();
-            $table->string('slug');
+            $table->string('imageURL')->nullable();
+            $table->string('slug')->unique();
+            $table->boolean('isPublished')->default(false);
+            $table->integer('difficulty')->default(1);
+            $table->integer('duration_in_minutes')->nullable();
+            $table->foreignId('instructor_id')->nullable()->references('id')->on('instructors');
             $table->timestamps();
         });
     }
