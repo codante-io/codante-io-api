@@ -30,6 +30,7 @@ class WorkshopFactory extends Factory
             'imageURL' => fake()->imageUrl(640, 480, 'Avatar', true),
             'isPublished' => fake()->boolean(),
             'difficulty' => fake()->numberBetween(1, 3),
+            'status' => fake()->randomElement(['draft', 'published', 'soon', 'archived']),
             'duration_in_minutes' => fake()->numberBetween(60, 300),
             'instructor_id' => Instructor::factory(),
         ];
