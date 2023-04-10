@@ -25,4 +25,9 @@ class Workshop extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+    public function scopeVisible($query)
+    {
+        return $query->where('status', '!=', 'draft')->where('status', '!=', 'archived');
+    }
 }
