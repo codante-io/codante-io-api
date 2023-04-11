@@ -21,7 +21,7 @@ class InstructorFactory extends Factory
             'company' => fake()->company(),
             'email' => fake()->unique()->safeEmail(),
             'bio' => fake()->paragraphs(2, true),
-            'avatarURL' => fake()->imageUrl(),
+            'avatar_url' => fake()->imageUrl(),
             'slug' => fake()->slug(4),
         ];
     }

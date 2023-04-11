@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('instructors', function (Blueprint $table) {
+        Schema::create('tracks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('company')->nullable();
-            $table->string('email')->unique()->nullable();
-            $table->text('bio')->nullable();
-            $table->string('avatarURL')->nullable();
+            $table->text('short_description')->nullable();
+            $table->text('description')->nullable();
+            $table->string('image_url')->nullable();
             $table->string('slug')->unique();
+            $table->string('status')->index(); // draft, published, soon, archived
+            $table->integer('difficulty');
+            $table->integer('duration_in_minutes')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('instructors');
+        Schema::dropIfExists('tracks');
     }
 };

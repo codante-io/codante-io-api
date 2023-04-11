@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Workshop extends Model
 {
@@ -21,9 +22,9 @@ class Workshop extends Model
         return $this->belongsTo(Instructor::class);
     }
 
-    public function categories()
+    public function tags(): MorphToMany
     {
-        return $this->belongsToMany(Category::class);
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function scopeVisible($query)
