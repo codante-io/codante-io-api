@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\WorkshopResource;
+use App\Models\Tag;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class WorkshopController extends Controller
             Workshop::query()
                 ->with('lessons')
                 ->with('instructor')
-                ->with('categories')
+                ->with('tags')
                 ->visible()
                 ->get()
         );
@@ -26,7 +27,7 @@ class WorkshopController extends Controller
             Workshop::where('slug', $slug)
                 ->with('lessons')
                 ->with('instructor')
-                ->with('categories')
+                ->with('tags')
                 ->firstOrFail()
         );
     }
