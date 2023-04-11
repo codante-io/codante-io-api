@@ -15,4 +15,9 @@ class Challenge extends Model
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
+
+    public function workshop()
+    {
+        return $this->hasOne(Workshop::class);
+    }
 }
