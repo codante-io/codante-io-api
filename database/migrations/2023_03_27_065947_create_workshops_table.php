@@ -16,13 +16,16 @@ return new class extends Migration
             $table->string('name');
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
-            $table->string('imageURL')->nullable();
+            $table->string('image_url')->nullable();
             $table->string('slug')->unique();
             $table->string('status')->index(); // draft, published, soon, archived
-            $table->boolean('isPublished')->default(false);
+            $table->boolean('is_standalone');
             $table->integer('difficulty')->default(1);
             $table->integer('duration_in_minutes')->nullable();
             $table->foreignId('instructor_id')->nullable()->references('id')->on('instructors');
+            $table->foreignId('track_id')->nullable()->references('id')->on('tracks');
+            $table->float('track_position', 8, 4)->nullable();
+            $table->date('published_at')->nullable();
             $table->timestamps();
         });
     }
