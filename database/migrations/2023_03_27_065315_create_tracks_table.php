@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('status')->index(); // draft, published, soon, archived
             $table->integer('difficulty');
             $table->integer('duration_in_minutes')->nullable();
+            $table->string('featured')->index()->nullable(); // featured, popular, new
             $table->timestamps();
         });
     }
