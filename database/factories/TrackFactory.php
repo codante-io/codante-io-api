@@ -24,6 +24,7 @@ class TrackFactory extends Factory
             'slug' => fake()->slug(4),
             'status' => fake()->randomElement(['draft', 'published', 'soon', 'archived']),
             'difficulty' => fake()->numberBetween(1, 3),
+            'featured' => fake()->randomElement(['landing', null, 'new']),
             'duration_in_minutes' => fake()->numberBetween(60, 300),
         ];
     }

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('duration_in_minutes')->nullable();
             $table->foreignId('instructor_id')->nullable()->references('id')->on('instructors');
             $table->foreignId('challenge_id')->nullable()->references('id')->on('challenges');
+            $table->string('featured')->index()->nullable(); // featured, popular, new
             $table->date('published_at')->nullable();
             $table->timestamps();
         });
