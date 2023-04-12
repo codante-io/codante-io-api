@@ -23,8 +23,6 @@ return new class extends Migration
             $table->integer('difficulty')->default(1);
             $table->integer('duration_in_minutes')->nullable();
             $table->foreignId('instructor_id')->nullable()->references('id')->on('instructors');
-            $table->foreignId('track_id')->nullable()->references('id')->on('tracks');
-            $table->float('track_position', 8, 4)->nullable();
             $table->foreignId('challenge_id')->nullable()->references('id')->on('challenges');
             $table->date('published_at')->nullable();
             $table->timestamps();
