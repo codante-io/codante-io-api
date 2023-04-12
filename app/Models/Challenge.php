@@ -11,13 +11,18 @@ class Challenge extends Model
 
     protected $guarded = ['id'];
 
+    public function workshop()
+    {
+        return $this->hasOne(Workshop::class);
+    }
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function workshop()
+    public function tracks()
     {
-        return $this->hasOne(Workshop::class);
+        return $this->morphToMany(Track::class, 'trackable');
     }
 }
