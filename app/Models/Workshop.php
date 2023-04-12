@@ -27,6 +27,11 @@ class Workshop extends Model
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
+    public function tracks(): MorphToMany
+    {
+        return $this->morphToMany(Track::class, 'trackable');
+    }
+
     public function scopeVisible($query)
     {
         return $query->where('status', '!=', 'draft')->where('status', '!=', 'archived');
