@@ -20,7 +20,7 @@ class InstructorResource extends JsonResource
             'company' => $this->company,
             'email' => $this->email,
             'bio' => $this->bio,
-            'avatarURL' => $this->avatarURL,
+            'avatar_url' => $this->avatar_url,
             'slug' => $this->slug,
             'workshops' => WorkshopResource::collection($this->whenLoaded('workshops')),
             'created_at' => $this->created_at,
