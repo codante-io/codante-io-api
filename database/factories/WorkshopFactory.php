@@ -34,6 +34,7 @@ class WorkshopFactory extends Factory
             'difficulty' => fake()->numberBetween(1, 3),
             'duration_in_minutes' => fake()->numberBetween(60, 300),
             'instructor_id' => Instructor::factory(),
+            'featured' => fake()->randomElement(['landing', null, 'new']),
             'published_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }
