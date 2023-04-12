@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Challenge;
 use App\Models\Lesson;
 use App\Models\Tag;
 use App\Models\User;
@@ -29,6 +30,29 @@ class DatabaseSeeder extends Seeder
                     ->has(Lesson::factory()->count(4))
             )
             ->has(Tag::factory()->count(3))
+            ->create();
+
+        \App\Models\Track::factory(3)
+            ->hasAttached(
+                Workshop::factory()
+                    ->count(3)
+                    ->has(Lesson::factory()->count(4))
+                    ->has(Tag::factory()->count(3))
+                    ->set('is_standalone', true),
+                fn () => ['position' => fake()->randomFloat(4, 1, 10)]
+            )
+            ->hasAttached(
+                Challenge::factory()
+                    ->count(3)
+                    ->has(
+                        Workshop::factory()
+                            ->set('is_standalone', false)
+                            ->count(1)
+                            ->has(Lesson::factory()->count(4))
+                    )
+                    ->has(Tag::factory()->count(3)),
+                fn () => ['position' => fake()->randomFloat(4, 1, 10)]
+            )
             ->create();
 
 
