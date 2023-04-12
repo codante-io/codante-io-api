@@ -20,4 +20,9 @@ class Track extends Model
     {
         return $this->morphedByMany(Challenge::class, 'trackable');
     }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
 }
