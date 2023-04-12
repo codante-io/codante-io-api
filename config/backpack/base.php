@@ -24,7 +24,7 @@ return [
     // ----
 
     // Project name. Shown in the window title.
-    'project_name' => 'Backpack Admin Panel',
+    'project_name' => 'Codante Admin',
 
     // When clicking on the admin panel's top-left logo/name,
     // where should the user be redirected?
@@ -85,7 +85,7 @@ return [
     // ------
 
     // Menu logo. You can replace this with an <img> tag if you have a logo.
-    'project_logo'   => '<b>Back</b>pack',
+    'project_logo'   => '<b>Cod</b>ante',
 
     // Show / hide breadcrumbs on admin panel pages.
     'breadcrumbs' => true,
