@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('difficulty');
             $table->integer('duration_in_minutes')->nullable();
             $table->string('repository_url')->nullable();
+            $table->string('featured')->index()->nullable(); // featured, popular, new
             $table->date('published_at')->nullable();
             $table->timestamps();
         });
