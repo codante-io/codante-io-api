@@ -19,18 +19,26 @@ class HomeController extends Controller
         return [
             'featured_workshops' => WorkshopResource::collection(
                 Workshop::query()
-                    ->withCount('lessons')
                     ->where('featured', 'landing')
+                    ->with('lessons')
+                    ->with('instructor')
+                    ->with('tags')
                     ->get()
             ),
             'featured_challenges' => ChallengeResource::collection(
                 Challenge::query()
                     ->where('featured', 'landing')
+                    ->with('workshop')
+                    ->with('workshop.lessons')
+                    ->with('tags')
                     ->get()
             ),
             'featured_tracks' => TrackResource::collection(
                 Track::query()
                     ->where('featured', 'landing')
+                    ->with('workshops')
+                    ->with('challenges')
+                    ->with('tags')
                     ->get()
             )
         ];
