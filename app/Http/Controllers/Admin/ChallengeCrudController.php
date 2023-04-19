@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\ChallengeRequest;
+use App\Models\Track;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -40,25 +41,18 @@ class ChallengeCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('name');
-        CRUD::column('short_description');
-        CRUD::column('description');
-        CRUD::column('image_url');
-        CRUD::column('slug');
         CRUD::column('status');
-        CRUD::column('difficulty');
-        CRUD::column('duration_in_minutes');
-        CRUD::column('repository_url');
         CRUD::column('track_id');
         CRUD::column('track_position');
-        CRUD::column('published_at');
-        CRUD::column('created_at');
-        CRUD::column('updated_at');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::column('difficulty');
+        // CRUD::column('short_description');
+        // CRUD::column('description');
+        // CRUD::column('slug');
+        // CRUD::column('duration_in_minutes');
+        // CRUD::column('repository_url');
+        // CRUD::column('published_at');
+        // CRUD::column('created_at');
+        // CRUD::column('updated_at');
     }
 
     /**
@@ -72,23 +66,54 @@ class ChallengeCrudController extends CrudController
         CRUD::setValidation(ChallengeRequest::class);
 
         CRUD::field('name');
-        CRUD::field('short_description');
+        CRUD::field('short_description')->label('Resumo');
         CRUD::field('description');
-        CRUD::field('image_url');
-        CRUD::field('slug');
-        CRUD::field('status');
-        CRUD::field('difficulty');
-        CRUD::field('duration_in_minutes');
-        CRUD::field('repository_url');
-        CRUD::field('track_id');
-        CRUD::field('track_position');
-        CRUD::field('published_at');
+        CRUD::field('image_url')->type('url')->label('Link da Imagem');
 
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        $this->crud->addField(
+            [
+                'name' => 'track_id',
+                'label' => 'Track',
+                'type' => 'select',
+                'model' => 'App\Models\Track',
+                'entity' => 'track',
+                'attribute' => 'name',
+            ]
+        );
+
+        CRUD::field('track_position')->type('number');
+        CRUD::field('slug');
+
+        $this->crud->addField(
+            [
+                'name'        => 'status',
+                'label'       => 'Status',
+                'type'        => 'radio',
+                'options'     => [ 
+                    0 => 'archived',
+                    1 => 'draft',
+                    2 => 'published',
+                    3 => 'soon'
+                ],
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name'        => 'difficulty',
+                'label'       => 'Dificuldade (nível)',
+                'type'        => 'radio',
+                'options'     => [ 
+                    0 => 1,
+                    1 => 2,
+                    2 => 3,
+                ],
+            ],
+        );
+
+        CRUD::field('difficulty');
+        CRUD::field('duration_in_minutes')->label('Duração');
+        CRUD::field('repository_url')->type('url');
+        CRUD::field('published_at');
     }
 
     /**
