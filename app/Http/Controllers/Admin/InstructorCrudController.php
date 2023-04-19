@@ -39,20 +39,19 @@ class InstructorCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        // $this->crud->addFilter(
+        //     [
+        //         'name' => 'company',
+        //         'label' => 'Empresa',
+        //         'type' => 'select2'
+        //     ],
+        // );
+
         CRUD::column('name');
         CRUD::column('company');
         CRUD::column('email');
         CRUD::column('bio');
-        CRUD::column('avatar_url');
         CRUD::column('slug');
-        CRUD::column('created_at');
-        CRUD::column('updated_at');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
     }
 
     /**
@@ -65,18 +64,48 @@ class InstructorCrudController extends CrudController
     {
         CRUD::setValidation(InstructorRequest::class);
 
-        CRUD::field('name');
-        CRUD::field('company');
-        CRUD::field('email');
-        CRUD::field('bio');
-        CRUD::field('avatar_url');
-        CRUD::field('slug');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        $this->crud->addField(
+            [
+                'name' => 'name',
+                'label' => 'Nome',
+                'type' => 'text'
+            ]
+        );
+        $this->crud->addField(
+            [
+                'name' => 'email',
+                'label' => 'E-mail',
+                'type' => 'email'
+            ]
+        );
+        $this->crud->addField(
+            [
+                'name' => 'company',
+                'label' => 'Empresa',
+                'type' => 'text'
+            ]
+        );
+        $this->crud->addField(
+            [
+                'name' => 'bio',
+                'label' => 'Perfil (Bio)',
+                'type' => 'text'
+            ]
+        );
+        $this->crud->addField(
+            [
+                'name' => 'avatar_url',
+                'label' => 'Foto de Perfil',
+                'type' => 'url'
+            ]
+        );
+        $this->crud->addField(
+            [
+                'name' => 'slug',
+                'label' => 'Slug',
+                'type' => 'text'
+            ]
+        );
     }
 
     /**
