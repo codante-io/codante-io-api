@@ -19,11 +19,6 @@ class TrackCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 
-    /**
-     * Configure the CrudPanel object. Apply settings to all operations.
-     * 
-     * @return void
-     */
     public function setup()
     {
         CRUD::setModel(\App\Models\Track::class);
@@ -31,64 +26,152 @@ class TrackCrudController extends CrudController
         CRUD::setEntityNameStrings('track', 'tracks');
     }
 
-    /**
-     * Define what happens when the List operation is loaded.
-     * 
-     * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
     protected function setupListOperation()
     {
-        CRUD::column('name');
-        CRUD::column('short_description');
-        CRUD::column('description');
-        CRUD::column('image_url');
-        CRUD::column('slug');
-        CRUD::column('status');
-        CRUD::column('difficulty');
-        CRUD::column('duration_in_minutes');
-        CRUD::column('created_at');
-        CRUD::column('updated_at');
+        // Filtros
+        // $this->crud->addFilter(
+        //     [
+        //         'type' => 'dropdown',
+        //         'name' => 'status',
+        //         'label' => 'Status'
+        //     ],
+        //     [
+        //         0 => 'archived',
+        //         1 => 'draft',
+        //         2 => 'published',
+        //         3 => 'soon'
+        //     ],
+        //     function($value){
+        //         $this->crud->addClause('where', 'status', $value);
+        //     }
+        // );
+        
+        // $this->crud->addFilter(
+        //     [
+        //         'type' => 'dropdown',
+        //         'name' => 'difficulty',
+        //         'label' => 'Dificuldade'
+        //     ],
+        //     [
+        //         0 => 1,
+        //         1 => 2,
+        //         2 => 3
+        //     ],
+        //     function($value){
+        //         $this->crud->addClause('where', 'difficulty', $value);
+        //     }
+        // );
 
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        // Colunas 
+        CRUD::addColumns([
+            [
+                'name' => 'name',
+                'label' => 'Nome',
+                'type' => 'text'
+            ],
+            [
+                'name' => 'status',
+                'label' => 'Status',
+                'type' => 'text'
+            ],
+            [
+                'name' => 'short_description',
+                'label' => 'Resumo',
+                'type' => 'text'
+            ],
+            [
+                'name' => 'description',
+                'label' => 'Descrição',
+                'type' => 'text'
+            ],
+            [
+                'name' => 'difficulty',
+                'label' => 'Dificuldade',
+                'type' => 'text'
+            ],
+            [
+                'name' => 'duration_in_minutes',
+                'label' => 'Duração (min)',
+                'type' => 'text'
+            ],
+        ]);
     }
 
-    /**
-     * Define what happens when the Create operation is loaded.
-     * 
-     * @see https://backpackforlaravel.com/docs/crud-operation-create
-     * @return void
-     */
     protected function setupCreateOperation()
     {
+        // Validação
         CRUD::setValidation(TrackRequest::class);
 
-        CRUD::field('name');
-        CRUD::field('short_description');
-        CRUD::field('description');
-        CRUD::field('image_url');
-        CRUD::field('slug');
-        CRUD::field('status');
-        CRUD::field('difficulty');
-        CRUD::field('duration_in_minutes');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        // Fields
+        $this->crud->addField(
+            [
+                'name' => 'name',
+                'label' => 'Nome',
+                'type' => 'text'
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name' => 'short_description',
+                'label' => 'Resumo',
+                'type' => 'text'
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name' => 'description',
+                'label' => 'Descrição Completa',
+                'type' => 'text'
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name' => 'image_url',
+                'label' => 'Imagem',
+                'type' => 'url'
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name' => 'slug',
+                'label' => 'Slug',
+                'type' => 'text'
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name'        => 'status',
+                'label'       => 'Status',
+                'type'        => 'radio',
+                'options'     => [ 
+                    0 => 'archived',
+                    1 => 'draft',
+                    2 => 'published',
+                    3 => 'soon'
+                ],
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name'        => 'difficulty',
+                'label'       => 'Dificuldade (nível)',
+                'type'        => 'radio',
+                'options'     => [ 
+                    0 => 1,
+                    1 => 2,
+                    2 => 3,
+                ],
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name' => 'duration_in_minutes',
+                'label' => 'Duração (min)',
+                'type' => 'text'
+            ]
+        );
     }
 
-    /**
-     * Define what happens when the Update operation is loaded.
-     * 
-     * @see https://backpackforlaravel.com/docs/crud-operation-update
-     * @return void
-     */
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
