@@ -39,19 +39,13 @@ class LessonCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('workshop_id');
         CRUD::column('name');
+        CRUD::column('workshop_id');
         CRUD::column('description');
-        CRUD::column('content');
-        CRUD::column('slug');
         CRUD::column('created_at');
         CRUD::column('updated_at');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
+        CRUD::column('slug');
+        CRUD::column('content');
     }
 
     /**
@@ -64,17 +58,20 @@ class LessonCrudController extends CrudController
     {
         CRUD::setValidation(LessonRequest::class);
 
-        CRUD::field('workshop_id');
         CRUD::field('name');
         CRUD::field('description');
         CRUD::field('content');
         CRUD::field('slug');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
+        $this->crud->addField(
+            [
+                'name' => 'workshop_id',
+                'label' => 'Workshop',
+                'type' => 'select',
+                'model' => 'App\Models\Workshop',
+                'entity' => 'workshop',
+                'attribute' => 'name'
+            ]
+        );
     }
 
     /**
