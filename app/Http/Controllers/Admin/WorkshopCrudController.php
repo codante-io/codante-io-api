@@ -40,27 +40,20 @@ class WorkshopCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::column('name');
+        CRUD::column('instructor_id');
+        CRUD::column('challenge_id');
+        CRUD::column('track_id');
+        CRUD::column('track_position');
+        CRUD::column('status');
+        CRUD::column('created_at');
+        CRUD::column('published_at');
+        CRUD::column('updated_at');
         CRUD::column('short_description');
         CRUD::column('description');
-        CRUD::column('image_url');
         CRUD::column('slug');
-        CRUD::column('status');
         CRUD::column('is_standalone');
         CRUD::column('difficulty');
         CRUD::column('duration_in_minutes');
-        CRUD::column('instructor_id');
-        CRUD::column('track_id');
-        CRUD::column('track_position');
-        CRUD::column('challenge_id');
-        CRUD::column('published_at');
-        CRUD::column('created_at');
-        CRUD::column('updated_at');
-
-        /**
-         * Columns can be defined using the fluent syntax or array syntax:
-         * - CRUD::column('price')->type('number');
-         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']); 
-         */
     }
 
     /**
@@ -74,25 +67,51 @@ class WorkshopCrudController extends CrudController
         CRUD::setValidation(WorkshopRequest::class);
 
         CRUD::field('name');
-        CRUD::field('short_description');
+        CRUD::field('short_description')->label('Resumo');
         CRUD::field('description');
-        CRUD::field('image_url');
+        CRUD::field('image_url')->type('url')->label('Link da Imagem');
         CRUD::field('slug');
-        CRUD::field('status');
-        CRUD::field('is_standalone');
-        CRUD::field('difficulty');
+        $this->crud->addField(
+            [
+                'name'        => 'status',
+                'label'       => 'Status',
+                'type'        => 'radio',
+                'options'     => [ 
+                    0 => 'archived',
+                    1 => 'draft',
+                    2 => 'published',
+                    3 => 'soon'
+                ],
+            ],
+        );
+        $this->crud->addField(
+            [
+                'name'        => 'difficulty',
+                'label'       => 'Dificuldade (nível)',
+                'type'        => 'radio',
+                'options'     => [ 
+                    0 => 1,
+                    1 => 2,
+                    2 => 3,
+                ],
+            ],
+        );
+        CRUD::field('is_standalone')->label('É independente?');
         CRUD::field('duration_in_minutes');
-        CRUD::field('instructor_id');
+        $this->crud->addField(
+            [
+                'name' => 'instructor_id',
+                'label' => 'Instrutor',
+                'type' => 'select',
+                'model' => 'App\Models\Instructor',
+                'entity' => 'instructor',
+                'attribute' => 'name'
+            ]
+        );
         CRUD::field('track_id');
         CRUD::field('track_position');
         CRUD::field('challenge_id');
         CRUD::field('published_at');
-
-        /**
-         * Fields can be defined using the fluent syntax or array syntax:
-         * - CRUD::field('price')->type('number');
-         * - CRUD::addField(['name' => 'price', 'type' => 'number'])); 
-         */
     }
 
     /**
