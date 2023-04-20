@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\TrackController;
@@ -36,6 +37,10 @@ Route::get('/tracks/{slug}', [TrackController::class, 'show']);
 
 
 Route::get('/home', [HomeController::class, 'index']);
+
+Route::post('/dashboard/change-name', [DashboardController::class, 'changeUserName']);
+Route::post('/dashboard/change-password', [DashboardController::class, 'changePassword']);
+
 
 
 require __DIR__ . '/auth.php';

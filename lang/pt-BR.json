@@ -37,7 +37,7 @@
     "Please confirm your password before continuing.": "Por favor, confirme sua senha para continuar.",
     "Hello!": "Olá!",
     "Regards": "Até breve",
-    "Reset Password Notification": "Notificação de redefinição de senha",
+    "Reset Password Notification": "Redefinição de Senha",
     "All rights reserved.": "Todos os direitos reservados.",
     "The :attribute must be at least :length characters and contain at least one uppercase character.": "O campo :attribute deve ter pelo menos :length e conter pelo menos um caractere maiúsculo.",
     "The :attribute must be at least :length characters and contain at least one number.": "O campo :attribute deve ter pelo menos :length caracteres e conter pelo menos um número.",
