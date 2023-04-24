@@ -23,6 +23,7 @@ class ChallengeController extends Controller
     {
         return new ChallengeResource(
             Challenge::where('slug', $slug)
+                ->where('status', 'published')
                 ->with('workshop')
                 ->with('workshop.lessons')
                 ->with('tags')
