@@ -23,9 +23,8 @@ class TrackController extends Controller
     public function show($slug)
     {
         return new TrackResource(
-            Track::where('slug', $slug)
-                ->with('workshops')
-                ->with('challenges')
+            Track::query()
+                ->where('slug', $slug)
                 ->with('tags')
                 ->firstOrFail()
         );

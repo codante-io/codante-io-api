@@ -22,6 +22,7 @@ class WorkshopResource extends JsonResource
             'short_description' => $this->short_description,
             'description' => $this->description,
             'image_url' => $this->imageURL,
+            'video_url' => $this->video_url,
             'difficulty' => $this->difficulty,
             'duration_in_minutes' => $this->duration_in_minutes,
             'status' => $this->status,
