@@ -31,6 +31,7 @@ Route::get('/instructors/{slug}', [InstructorController::class, 'show']);
 
 Route::get('/challenges', [ChallengeController::class, 'index']);
 Route::get('/challenges/{slug}', [ChallengeController::class, 'show']);
+Route::post('/challenges/{slug}/join', [ChallengeController::class, 'join']);
 
 Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{slug}', [TrackController::class, 'show']);

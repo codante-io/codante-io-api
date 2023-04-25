@@ -55,6 +55,16 @@ class DatabaseSeeder extends Seeder
             )
             ->create();
 
+        \App\Models\User::factory(3)
+            ->hasAttached(
+                \App\Models\Challenge::factory(10)
+                    ->has(
+                        Tag::factory()->count(3)
+                    ), fn () => ['completed' => fake()->boolean(), 'joined_discord' => fake()->boolean()]
+            )
+            ->create();
+
+
 
 
         // \App\Models\User::factory()->create([
