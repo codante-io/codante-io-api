@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->string('image_url')->nullable();
+            $table->string('video_url')->nullable();
             $table->string('slug')->unique();
             $table->string('status')->index(); // draft, published, soon, archived
             $table->boolean('is_standalone');
