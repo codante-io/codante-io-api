@@ -11,14 +11,24 @@ class Track extends Model
 
     protected $guarded = ['id'];
 
+    public function trackables()
+    {
+        $workshops = $this->workshops;
+        $challenges = $this->challenges;
+
+        return $workshops->concat($challenges)->sortBy(function ($trackable) {
+            return $trackable->pivot->position;
+        })->flatten();
+    }
+
     public function workshops()
     {
-        return $this->morphedByMany(Workshop::class, 'trackable');
+        return $this->morphedByMany(Workshop::class, 'trackable')->withPivot('position');
     }
 
     public function challenges()
     {
-        return $this->morphedByMany(Challenge::class, 'trackable');
+        return $this->morphedByMany(Challenge::class, 'trackable')->withPivot('position');
     }
 
     public function tags()
