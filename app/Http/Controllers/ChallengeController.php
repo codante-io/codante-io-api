@@ -12,6 +12,8 @@ class ChallengeController extends Controller
     {
         return ChallengeResource::collection(
             Challenge::query()
+                ->where('status', 'published')
+                ->orWhere('status', 'soon')
                 ->with('workshop')
                 ->with('workshop.lessons')
                 ->with('tags')
@@ -23,6 +25,7 @@ class ChallengeController extends Controller
     {
         return new ChallengeResource(
             Challenge::where('slug', $slug)
+                ->where('status', 'published')
                 ->with('workshop')
                 ->with('workshop.lessons')
                 ->with('tags')
