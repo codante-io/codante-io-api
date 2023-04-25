@@ -29,4 +29,20 @@ class ChallengeController extends Controller
                 ->firstOrFail()
         );
     }
+
+    public function join(Request $request, $slug)
+    {
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+
+        $challenge->users()->attach($request->user()->id);
+        dd($challenge->users);
+        dd($request->user()->id);
+        // return new ChallengeResource(
+        //     Challenge::where('slug', $slug)
+        //         ->with('workshop')
+        //         ->with('workshop.lessons')
+        //         ->with('tags')
+        //         ->firstOrFail()
+        // );
+    }
 }

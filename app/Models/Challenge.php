@@ -25,4 +25,9 @@ class Challenge extends Model
     {
         return $this->morphToMany(Track::class, 'trackable');
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }
