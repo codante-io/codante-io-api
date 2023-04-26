@@ -3,8 +3,9 @@
 body,
 body *:not(html):not(style):not(br):not(tr):not(code) {
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol";
     position: relative;
 }
 
@@ -28,7 +29,7 @@ blockquote {
 }
 
 a {
-    color: #3869d4;
+    color: #5282ff;
 }
 
 a img {
@@ -38,7 +39,7 @@ a img {
 /* Typography */
 
 h1 {
-    color: #3d4852;
+    color: #334155;
     font-size: 18px;
     font-weight: bold;
     margin-top: 0;
@@ -80,7 +81,7 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #edf2f7;
+    background-color: #e2e8f0;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -112,9 +113,9 @@ img {
 /* Logo */
 
 .logo {
-    height: 75px;
-    max-height: 75px;
-    width: 75px;
+    /* height: 75px; */
+    /* max-height: 75px; */
+    max-width: 200px;
 }
 
 /* Body */
@@ -123,9 +124,9 @@ img {
     -premailer-cellpadding: 0;
     -premailer-cellspacing: 0;
     -premailer-width: 100%;
-    background-color: #edf2f7;
-    border-bottom: 1px solid #edf2f7;
-    border-top: 1px solid #edf2f7;
+    background-color: #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    border-top: 1px solid #e2e8f0;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -232,11 +233,11 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #2d3748;
-    border-bottom: 8px solid #2d3748;
-    border-left: 18px solid #2d3748;
-    border-right: 18px solid #2d3748;
-    border-top: 8px solid #2d3748;
+    background-color: #5282ff;
+    border-bottom: 8px solid #5282ff;
+    border-left: 18px solid #5282ff;
+    border-right: 18px solid #5282ff;
+    border-top: 8px solid #5282ff;
 }
 
 .button-green,
@@ -265,7 +266,7 @@ img {
 }
 
 .panel-content {
-    background-color: #edf2f7;
+    background-color: #e2e8f0;
     color: #718096;
     padding: 16px;
 }
