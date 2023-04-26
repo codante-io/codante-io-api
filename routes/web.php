@@ -32,10 +32,11 @@ Route::get('/instructors/{slug}', [InstructorController::class, 'show']);
 Route::get('/challenges', [ChallengeController::class, 'index']);
 Route::get('/challenges/{slug}', [ChallengeController::class, 'show']);
 Route::post('/challenges/{slug}/join', [ChallengeController::class, 'join']);
+Route::get('/challenges/{slug}/joined', [ChallengeController::class, 'userJoined']);
+Route::put('/challenges/{slug}/update', [ChallengeController::class, 'updateChallengeUser']);
 
 Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{slug}', [TrackController::class, 'show']);
-
 
 Route::get('/home', [HomeController::class, 'index']);
 

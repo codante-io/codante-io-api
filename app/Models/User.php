@@ -31,6 +31,6 @@ class User extends Authenticatable
 
     public function challenges()
     {
-        return $this->belongsToMany(Challenge::class);
+        return $this->belongsToMany(Challenge::class)->withPivot(['completed', 'fork_url', 'joined_discord']);
     }
 }
