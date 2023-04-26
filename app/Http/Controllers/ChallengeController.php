@@ -36,7 +36,7 @@ class ChallengeController extends Controller
 
     public function join(Request $request, $slug)
     {
-        if(!$request->user()) {
+        if (!$request->user()) {
             return response()->json(['error' => 'You are not logged in'], 403);
         }
         $challenge = Challenge::where('slug', $slug)->firstOrFail();
@@ -49,7 +49,7 @@ class ChallengeController extends Controller
     {
         $token = PersonalAccessToken::findToken($request->bearerToken());
 
-        if(!$token?->tokenable) {
+        if (!$token?->tokenable) {
             return response()->json(['error' => 'You are not logged in'], 403);
         }
 
@@ -64,7 +64,7 @@ class ChallengeController extends Controller
         //only the user who joined the challenge can update their own data
         $challengeUser = $this->userJoined($request, $slug);
 
-        if(!$challengeUser) {
+        if (!$challengeUser) {
             return response()->json(['error' => 'You did not join this challenge'], 403);
         }
 
