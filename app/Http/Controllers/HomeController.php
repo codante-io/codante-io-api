@@ -28,6 +28,8 @@ class HomeController extends Controller
             'featured_challenges' => ChallengeResource::collection(
                 Challenge::query()
                     ->where('featured', 'landing')
+                    ->where('status', 'published')
+                    ->orWhere('status', 'soon')
                     ->with('workshop')
                     ->with('workshop.lessons')
                     ->with('tags')

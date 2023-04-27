@@ -31,8 +31,9 @@ Route::get('/instructors/{slug}', [InstructorController::class, 'show']);
 
 Route::get('/challenges', [ChallengeController::class, 'index']);
 Route::get('/challenges/{slug}', [ChallengeController::class, 'show']);
-Route::post('/challenges/{slug}/join', [ChallengeController::class, 'join'])->middleware('auth:sanctum');
 Route::get('/challenges/{slug}/joined', [ChallengeController::class, 'userJoined'])->middleware('auth:sanctum');
+Route::get('/challenges/{slug}/participants', [ChallengeController::class, 'getChallengeParticipantsBanner']);
+Route::post('/challenges/{slug}/join', [ChallengeController::class, 'join'])->middleware('auth:sanctum');
 Route::put('/challenges/{slug}', [ChallengeController::class, 'updateChallengeUser'])->middleware('auth:sanctum');
 
 Route::get('/tracks', [TrackController::class, 'index']);

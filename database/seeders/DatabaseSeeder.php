@@ -29,6 +29,11 @@ class DatabaseSeeder extends Seeder
                     ->count(1)
                     ->has(Lesson::factory()->count(4))
             )
+            ->hasAttached(
+                \App\Models\User
+                ::factory(10)->set('avatar_url', 'https://i.pravatar.cc/300'),
+                fn () => ['completed' => fake()->boolean(), 'joined_discord' => fake()->boolean()]
+            )
             ->has(Tag::factory()->count(3))
             ->create();
 
