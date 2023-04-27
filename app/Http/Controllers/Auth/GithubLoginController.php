@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Mail\UserRegistered;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -21,7 +23,8 @@ class GithubLoginController extends AuthenticatedSessionController
             $githubUserData = Socialite::driver('github')->userFromToken($token['github_token']);
 
             $user = User::where('email', $githubUserData->getEmail())->first();
-            if (! $user) {
+
+            if (!$user) {
                 $user = User::create([
                     'name' => $githubUserData->getName(),
                     'email' => $githubUserData->getEmail(),
@@ -31,6 +34,9 @@ class GithubLoginController extends AuthenticatedSessionController
                     'avatar_url' => $githubUserData->getAvatar(),
                     'email_verified_at' => now(),
                 ]);
+
+                // send UserRegistered email
+                Mail::to($user->email)->send(new UserRegistered($user));
             }
 
             // update avatar and github id
