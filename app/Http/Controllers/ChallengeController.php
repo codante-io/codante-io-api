@@ -47,15 +47,9 @@ class ChallengeController extends Controller
 
     public function userJoined(Request $request, $slug)
     {
-        $token = PersonalAccessToken::findToken($request->bearerToken());
-
-        if (!$token?->tokenable) {
-            return response()->json(['error' => 'You are not logged in'], 403);
-        }
-
         $challenge = Challenge::where('slug', $slug)->firstOrFail();
 
-        $challengeUser = $challenge->users()->where('user_id', $token->tokenable->id)->firstOrFail();
+        $challengeUser = $challenge->users()->where('user_id', $request->user()->id)->firstOrFail();
         return $challengeUser;
     }
 
@@ -69,7 +63,14 @@ class ChallengeController extends Controller
         }
 
         $challenge = Challenge::where('slug', $slug)->firstOrFail();
-        $challenge->users()->updateExistingPivot($request->user()->id, $request->all());
+
+        $validated = $request->validate([
+            'completed' => 'nullable|boolean',
+            'joined_discord' => 'nullable|boolean',
+            'fork_url' => 'nullable|url',
+        ]);
+
+        $challenge->users()->updateExistingPivot($request->user()->id, $validated);
 
         return response()->json(['ok' => true], 200);
     }
