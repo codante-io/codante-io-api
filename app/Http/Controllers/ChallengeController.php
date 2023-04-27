@@ -74,4 +74,16 @@ class ChallengeController extends Controller
 
         return response()->json(['ok' => true], 200);
     }
+
+    public function getChallengeParticipantsBanner(Request $request, $slug)
+    {
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+        $participantsCount = $challenge->users()->count();
+        $participantsAvatars = $challenge->users()->get()->map(function ($user) {
+            return $user->avatar_url;
+        })->take(20);
+        return [
+            'count' => $participantsCount,
+            'avatars' => $participantsAvatars,];
+    }
 }
