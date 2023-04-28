@@ -13,8 +13,8 @@ class Track extends Model
 
     public function trackables()
     {
-        $workshops = $this->workshops;
-        $challenges = $this->challenges;
+        $workshops = $this->workshops()->with('lessons')->get();
+        $challenges = $this->challenges()->withCount('users')->get();
 
         return $workshops->concat($challenges)->sortBy(function ($trackable) {
             return $trackable->pivot->position;
