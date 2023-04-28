@@ -42,7 +42,7 @@ class ChallengeController extends Controller
             return response()->json(['error' => 'You are not logged in'], 403);
         }
         $challenge = Challenge::where('slug', $slug)->firstOrFail();
-        $challenge->users()->sync($request->user()->id);
+        $challenge->users()->syncWithoutDetaching($request->user()->id);
 
         return response()->json(['ok' => true], 200);
     }
