@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Facade;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -15,7 +14,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Codante'),
+    "name" => env("APP_NAME", "Codante"),
 
     /*
     |--------------------------------------------------------------------------
@@ -28,7 +27,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    "env" => env("APP_ENV", "production"),
 
     /*
     |--------------------------------------------------------------------------
@@ -41,7 +40,7 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    "debug" => (bool) env("APP_DEBUG", false),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,11 +53,11 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    "url" => env("APP_URL", "http://localhost"),
 
-    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
+    "frontend_url" => env("FRONTEND_URL", "http://localhost:3000"),
 
-    'asset_url' => env('ASSET_URL'),
+    "asset_url" => env("ASSET_URL"),
 
     /*
     |--------------------------------------------------------------------------
@@ -71,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'America/Sao_Paulo',
+    "timezone" => "America/Sao_Paulo",
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +83,7 @@ return [
     |
     */
 
-    'locale' => 'pt-BR',
+    "locale" => "pt-BR",
 
     /*
     |--------------------------------------------------------------------------
@@ -97,7 +96,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    "fallback_locale" => "en",
 
     /*
     |--------------------------------------------------------------------------
@@ -110,7 +109,7 @@ return [
     |
     */
 
-    'faker_locale' => 'pt_BR',
+    "faker_locale" => "pt_BR",
 
     /*
     |--------------------------------------------------------------------------
@@ -123,9 +122,9 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    "key" => env("APP_KEY"),
 
-    'cipher' => 'AES-256-CBC',
+    "cipher" => "AES-256-CBC",
 
     /*
     |--------------------------------------------------------------------------
@@ -140,8 +139,8 @@ return [
     |
     */
 
-    'maintenance' => [
-        'driver' => 'file',
+    "maintenance" => [
+        "driver" => "file",
         // 'store'  => 'redis',
     ],
 
@@ -156,8 +155,7 @@ return [
     |
     */
 
-    'providers' => [
-
+    "providers" => [
         /*
          * Laravel Framework Service Providers...
          */
@@ -196,7 +194,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        GrahamCampbell\GitHub\GitHubServiceProvider::class,
     ],
 
     /*
@@ -210,8 +208,10 @@ return [
     |
     */
 
-    'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
-    ])->toArray(),
-
+    "aliases" => Facade::defaultAliases()
+        ->merge([
+            // 'ExampleClass' => App\Example\ExampleClass::class,
+            "GitHub" => GrahamCampbell\GitHub\Facades\GitHub::class,
+        ])
+        ->toArray(),
 ];
