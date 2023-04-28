@@ -20,6 +20,7 @@ class HomeController extends Controller
             'featured_workshops' => WorkshopResource::collection(
                 Workshop::query()
                     ->where('featured', 'landing')
+                    ->where('status', 'published')
                     ->with('lessons')
                     ->with('instructor')
                     ->with('tags')
@@ -38,6 +39,7 @@ class HomeController extends Controller
             'featured_tracks' => TrackResource::collection(
                 Track::query()
                     ->where('featured', 'landing')
+                    ->where('status', 'published')
                     ->with('workshops')
                     ->with('challenges')
                     ->with('tags')
