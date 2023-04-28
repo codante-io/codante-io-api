@@ -21,21 +21,43 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory(10)->create();
         \App\Models\Tag::factory(10)->create();
         \App\Models\Instructor::factory(10)->create();
-        \App\Models\Workshop::factory(10)->has(Lesson::factory()->count(4))->has(Tag::factory()->count(3))->set('is_standalone', true)->create();
-        \App\Models\Challenge::factory(10)
+        \App\Models\Workshop::factory(10)->has(Lesson::factory()->count(4))->has(Tag::factory()->count(3))->set('is_standalone', true)
+            ->set('featured', null)->create();
+        \App\Models\Workshop::factory(2)->has(Lesson::factory()->count(4))->has(Tag::factory()->count(3))->set('is_standalone', true)->set('featured', 'landing')->create();
+        \App\Models\Challenge::factory(4)
             ->has(
                 Workshop::factory()
                     ->set('is_standalone', false)
+                    ->set('featured', null)
                     ->count(1)
                     ->has(Lesson::factory()->count(4))
             )
             ->hasAttached(
                 \App\Models\User
-                ::factory(10)->set('avatar_url', 'https://i.pravatar.cc/300'),
+                ::factory(23)->set('avatar_url', 'https://i.pravatar.cc/300'),
                 fn () => ['completed' => fake()->boolean(), 'joined_discord' => fake()->boolean()]
             )
             ->has(Tag::factory()->count(3))
+            ->set('featured', null)
             ->create();
+
+        \App\Models\Challenge::factory(12)
+            ->has(
+                Workshop::factory()
+                    ->set('is_standalone', false)
+                    ->set('featured', null)
+                    ->count(1)
+                    ->has(Lesson::factory()->count(4))
+            )
+            ->hasAttached(
+                \App\Models\User
+                ::factory(23)->set('avatar_url', 'https://i.pravatar.cc/300'),
+                fn () => ['completed' => fake()->boolean(), 'joined_discord' => fake()->boolean()]
+            )
+            ->has(Tag::factory()->count(3))
+            ->set('featured', 'landing')
+            ->create();
+
 
         \App\Models\Track::factory(3)
             ->hasAttached(
@@ -43,15 +65,18 @@ class DatabaseSeeder extends Seeder
                     ->count(3)
                     ->has(Lesson::factory()->count(4))
                     ->has(Tag::factory()->count(3))
+                    ->set('featured', null)
                     ->set('is_standalone', true),
                 fn () => ['position' => fake()->randomFloat(4, 1, 10)]
             )
             ->hasAttached(
                 Challenge::factory()
                     ->count(3)
+                    ->set('featured', null)
                     ->has(
                         Workshop::factory()
                             ->set('is_standalone', false)
+                            ->set('featured', null)
                             ->count(1)
                             ->has(Lesson::factory()->count(4))
                     )
@@ -61,12 +86,6 @@ class DatabaseSeeder extends Seeder
             ->create();
 
         \App\Models\User::factory(3)
-            ->hasAttached(
-                \App\Models\Challenge::factory(10)
-                    ->has(
-                        Tag::factory()->count(3)
-                    ), fn () => ['completed' => fake()->boolean(), 'joined_discord' => fake()->boolean()]
-            )
             ->create();
 
 
