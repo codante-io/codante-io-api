@@ -17,6 +17,7 @@ class ChallengeController extends Controller
                 ->orWhere('status', 'soon')
                 ->with('workshop')
                 ->with('workshop.lessons')
+                ->withCount('users')
                 ->with('tags')
                 ->get()
         );
@@ -29,6 +30,7 @@ class ChallengeController extends Controller
                 ->where('status', 'published')
                 ->with('workshop')
                 ->with('workshop.lessons')
+                ->withCount('users')
                 ->with('tags')
                 ->firstOrFail()
         );
@@ -40,7 +42,7 @@ class ChallengeController extends Controller
             return response()->json(['error' => 'You are not logged in'], 403);
         }
         $challenge = Challenge::where('slug', $slug)->firstOrFail();
-        $challenge->users()->sync($request->user()->id);
+        $challenge->users()->syncWithoutDetaching($request->user()->id);
 
         return response()->json(['ok' => true], 200);
     }
@@ -84,6 +86,7 @@ class ChallengeController extends Controller
         })->take(20);
         return [
             'count' => $participantsCount,
-            'avatars' => $participantsAvatars,];
+            'avatars' => $participantsAvatars,
+        ];
     }
 }
