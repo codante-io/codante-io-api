@@ -17,6 +17,7 @@ class ChallengeController extends Controller
                 ->orWhere('status', 'soon')
                 ->with('workshop')
                 ->with('workshop.lessons')
+                ->withCount('users')
                 ->with('tags')
                 ->get()
         );
@@ -29,6 +30,7 @@ class ChallengeController extends Controller
                 ->where('status', 'published')
                 ->with('workshop')
                 ->with('workshop.lessons')
+                ->withCount('users')
                 ->with('tags')
                 ->firstOrFail()
         );
@@ -84,6 +86,7 @@ class ChallengeController extends Controller
         })->take(20);
         return [
             'count' => $participantsCount,
-            'avatars' => $participantsAvatars,];
+            'avatars' => $participantsAvatars,
+        ];
     }
 }
