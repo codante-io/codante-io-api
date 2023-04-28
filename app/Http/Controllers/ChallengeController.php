@@ -34,11 +34,18 @@ class ChallengeController extends Controller
             ->with("tags")
             ->firstOrFail();
 
-        $repoInfo = GitHub::repo()->show("codante-io", $challenge->slug);
+        try {
+            $repoInfo = GitHub::repo()->show("codante-io", $challenge->slug);
+        } catch (\Exception $e) {
+            $repoInfo = null;
+        }
 
         # add stars and forks to the challenge
-        $challenge->stars = $repoInfo["stargazers_count"];
-        $challenge->forks = $repoInfo["forks_count"];
+        if ($repoInfo) {
+            $challenge->stars = $repoInfo["stargazers_count"];
+            $challenge->forks = $repoInfo["forks_count"];
+        }
+
         return $challenge;
     }
 
