@@ -28,6 +28,7 @@ class ChallengeResource extends JsonResource
             'workshop' => new WorkshopResource($this->whenLoaded('workshop')),
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'enrolled_users_count' => $this->users_count,
             'published_at' => $this->published_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
