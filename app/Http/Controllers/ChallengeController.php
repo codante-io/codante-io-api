@@ -46,7 +46,7 @@ class ChallengeController extends Controller
             $challenge->forks = $repoInfo["forks_count"];
         }
 
-        return $challenge;
+        return response()->json(["data" => $challenge]);
     }
 
     public function join(Request $request, $slug)
