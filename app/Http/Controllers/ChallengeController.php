@@ -6,6 +6,7 @@ use App\Http\Resources\ChallengeResource;
 use App\Models\Challenge;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
+use GrahamCampbell\GitHub\Facades\GitHub;
 
 class ChallengeController extends Controller
 {
@@ -13,45 +14,53 @@ class ChallengeController extends Controller
     {
         return ChallengeResource::collection(
             Challenge::query()
-                ->where('status', 'published')
-                ->orWhere('status', 'soon')
-                ->with('workshop')
-                ->with('workshop.lessons')
-                ->withCount('users')
-                ->with('tags')
+                ->where("status", "published")
+                ->orWhere("status", "soon")
+                ->with("workshop")
+                ->with("workshop.lessons")
+                ->withCount("users")
+                ->with("tags")
                 ->get()
         );
     }
 
     public function show($slug)
     {
-        return new ChallengeResource(
-            Challenge::where('slug', $slug)
-                ->where('status', 'published')
-                ->with('workshop')
-                ->with('workshop.lessons')
-                ->withCount('users')
-                ->with('tags')
-                ->firstOrFail()
-        );
+        $challenge = Challenge::where("slug", $slug)
+            ->where("status", "published")
+            ->with("workshop")
+            ->with("workshop.lessons")
+            ->withCount("users")
+            ->with("tags")
+            ->firstOrFail();
+
+        $repoInfo = GitHub::repo()->show("codante-io", $challenge->slug);
+
+        # add stars and forks to the challenge
+        $challenge->stars = $repoInfo["stargazers_count"];
+        $challenge->forks = $repoInfo["forks_count"];
+        return $challenge;
     }
 
     public function join(Request $request, $slug)
     {
         if (!$request->user()) {
-            return response()->json(['error' => 'You are not logged in'], 403);
+            return response()->json(["error" => "You are not logged in"], 403);
         }
-        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $challenge->users()->syncWithoutDetaching($request->user()->id);
 
-        return response()->json(['ok' => true], 200);
+        return response()->json(["ok" => true], 200);
     }
 
     public function userJoined(Request $request, $slug)
     {
-        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
 
-        $challengeUser = $challenge->users()->where('user_id', $request->user()->id)->firstOrFail();
+        $challengeUser = $challenge
+            ->users()
+            ->where("user_id", $request->user()->id)
+            ->firstOrFail();
         return $challengeUser;
     }
 
@@ -61,32 +70,41 @@ class ChallengeController extends Controller
         $challengeUser = $this->userJoined($request, $slug);
 
         if (!$challengeUser) {
-            return response()->json(['error' => 'You did not join this challenge'], 403);
+            return response()->json(
+                ["error" => "You did not join this challenge"],
+                403
+            );
         }
 
-        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
 
         $validated = $request->validate([
-            'completed' => 'nullable|boolean',
-            'joined_discord' => 'nullable|boolean',
-            'fork_url' => 'nullable|url',
+            "completed" => "nullable|boolean",
+            "joined_discord" => "nullable|boolean",
+            "fork_url" => "nullable|url",
         ]);
 
-        $challenge->users()->updateExistingPivot($request->user()->id, $validated);
+        $challenge
+            ->users()
+            ->updateExistingPivot($request->user()->id, $validated);
 
-        return response()->json(['ok' => true], 200);
+        return response()->json(["ok" => true], 200);
     }
 
     public function getChallengeParticipantsBanner(Request $request, $slug)
     {
-        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $participantsCount = $challenge->users()->count();
-        $participantsAvatars = $challenge->users()->get()->map(function ($user) {
-            return $user->avatar_url;
-        })->take(20);
+        $participantsAvatars = $challenge
+            ->users()
+            ->get()
+            ->map(function ($user) {
+                return $user->avatar_url;
+            })
+            ->take(20);
         return [
-            'count' => $participantsCount,
-            'avatars' => $participantsAvatars,
+            "count" => $participantsCount,
+            "avatars" => $participantsAvatars,
         ];
     }
 }
