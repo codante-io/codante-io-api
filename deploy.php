@@ -1,4 +1,5 @@
 <?php
+
 namespace Deployer;
 
 require 'recipe/laravel.php';
@@ -13,9 +14,9 @@ add('writable_dirs', []);
 
 // Hosts
 
-host('')
-    ->set('remote_user', 'deployer')
-    ->set('deploy_path', '~/codante-api');
+host('159.89.44.90')
+    ->set('remote_user', 'robertotcestari')
+    ->set('deploy_path', '/var/www/codante-io-api');
 
 // Hooks
 
