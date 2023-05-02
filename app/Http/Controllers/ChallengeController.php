@@ -45,7 +45,10 @@ class ChallengeController extends Controller
                     $challenge->slug
                 );
             } catch (\Exception $e) {
-                $repoInfo = null;
+                $repoInfo = [
+                    "stargazers_count" => 0,
+                    "forks_count" => 0,
+                ];
             }
 
             return [
