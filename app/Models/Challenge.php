@@ -18,13 +18,13 @@ class Challenge extends Model
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function track()
-    {
-        return $this->belongsTo(Track::class);
-    }
-
     public function workshop()
     {
         return $this->hasOne(Workshop::class);
+    }
+
+    public function track()
+    {
+        return $this->belongsTo(Track::class);
     }
 }
