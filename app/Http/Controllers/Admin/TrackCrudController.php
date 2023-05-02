@@ -29,38 +29,38 @@ class TrackCrudController extends CrudController
     protected function setupListOperation()
     {
         // Filtros
-        // $this->crud->addFilter(
-        //     [
-        //         'type' => 'dropdown',
-        //         'name' => 'status',
-        //         'label' => 'Status'
-        //     ],
-        //     [
-        //         0 => 'archived',
-        //         1 => 'draft',
-        //         2 => 'published',
-        //         3 => 'soon'
-        //     ],
-        //     function($value){
-        //         $this->crud->addClause('where', 'status', $value);
-        //     }
-        // );
+        $this->crud->addFilter(
+            [
+                'type' => 'dropdown',
+                'name' => 'status',
+                'label' => 'Status'
+            ],
+            [
+                'archived' => 'archived',
+                'draft' => 'draft',
+                'published' => 'published',
+                'soon' => 'soon'
+            ],
+            function($value){
+                $this->crud->addClause('where', 'status', $value);
+            }
+        );
         
-        // $this->crud->addFilter(
-        //     [
-        //         'type' => 'dropdown',
-        //         'name' => 'difficulty',
-        //         'label' => 'Dificuldade'
-        //     ],
-        //     [
-        //         0 => 1,
-        //         1 => 2,
-        //         2 => 3
-        //     ],
-        //     function($value){
-        //         $this->crud->addClause('where', 'difficulty', $value);
-        //     }
-        // );
+        $this->crud->addFilter(
+            [
+                'type' => 'dropdown',
+                'name' => 'difficulty',
+                'label' => 'Dificuldade'
+            ],
+            [
+                1 => 1,
+                2 => 2,
+                3 => 3
+            ],
+            function($value){
+                $this->crud->addClause('where', 'difficulty', $value);
+            }
+        );
 
         // Colunas 
         CRUD::addColumns([
