@@ -14,10 +14,14 @@ add('writable_dirs', []);
 
 // Hosts
 
-host('159.89.44.90')
+// host('159.89.44.90')
+//     ->set('remote_user', 'robertotcestari')
+//     ->set('deploy_path', '/var/www/codante-io-api');
+
+
+host('216.238.108.237')
     ->set('remote_user', 'robertotcestari')
     ->set('deploy_path', '/var/www/codante-io-api');
-
 // Hooks
 
 after('deploy:failed', 'deploy:unlock');
