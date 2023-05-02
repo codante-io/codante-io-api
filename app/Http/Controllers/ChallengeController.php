@@ -24,6 +24,45 @@ class ChallengeController extends Controller
         );
     }
 
+    public function hasForkedRepo(Request $request, $slug)
+    {
+        $user = $request->user();
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challengeUser = $challenge
+            ->users()
+            ->where("user_id", $user->id)
+            ->firstOrFail();
+
+        if ($challengeUser->pivot->fork_url) {
+            return response()->json(["data" => true]);
+        }
+
+        try {
+            # get github forks
+            $forks = GitHub::repo()
+                ->forks()
+                ->all("codante-io", $challenge->slug);
+            #verify if the user has forked the repo
+            $userFork = collect($forks)
+                ->filter(function ($fork) use ($user) {
+                    return $fork["owner"]["login"] == $user->github_username;
+                })
+                ->first();
+
+            if ($userFork) {
+                # update challengeUser record with the fork url
+                $challengeUser->pivot->fork_url = $userFork["html_url"];
+                $challengeUser->pivot->save();
+
+                return response()->json(["data" => true]);
+            }
+
+            return response()->json(["data" => false]);
+        } catch (\Exception $e) {
+            return response()->json(["data" => false]);
+        }
+    }
+
     public function show($slug)
     {
         $challenge = Challenge::where("slug", $slug)
