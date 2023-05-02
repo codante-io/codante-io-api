@@ -45,7 +45,7 @@ class ChallengeController extends Controller
             #verify if the user has forked the repo
             $userFork = collect($forks)
                 ->filter(function ($fork) use ($user) {
-                    return $fork["owner"]["login"] == $user->github_username;
+                    return $fork["owner"]["login"] == $user->github_user;
                 })
                 ->first();
 
