@@ -45,14 +45,6 @@ class ChallengeCrudController extends CrudController
         CRUD::column('track_id');
         CRUD::column('track_position');
         CRUD::column('difficulty');
-        // CRUD::column('short_description');
-        // CRUD::column('description');
-        // CRUD::column('slug');
-        // CRUD::column('duration_in_minutes');
-        // CRUD::column('repository_url');
-        // CRUD::column('published_at');
-        // CRUD::column('created_at');
-        // CRUD::column('updated_at');
     }
 
     /**
@@ -95,6 +87,9 @@ class ChallengeCrudController extends CrudController
                     2 => 'published',
                     3 => 'soon'
                 ],
+                'wrapper' => [
+                    'class' => 'form-group col-md-6',
+                ],
             ],
         );
         $this->crud->addField(
@@ -107,11 +102,30 @@ class ChallengeCrudController extends CrudController
                     1 => 2,
                     2 => 3,
                 ],
+                'wrapper' => [
+                    'class' => 'form-group col-md-6',
+                ],
             ],
         );
 
-        CRUD::field('difficulty');
-        CRUD::field('duration_in_minutes')->label('Duração');
+        $this->crud->addField([
+            'label' => 'Duração',
+            'name' => 'duration_in_minutes',
+            'type' => 'number',
+            'wrapper' => [
+                'class' => 'form-group col-md-6',
+            ],
+        ]);
+
+        $this->crud->addField([
+            'label' => 'Repository URL',
+            'name' => 'repository_url',
+            'type' => 'url',
+            'wrapper' => [
+                'class' => 'form-group col-md-6',
+            ],
+        ]);
+
         CRUD::field('repository_url')->type('url');
         CRUD::field('published_at');
     }
