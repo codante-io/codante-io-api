@@ -28,7 +28,7 @@ class WorkshopFactory extends Factory
             'short_description' => fake()->paragraph(2, true),
             'description' => fake()->paragraphs(4, true),
             'image_url' => fake()->imageUrl(640, 480, 'Avatar', true),
-            'video_url' => 'https://player.vimeo.com/video/95887076',
+            'video_url' => 'https://player.vimeo.com/video/4812350',
             'slug' => fake()->slug(4),
             'status' => fake()->randomElement(['draft', 'published', 'soon', 'archived']),
             'is_standalone' => fake()->boolean(),
