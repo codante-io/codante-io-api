@@ -22,16 +22,14 @@ class ChallengeFactory extends Factory
             'short_description' => fake()->paragraph(2, true),
             'description' => fake()->paragraphs(4, true),
             'image_url' => fake()->imageUrl(640, 480, 'Avatar', true),
+            'video_url' => fake()->imageUrl(640, 480, 'Avatar', true),
             'slug' => fake()->slug(4),
             'status' => fake()->randomElement(['draft', 'published', 'soon', 'archived']),
             'difficulty' => fake()->numberBetween(1, 3),
             'duration_in_minutes' => fake()->numberBetween(60, 300),
             'repository_url' => fake()->url(),
-            'track_id' => Track::factory(),
-            'track_position' => fake()->randomFloat(4, 0, 5),
+            'featured' => fake()->randomElement(['landing', null, 'new']),
             'published_at' => fake()->dateTimeBetween('-1 year', 'now'),
-
-
         ];
     }
 }

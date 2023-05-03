@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class WorkshopResource extends JsonResource
+class ChallengeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,30 +14,26 @@ class WorkshopResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
-        $resource = [
+        return [
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'short_description' => $this->short_description,
             'description' => $this->description,
             'image_url' => $this->imageURL,
-            'video_url' => $this->video_url,
+            'status' => $this->status,
             'difficulty' => $this->difficulty,
             'duration_in_minutes' => $this->duration_in_minutes,
-            'status' => $this->status,
-            'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
+            'repository_url' => $this->repository_url,
+            'workshop' => new WorkshopResource($this->whenLoaded('workshop')),
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'enrolled_users_count' => $this->users_count,
+            'published_at' => $this->published_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
 
-        if ($this->lessons_count) {
-            $resource['lessons_count'] = $this->lessons_count;
-        }
-
-        return $resource;
         // return parent::toArray($request);
     }
 }

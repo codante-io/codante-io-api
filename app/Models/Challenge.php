@@ -13,14 +13,24 @@ class Challenge extends Model
 
     protected $guarded = ['id'];
 
+    public function workshop()
+    {
+        return $this->hasOne(Workshop::class);
+    }
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public function workshop()
+    public function tracks()
     {
-        return $this->hasOne(Workshop::class);
+        return $this->morphToMany(Track::class, 'trackable');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withPivot(['completed', 'fork_url', 'joined_discord']);
     }
 
     public function track()

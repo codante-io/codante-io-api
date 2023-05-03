@@ -19,6 +19,8 @@ class LessonFactory extends Factory
         return [
             'name' => fake()->words(3, true),
             'description' => fake()->paragraphs(2, true),
+            'content' => fake()->paragraphs(10, true),
+            'duration_in_seconds' => fake()->numberBetween(60, 3600),
             'slug' => fake()->slug(4),
         ];
     }
