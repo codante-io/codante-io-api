@@ -56,17 +56,30 @@ class TagCrudController extends CrudController
     {
         CRUD::setValidation(TagRequest::class);
 
-        $colors = ['#FF8052','#009BDD', '#C0392B', '#27ae60'];
-
         CRUD::field('name');
         CRUD::addField([
             'label' => 'Cor',
             'name' => 'color', 
-            'type' => 'select_from_array',
-            'options' => $colors,
-            'allows_null' => false,
-            'default'     => '#FF8052',
-        ]);
+            'type' => 'color_picker',
+            'default'     => '#5282FF',
+            'color_picker_options' => [
+                'horizontal' => true,
+                'extensions' => [
+                    [
+                        'name' => 'swatches', 
+                        'options' => [
+                            'colors' => [
+                                'primary' => '#337ab7',
+                                'success' => '#5cb85c',
+                                'info' => '#5bc0de',
+                                'warning' => '#f0ad4e',
+                                'danger' => '#d9534f'
+                            ],
+                            'namesAsValues' => false
+                        ]
+                    ]
+                ]
+        ]]);
     }
 
     /**

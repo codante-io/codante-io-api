@@ -39,14 +39,6 @@ class InstructorCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        // $this->crud->addFilter(
-        //     [
-        //         'name' => 'company',
-        //         'label' => 'Empresa',
-        //         'type' => 'select2'
-        //     ],
-        // );
-
         CRUD::column('name');
         CRUD::column('company');
         CRUD::column('email');
