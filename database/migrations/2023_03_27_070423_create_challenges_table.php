@@ -17,13 +17,13 @@ return new class extends Migration
             $table->text('short_description')->nullable();
             $table->text('description')->nullable();
             $table->string('image_url')->nullable();
+            $table->string('video_url')->nullable();
             $table->string('slug')->unique();
             $table->string('status')->index(); // draft, published, soon, archived
             $table->integer('difficulty');
             $table->integer('duration_in_minutes')->nullable();
             $table->string('repository_url')->nullable();
-            $table->foreignId('track_id')->nullable()->references('id')->on('tracks');
-            $table->float('track_position', 8, 4)->nullable();
+            $table->string('featured')->index()->nullable(); // featured, popular, new
             $table->date('published_at')->nullable();
             $table->timestamps();
         });

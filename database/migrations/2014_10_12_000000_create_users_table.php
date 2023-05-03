@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('avatar_url')->nullable();
             $table->string('github_id')->nullable();
+            $table->string('github_user')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
