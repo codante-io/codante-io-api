@@ -20,7 +20,10 @@ class HomeController extends Controller
             'featured_workshops' => WorkshopResource::collection(
                 Workshop::query()
                     ->where('featured', 'landing')
-                    ->where('status', 'published')
+                    ->where(function ($query) {
+                        $query->where('status', 'published')
+                            ->orWhere('status', 'soon');
+                    })
                     ->with('lessons')
                     ->with('instructor')
                     ->with('tags')
@@ -33,7 +36,6 @@ class HomeController extends Controller
                         $query->where('status', 'published')
                             ->orWhere('status', 'soon');
                     })
-                    ->orWhere('status', 'soon')
                     ->with('workshop')
                     ->with('workshop.lessons')
                     ->with('tags')
