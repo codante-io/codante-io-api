@@ -29,7 +29,10 @@ class HomeController extends Controller
             'featured_challenges' => ChallengeResource::collection(
                 Challenge::query()
                     ->where('featured', 'landing')
-                    ->where('status', 'published')
+                    ->where(function ($query) {
+                        $query->where('status', 'published')
+                            ->orWhere('status', 'soon');
+                    })
                     ->orWhere('status', 'soon')
                     ->with('workshop')
                     ->with('workshop.lessons')
@@ -39,7 +42,10 @@ class HomeController extends Controller
             'featured_tracks' => TrackResource::collection(
                 Track::query()
                     ->where('featured', 'landing')
-                    ->where('status', 'published')
+                    ->where(function ($query) {
+                        $query->where('status', 'published')
+                            ->orWhere('status', 'soon');
+                    })
                     ->with('workshops')
                     ->with('challenges')
                     ->with('tags')
