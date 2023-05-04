@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ChallengeResource;
+use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use GrahamCampbell\GitHub\Facades\GitHub;
+use Illuminate\Support\Facades\Mail;
 
 class ChallengeController extends Controller
 {
@@ -112,6 +114,11 @@ class ChallengeController extends Controller
         }
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $challenge->users()->syncWithoutDetaching($request->user()->id);
+
+        // send email
+        Mail::to($request->user()->email)->send(
+            new UserJoinedChallenge($request->user(), $challenge)
+        );
 
         return response()->json(["ok" => true], 200);
     }
