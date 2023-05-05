@@ -41,11 +41,11 @@ class TrackCrudController extends CrudController
                 'published' => 'published',
                 'soon' => 'soon'
             ],
-            function($value){
+            function ($value) {
                 $this->crud->addClause('where', 'status', $value);
             }
         );
-        
+
         $this->crud->addFilter(
             [
                 'type' => 'dropdown',
@@ -57,7 +57,7 @@ class TrackCrudController extends CrudController
                 2 => 2,
                 3 => 3
             ],
-            function($value){
+            function ($value) {
                 $this->crud->addClause('where', 'difficulty', $value);
             }
         );
@@ -143,7 +143,7 @@ class TrackCrudController extends CrudController
                 'name'        => 'status',
                 'label'       => 'Status',
                 'type'        => 'radio',
-                'options'     => [ 
+                'options'     => [
                     0 => 'archived',
                     1 => 'draft',
                     2 => 'published',
@@ -156,7 +156,7 @@ class TrackCrudController extends CrudController
                 'name'        => 'difficulty',
                 'label'       => 'Dificuldade (nível)',
                 'type'        => 'radio',
-                'options'     => [ 
+                'options'     => [
                     0 => 1,
                     1 => 2,
                     2 => 3,
@@ -170,6 +170,20 @@ class TrackCrudController extends CrudController
                 'type' => 'text'
             ]
         );
+
+        $this->crud->addField(
+            [
+                'name' => 'challenges',
+                'type' => 'relationship',
+            ]
+        );
+        $this->crud->addField(
+            [
+                'name' => 'workshops',
+                'type' => 'relationship',
+            ]
+        );
+        CRUD::field('featured')->label('Featured')->hint('Por exemplo, "landing"');
     }
 
     protected function setupUpdateOperation()
