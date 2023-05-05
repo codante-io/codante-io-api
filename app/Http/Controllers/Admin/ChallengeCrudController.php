@@ -64,16 +64,12 @@ class ChallengeCrudController extends CrudController
 
         $this->crud->addField(
             [
-                'name' => 'track_id',
-                'label' => 'Track',
-                'type' => 'select',
-                'model' => 'App\Models\Track',
-                'entity' => 'track',
-                'attribute' => 'name',
+                'name' => 'tracks',
+                'type' => 'relationship',
             ]
         );
 
-        CRUD::field('track_position')->type('number');
+        // CRUD::field('track_position')->type('number');
         CRUD::field('slug');
 
         $this->crud->addField(
@@ -81,11 +77,11 @@ class ChallengeCrudController extends CrudController
                 'name'        => 'status',
                 'label'       => 'Status',
                 'type'        => 'radio',
-                'options'     => [ 
-                    0 => 'archived',
-                    1 => 'draft',
-                    2 => 'published',
-                    3 => 'soon'
+                'options'     => [
+                    'archived' => 'archived',
+                    'draft' => 'draft',
+                    'published' => 'published',
+                    'soon' => 'soon'
                 ],
                 'wrapper' => [
                     'class' => 'form-group col-md-6',
@@ -97,10 +93,10 @@ class ChallengeCrudController extends CrudController
                 'name'        => 'difficulty',
                 'label'       => 'Dificuldade (nível)',
                 'type'        => 'radio',
-                'options'     => [ 
-                    0 => 1,
-                    1 => 2,
-                    2 => 3,
+                'options'     => [
+                    1 => 1,
+                    2 => 2,
+                    3 => 3,
                 ],
                 'wrapper' => [
                     'class' => 'form-group col-md-6',
@@ -109,7 +105,7 @@ class ChallengeCrudController extends CrudController
         );
 
         $this->crud->addField([
-            'label' => 'Duração',
+            'label' => 'Duração (em minutos)',
             'name' => 'duration_in_minutes',
             'type' => 'number',
             'wrapper' => [
@@ -118,9 +114,10 @@ class ChallengeCrudController extends CrudController
         ]);
 
         $this->crud->addField([
-            'label' => 'Repository URL',
-            'name' => 'repository_url',
-            'type' => 'url',
+            'label' => 'Featured',
+            'hint' => 'Por exemplo, "landing"',
+            'name' => 'featured',
+            'type' => 'text',
             'wrapper' => [
                 'class' => 'form-group col-md-6',
             ],
@@ -128,6 +125,11 @@ class ChallengeCrudController extends CrudController
 
         CRUD::field('repository_url')->type('url');
         CRUD::field('published_at');
+
+        $this->crud->addField([
+            'name' => 'tags',
+            'type' => 'relationship'
+        ]);
     }
 
     /**
