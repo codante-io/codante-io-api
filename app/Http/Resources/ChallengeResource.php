@@ -29,6 +29,7 @@ class ChallengeResource extends JsonResource
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'enrolled_users_count' => $this->users_count,
+            'base_color' => $this->base_color,
             'published_at' => $this->published_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
