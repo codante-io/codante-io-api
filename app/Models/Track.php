@@ -17,6 +17,7 @@ class Track extends Model
     {
         $workshops = $this->workshops()
             ->with("lessons")
+            ->with("instructor")
             ->get();
         $challenges = $this->challenges()
             ->withCount("users")
