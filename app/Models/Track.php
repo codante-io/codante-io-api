@@ -21,6 +21,7 @@ class Track extends Model
             ->get();
         $challenges = $this->challenges()
             ->withCount("users")
+            ->with("tags")
             ->get();
 
         return $workshops
