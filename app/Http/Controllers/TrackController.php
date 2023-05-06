@@ -8,14 +8,14 @@ use Illuminate\Http\Request;
 
 class TrackController extends Controller
 {
-
     public function index()
     {
         return TrackResource::collection(
             Track::query()
-                ->with('workshops')
-                ->with('challenges')
-                ->with('tags')
+                ->where("status", "published")
+                ->with("workshops")
+                ->with("challenges")
+                ->with("tags")
                 ->get()
         );
     }
@@ -24,8 +24,8 @@ class TrackController extends Controller
     {
         return new TrackResource(
             Track::query()
-                ->where('slug', $slug)
-                ->with('tags')
+                ->where("slug", $slug)
+                ->with("tags")
                 ->firstOrFail()
         );
     }
