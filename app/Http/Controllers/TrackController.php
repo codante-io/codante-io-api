@@ -13,6 +13,7 @@ class TrackController extends Controller
         return TrackResource::collection(
             Track::query()
                 ->where("status", "published")
+                ->orWhere("status", "soon")
                 ->with("workshops")
                 ->with("challenges")
                 ->with("tags")
