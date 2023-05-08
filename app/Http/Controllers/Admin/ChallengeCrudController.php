@@ -71,6 +71,7 @@ class ChallengeCrudController extends CrudController
 
         // CRUD::field('track_position')->type('number');
         CRUD::field('slug');
+        CRUD::field('base_color')->hint('Cor base do desafio (classe do tailwind). Não se esqueça de fazer o import no arquivo tailwind.config.js');
 
         $this->crud->addField(
             [
