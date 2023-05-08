@@ -13,6 +13,10 @@ class Instructor extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'links' => 'array',
+    ];
+
     public function workshops()
     {
         return $this->hasMany(Workshop::class);

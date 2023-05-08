@@ -23,6 +23,7 @@ class InstructorResource extends JsonResource
             'avatar_url' => $this->avatar_url,
             'slug' => $this->slug,
             'workshops' => WorkshopResource::collection($this->whenLoaded('workshops')),
+            'links' => $this->links,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
