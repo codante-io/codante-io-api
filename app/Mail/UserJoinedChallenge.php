@@ -30,7 +30,7 @@ class UserJoinedChallenge extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Você está participando do projeto ' . $this->challenge->name,
+            subject: 'Você está participando do mini projeto ' . $this->challenge->name,
         );
     }
 
