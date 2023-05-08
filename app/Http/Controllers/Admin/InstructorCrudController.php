@@ -98,6 +98,18 @@ class InstructorCrudController extends CrudController
                 'type' => 'text'
             ]
         );
+        $this->crud->addField([
+            'name' => 'links',
+            'label' => 'Social Links',
+            'type' => 'table',
+            'hint' => 'Links para redes sociais do instrutor. Em "social media" preencha apenas github, twitter, linkedin, website, se houver. Para consistência, preencha nessa ordem.',
+            'max' => 4,
+            'min' => 1,
+            'columns' => [
+                'type' => 'Social Media (github, twitter, linkedin, website)',
+                'url' => 'Url',
+            ]
+        ]);
     }
 
     /**
