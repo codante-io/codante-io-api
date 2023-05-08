@@ -71,7 +71,7 @@ class WorkshopCrudController extends CrudController
         CRUD::field('description')->label('Descrição (markdown)')->type('easymde')->easymdeAttributes(['spellChecker' => 'false']);
         CRUD::field('image_url')->type('url')->label('Link da Imagem');
         CRUD::field('vide_url')->type('url')->label('Link do Vídeo');
-        CRUD::field('slug');
+        CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
         $this->crud->addField(
             [
                 'name'        => 'status',

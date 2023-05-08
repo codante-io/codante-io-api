@@ -62,6 +62,7 @@ class LessonCrudController extends CrudController
         CRUD::field('description');
         CRUD::field('content');
         CRUD::field('slug');
+        CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
         $this->crud->addField(
             [
                 'name' => 'workshop_id',
