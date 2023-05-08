@@ -131,13 +131,9 @@ class TrackCrudController extends CrudController
                 'type' => 'url'
             ],
         );
-        $this->crud->addField(
-            [
-                'name' => 'slug',
-                'label' => 'Slug',
-                'type' => 'text'
-            ],
-        );
+
+        CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
+
         $this->crud->addField(
             [
                 'name'        => 'status',
