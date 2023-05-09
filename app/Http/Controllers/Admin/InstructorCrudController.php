@@ -81,7 +81,7 @@ class InstructorCrudController extends CrudController
             [
                 'name' => 'bio',
                 'label' => 'Perfil (Bio)',
-                'type' => 'textarea'
+                'type' => 'easymde'
             ]
         );
         $this->crud->addField(
@@ -104,7 +104,7 @@ class InstructorCrudController extends CrudController
             'type' => 'table',
             'hint' => 'Links para redes sociais do instrutor. Em "social media" preencha apenas github, twitter, linkedin, website, se houver. Para consistência, preencha nessa ordem.',
             'max' => 4,
-            'min' => 1,
+            'min' => 0,
             'columns' => [
                 'type' => 'Social Media (github, twitter, linkedin, website)',
                 'url' => 'Url',
