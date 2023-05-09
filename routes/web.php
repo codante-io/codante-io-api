@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get("/", function () {
-    return ["Laravel" => app()->version()];
+    return ["name" => "Codante API", "version" => "1.0.0"];
 });
 
 Route::get("/workshops", [WorkshopController::class, "index"]);
