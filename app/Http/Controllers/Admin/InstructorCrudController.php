@@ -81,7 +81,7 @@ class InstructorCrudController extends CrudController
             [
                 'name' => 'bio',
                 'label' => 'Perfil (Bio)',
-                'type' => 'text'
+                'type' => 'textarea'
             ]
         );
         $this->crud->addField(
