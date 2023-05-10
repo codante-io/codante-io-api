@@ -8,6 +8,7 @@ use App\Models\Challenge;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use GrahamCampbell\GitHub\Facades\GitHub;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class ChallengeController extends Controller
@@ -67,13 +68,27 @@ class ChallengeController extends Controller
 
     public function show($slug)
     {
-        $challenge = Challenge::where("slug", $slug)
-            ->where("status", "published")
-            ->with("workshop")
-            ->with("workshop.lessons")
-            ->withCount("users")
-            ->with("tags")
-            ->firstOrFail();
+        // $challenge = Challenge::where("slug", $slug)
+        //     ->where("status", "published")
+        //     ->with("workshop")
+        //     ->with("workshop.lessons")
+        //     ->withCount("users")
+        //     ->with("tags")
+        //     ->firstOrFail();
+
+        $challenge = Cache::remember(
+            "challenge_content_" . $slug,
+            60 * 60,
+            function () use ($slug) {
+                return Challenge::where("slug", $slug)
+                    ->where("status", "published")
+                    ->with("workshop")
+                    ->with("workshop.lessons")
+                    ->withCount("users")
+                    ->with("tags")
+                    ->firstOrFail();
+            }
+        );
 
         $cacheKey = "challenge_" . $challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
