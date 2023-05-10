@@ -33,7 +33,7 @@ class CalendarController extends Controller
 
 
         $challenges = Challenge::query()
-            ->where('status', 'soon')
+            ->where('status', '!=', 'draft')
             ->with('tags', fn ($query) => $query->select('name'))
             ->whereDate('published_at', '>=', now())
             ->select($challengeColumns)
