@@ -14,6 +14,14 @@ class Workshop extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    protected $casts = [
+        'published_at' => 'date',
+    ];
+
+    public function getTypeAttribute()
+    {
+        return 'workshop';
+    }
 
     public function lessons()
     {
