@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -65,5 +66,7 @@ Route::post("/dashboard/change-password", [
     DashboardController::class,
     "changePassword",
 ]);
+
+Route::get('/upcoming', [CalendarController::class, 'showCalendar']);
 
 require __DIR__ . "/auth.php";
