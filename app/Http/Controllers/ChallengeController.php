@@ -68,17 +68,10 @@ class ChallengeController extends Controller
 
     public function show($slug)
     {
-        // $challenge = Challenge::where("slug", $slug)
-        //     ->where("status", "published")
-        //     ->with("workshop")
-        //     ->with("workshop.lessons")
-        //     ->withCount("users")
-        //     ->with("tags")
-        //     ->firstOrFail();
-
+        // add cache 5minutes
         $challenge = Cache::remember(
             "challenge_content_" . $slug,
-            60 * 60,
+            60 * 5,
             function () use ($slug) {
                 return Challenge::where("slug", $slug)
                     ->where("status", "published")
