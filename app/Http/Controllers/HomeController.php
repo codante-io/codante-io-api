@@ -16,7 +16,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return Cache::remember('home_content', 60 * 10, function () {
+        return Cache::remember('home_content', 60 * 60, function () {
             return [
                 'featured_workshops' => WorkshopResource::collection(
                     Workshop::query()
