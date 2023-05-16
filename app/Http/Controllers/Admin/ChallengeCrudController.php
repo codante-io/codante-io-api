@@ -125,7 +125,7 @@ class ChallengeCrudController extends CrudController
         ]);
 
         CRUD::field('repository_url')->type('url');
-        CRUD::field('published_at');
+        CRUD::field('published_at')->type('datetime');
 
         $this->crud->addField([
             'name' => 'tags',

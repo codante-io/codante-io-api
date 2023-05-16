@@ -68,7 +68,7 @@ class WorkshopCrudController extends CrudController
 
         CRUD::field('name');
         CRUD::field('short_description')->label('Resumo')->limit(255);
-        CRUD::field('description')->label('Descrição (markdown)')->type('easymde')->easymdeAttributes(['spellChecker' => 'false']);
+        CRUD::field('description')->label('Descrição (markdown)')->type('easymde')->easymdeAttributes(['spellChecker' => false]);
         CRUD::field('image_url')->type('url')->label('Link da Imagem');
         CRUD::field('vide_url')->type('url')->label('Link do Vídeo');
         CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
@@ -137,7 +137,7 @@ class WorkshopCrudController extends CrudController
 
         CRUD::field('is_standalone')->label('É independente?')->hint('Se não for resolução de mini-projeto, marque essa opção.');
         CRUD::field('featured')->label('Featured')->hint('Por exemplo, "landing"');
-        CRUD::field('published_at');
+        CRUD::field('published_at')->type('datetime');
     }
 
     /**
