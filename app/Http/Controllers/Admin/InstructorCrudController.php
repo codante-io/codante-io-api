@@ -81,7 +81,10 @@ class InstructorCrudController extends CrudController
             [
                 'name' => 'bio',
                 'label' => 'Perfil (Bio)',
-                'type' => 'easymde'
+                'type' => 'easymde',
+                'easymdeAttributes' => [
+                    'spellChecker' => false,
+                ]
             ]
         );
         $this->crud->addField(
