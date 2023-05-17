@@ -140,10 +140,10 @@ class TrackCrudController extends CrudController
                 'label'       => 'Status',
                 'type'        => 'radio',
                 'options'     => [
-                    0 => 'archived',
-                    1 => 'draft',
-                    2 => 'published',
-                    3 => 'soon'
+                    'archived' => 'archived',
+                    'draft' => 'draft',
+                    'published' => 'published',
+                    'soon' => 'soon'
                 ],
             ],
         );
