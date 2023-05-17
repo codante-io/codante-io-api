@@ -153,9 +153,9 @@ class TrackCrudController extends CrudController
                 'label'       => 'Dificuldade (nível)',
                 'type'        => 'radio',
                 'options'     => [
-                    0 => 1,
-                    1 => 2,
-                    2 => 3,
+                    1 => 1,
+                    2 => 2,
+                    3 => 3,
                 ],
             ],
         );
