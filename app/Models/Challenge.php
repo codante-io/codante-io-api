@@ -13,7 +13,7 @@ class Challenge extends Model
 
     protected $guarded = ['id'];
     protected $casts = [
-        'published_at' => 'date',
+        'published_at' => 'datetime',
     ];
 
     public function getTypeAttribute()
