@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Registered as RegisteredEvent;
-use App\Notifications\Discord;
+use App\Jobs\ProcessRegisteredUser;
 use Illuminate\Support\Facades\Auth;
 
 class Registered
@@ -21,7 +21,6 @@ class Registered
      */
     public function handle(RegisteredEvent $event): void
     {
-        $message = "Novo usuário cadastrado 🥳 \n " . $event->user->name . ' | ' . $event->user->email;
-        new Discord($message);
+        ProcessRegisteredUser::dispatch($event->user);
     }
 }
