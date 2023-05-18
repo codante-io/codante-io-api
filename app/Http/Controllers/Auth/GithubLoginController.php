@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Mail\UserRegistered;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -35,6 +36,7 @@ class GithubLoginController extends AuthenticatedSessionController
                     'email_verified_at' => now(),
                 ]);
 
+                event(new Registered($user));
                 // send UserRegistered email
                 Mail::to($user->email)->send(new UserRegistered($user));
             }
