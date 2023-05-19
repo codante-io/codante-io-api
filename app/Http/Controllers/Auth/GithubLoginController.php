@@ -27,7 +27,7 @@ class GithubLoginController extends AuthenticatedSessionController
 
             if (!$user) {
                 $user = User::create([
-                    'name' => $githubUserData->getName(),
+                    'name' => $githubUserData->getName() ?? $githubUserData->getNickname(),
                     'email' => $githubUserData->getEmail(),
                     'password' => Hash::make(Str::random(10)),
                     'github_id' => $githubUserData->getId(),
