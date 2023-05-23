@@ -14,6 +14,7 @@ class WorkshopController extends Controller
     {
         return WorkshopResource::collection(
             Workshop::query()
+                ->where('is_standalone', true)
                 ->with('lessons')
                 ->with('instructor')
                 ->with('tags')
