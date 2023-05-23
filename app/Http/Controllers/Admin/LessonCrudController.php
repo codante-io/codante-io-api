@@ -61,7 +61,7 @@ class LessonCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('description');
         CRUD::field('content');
-        CRUD::field('slug');
+        CRUD::field('video_url');
         CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
         $this->crud->addField(
             [
