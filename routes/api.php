@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BugsnagWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,3 +32,6 @@ Route::get('/workshops', function () {
 Route::get('/workshops/{slug}', function ($slug) {
     return \App\Models\Workshop::where('slug', $slug)->firstOrFail();
 });
+
+//BugsnagWebhook
+Route::post('bugsnag/notification', [BugsnagWebhookController::class, 'notify']);
