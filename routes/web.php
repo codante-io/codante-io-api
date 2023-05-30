@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
@@ -68,5 +69,7 @@ Route::post("/dashboard/change-password", [
 ]);
 
 Route::get('/upcoming', [CalendarController::class, 'showCalendar']);
+
+Route::get('/custom-test', [CustomTestController::class, 'handle']);
 
 require __DIR__ . "/auth.php";
