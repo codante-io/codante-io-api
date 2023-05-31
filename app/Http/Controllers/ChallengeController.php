@@ -10,6 +10,8 @@ use Laravel\Sanctum\PersonalAccessToken;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Storage;
 
 class ChallengeController extends Controller
 {
@@ -79,7 +81,9 @@ class ChallengeController extends Controller
 
         $cacheKey = "challenge_" . $challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
-        $repoInfo = cache()->remember($cacheKey, $cacheTime, function () use ($challenge) {
+        $repoInfo = cache()->remember($cacheKey, $cacheTime, function () use (
+            $challenge
+        ) {
             try {
                 $repoInfo = GitHub::repo()->show(
                     "codante-io",
@@ -176,5 +180,50 @@ class ChallengeController extends Controller
             "count" => $participantsCount,
             "avatars" => $participantsAvatars,
         ];
+    }
+
+    public function submit(Request $request, $slug)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            "submission_url" => "required|url",
+        ]);
+
+        // Check if the user has joined the challenge
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challengeUser = $challenge
+            ->users()
+            ->where("user_id", $request->user()->id)
+            ->firstOrFail();
+
+        if ($challengeUser->pivot["submission_url"]) {
+            abort(400, "Você já submeteu esse Mini Projeto");
+        }
+
+        // Check if the URL is valid
+        $response = \Illuminate\Support\Facades\Http::get(
+            $validated["submission_url"]
+        );
+        $status = $response->status();
+
+        if ($status > 300) {
+            abort(400, "Não conseguimos acessar a URL informada. Verifique e tente novamente.");
+        }
+
+        // Capture the screenshot
+        $urlToCapture = $validated["submission_url"];
+        $imagePath = "/challenges/$slug/$challengeUser->github_id.png";
+
+        $screenshot = Browsershot::url($urlToCapture);
+        $screenshot->windowSize(1280, 720);
+        $screenshot->setDelay(2000);
+        $screenshot->setScreenshotType('png');
+        $screenshot->optimize(); 
+        $storageRes = Storage::disk('s3')->put($imagePath, $screenshot->screenshot());
+
+        // Saves in DB
+        $challengeUser->pivot->submission_url = $validated["submission_url"];
+        $challengeUser->pivot->submission_image_url = Storage::disk('s3')->url($imagePath);
+        $challengeUser->pivot->save();
     }
 }
