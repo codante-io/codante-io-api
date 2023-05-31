@@ -38,7 +38,7 @@ class Challenge extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(['completed', 'fork_url', 'joined_discord']);
+        return $this->belongsToMany(User::class)->withPivot(['completed', 'fork_url', 'joined_discord', 'submission_url', 'submission_image_url']);
     }
 
     public function track()
