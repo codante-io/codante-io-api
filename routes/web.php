@@ -33,6 +33,7 @@ Route::get("/instructors/{slug}", [InstructorController::class, "show"]);
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
+Route::post('/challenges/{slug}/submit', [ChallengeController::class, 'submit'])->middleware('auth:sanctum');
 Route::get("/challenges/{slug}/joined", [
     ChallengeController::class,
     "userJoined",
