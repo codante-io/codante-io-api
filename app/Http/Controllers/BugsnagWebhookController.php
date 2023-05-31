@@ -13,6 +13,6 @@ class BugsnagWebhookController extends Controller
         $errorMessage = $error['message'] ?? '';
         $errorExceptionClass = $error['exceptionClass'] ?? '';
 
-        new Discord("Erro não tratado na aplicação!/n" . $errorExceptionClass . " | " . $errorMessage);
+        new Discord("Erro não tratado na aplicação! \n" . $errorExceptionClass . "\n" . $errorMessage, 'bugs');
     }
 }
