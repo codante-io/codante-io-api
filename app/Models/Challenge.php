@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Reactable;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,15 +11,16 @@ class Challenge extends Model
 {
     use CrudTrait;
     use HasFactory;
+    use Reactable;
 
-    protected $guarded = ['id'];
+    protected $guarded = ["id"];
     protected $casts = [
-        'published_at' => 'datetime',
+        "published_at" => "datetime",
     ];
 
     public function getTypeAttribute()
     {
-        return 'challenge';
+        return "challenge";
     }
 
     public function workshop()
@@ -28,17 +30,23 @@ class Challenge extends Model
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, 'taggable');
+        return $this->morphToMany(Tag::class, "taggable");
     }
 
     public function tracks()
     {
-        return $this->morphToMany(Track::class, 'trackable');
+        return $this->morphToMany(Track::class, "trackable");
     }
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(['completed', 'fork_url', 'joined_discord', 'submission_url', 'submission_image_url']);
+        return $this->belongsToMany(User::class)->withPivot([
+            "completed",
+            "fork_url",
+            "joined_discord",
+            "submission_url",
+            "submission_image_url",
+        ]);
     }
 
     public function track()

@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\WorkshopController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,9 @@ Route::get("/workshops/{slug}", [WorkshopController::class, "show"]);
 
 Route::get("/instructors", [InstructorController::class, "index"]);
 Route::get("/instructors/{slug}", [InstructorController::class, "show"]);
+
+Route::get('/reactions', [ReactionController::class, "getReactions"]);
+Route::post('/reactions', [ReactionController::class, "store"])->middleware('auth:sanctum');
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
