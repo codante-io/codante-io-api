@@ -33,7 +33,7 @@ Route::get("/instructors", [InstructorController::class, "index"]);
 Route::get("/instructors/{slug}", [InstructorController::class, "show"]);
 
 Route::get('/reactions', [ReactionController::class, "getReactions"]);
-Route::post('/reactions', [ReactionController::class, "store"])->middleware('auth:sanctum');
+Route::post('/reactions', [ReactionController::class, "toggle"])->middleware('auth:sanctum');
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
