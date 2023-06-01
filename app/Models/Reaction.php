@@ -10,4 +10,11 @@ class Reaction extends Model
     use HasFactory;
 
     protected $guarded = ["id"];
+
+    public static $allowedReactionTypes = [
+        "like",
+        "exploding_head",
+        "fire",
+        "rocket",
+    ];
 }
