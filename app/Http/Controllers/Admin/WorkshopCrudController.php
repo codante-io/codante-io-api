@@ -135,6 +135,14 @@ class WorkshopCrudController extends CrudController
             ]
         );
 
+        $this->crud->addField([
+            'name' => 'image_url',
+            'label' => 'Imagem',
+            'type' => 'upload',
+            'upload' => true,
+            'disk' => 's3',
+        ]);
+
         CRUD::field('is_standalone')->label('É independente?')->hint('Se não for resolução de mini-projeto, marque essa opção.');
         CRUD::field('featured')->label('Featured')->hint('Por exemplo, "landing"');
         CRUD::field('published_at')->type('datetime');
