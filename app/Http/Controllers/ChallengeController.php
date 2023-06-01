@@ -207,7 +207,10 @@ class ChallengeController extends Controller
         $status = $response->status();
 
         if ($status > 300) {
-            abort(400, "Não conseguimos acessar a URL informada. Verifique e tente novamente.");
+            abort(
+                400,
+                "Não conseguimos acessar a URL informada. Verifique e tente novamente."
+            );
         }
 
         // Capture the screenshot
@@ -217,13 +220,41 @@ class ChallengeController extends Controller
         $screenshot = Browsershot::url($urlToCapture);
         $screenshot->windowSize(1280, 720);
         $screenshot->setDelay(2000);
-        $screenshot->setScreenshotType('png');
-        $screenshot->optimize(); 
-        $storageRes = Storage::disk('s3')->put($imagePath, $screenshot->screenshot());
+        $screenshot->setScreenshotType("png");
+        $screenshot->optimize();
+        $storageRes = Storage::disk("s3")->put(
+            $imagePath,
+            $screenshot->screenshot()
+        );
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
-        $challengeUser->pivot->submission_image_url = Storage::disk('s3')->url($imagePath);
+        $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
+            $imagePath
+        );
         $challengeUser->pivot->save();
+    }
+
+    public function getSubmissions(Request $request, $slug)
+    {
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+
+        $challengeUsers = $challenge
+            ->users()
+            ->select("users.name", "users.avatar_url", "users.github_user")
+            ->wherePivotNotNull("submission_url")
+            ->get();
+
+        $submissions = $challengeUsers->map(function ($user) {
+            return [
+                "user_name" => $user->name,
+                "user_avatar_url" => $user->avatar_url,
+                "user_github_user" => $user->github_user,
+                "submission_url" => $user->pivot->submission_url,
+                "submission_image_url" => $user->pivot->submission_image_url,
+            ];
+        });
+
+        return response()->json(["data" => $submissions]);
     }
 }
