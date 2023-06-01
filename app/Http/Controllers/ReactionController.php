@@ -14,7 +14,7 @@ class ReactionController extends Controller
             "reactable_id" => "required",
             "reactable_type" => "required",
             "reaction" =>
-            "required|in:" . implode(",", Reaction::$allowedReactionTypes),
+                "required|in:" . implode(",", Reaction::$allowedReactionTypes),
         ]);
 
         $reactableClass = "App\\Models\\" . $data["reactable_type"];
@@ -25,8 +25,13 @@ class ReactionController extends Controller
         $reactable = $reactableClass::findOrFail($data["reactable_id"]);
 
         // if the user has already reacted, delete the reaction
-        if ($reactable->isReactedBy($data["reaction"], auth()->user())) {
-            $reactable->removeReaction($data["reaction"], auth()->user());
+        if (
+            $reactable->isReactedBy($data["reaction"], auth("sanctum")->user())
+        ) {
+            $reactable->removeReaction(
+                $data["reaction"],
+                auth("sanctum")->user()
+            );
             return response()->json([
                 "message" => "Reaction removed successfully",
                 "result" => "destroy",
@@ -35,7 +40,7 @@ class ReactionController extends Controller
         }
 
         // create the reaction
-        $reactable->react($data["reaction"], auth()->user());
+        $reactable->react($data["reaction"], auth("sanctum")->user());
 
         return response()->json([
             "message" => "Reaction created successfully",
@@ -66,14 +71,14 @@ class ReactionController extends Controller
             ->get();
 
         // get the user specific reactions
-        if (!auth()->user()) {
+        if (!auth("sanctum")->user()) {
             return ["reaction_counts" => $reactions];
         }
 
         // get user reactions in an array of types
         $userReactions = $reactable
             ->reactions()
-            ->where("user_id", auth()->user()->id)
+            ->where("user_id", auth("sanctum")->user()->id)
             ->pluck("reaction")
             ->toArray();
 
