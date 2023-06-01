@@ -16,44 +16,48 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return Cache::remember('home_content', 60 * 60, function () {
+        return Cache::remember("home_content", 60 * 60, function () {
             return [
-                'featured_workshops' => WorkshopResource::collection(
+                "featured_workshops" => WorkshopResource::collection(
                     Workshop::query()
-                        ->where('featured', 'landing')
+                        ->where("featured", "landing")
                         ->where(function ($query) {
-                            $query->where('status', 'published')
-                                ->orWhere('status', 'soon');
+                            $query
+                                ->where("status", "published")
+                                ->orWhere("status", "soon");
                         })
-                        ->with('lessons')
-                        ->with('instructor')
-                        ->with('tags')
+                        ->with("lessons")
+                        ->with("instructor")
+                        ->with("tags")
                         ->get()
                 ),
-                'featured_challenges' => ChallengeResource::collection(
+                "featured_challenges" => ChallengeResource::collection(
                     Challenge::query()
-                        ->where('featured', 'landing')
+                        ->where("featured", "landing")
                         ->where(function ($query) {
-                            $query->where('status', 'published')
-                                ->orWhere('status', 'soon');
+                            $query
+                                ->where("status", "published")
+                                ->orWhere("status", "soon");
                         })
-                        ->with('workshop')
-                        ->with('workshop.lessons')
-                        ->with('tags')
+                        ->with("workshop")
+                        ->with("workshop.lessons")
+                        ->withCount("users")
+                        ->with("tags")
                         ->get()
                 ),
-                'featured_tracks' => TrackResource::collection(
+                "featured_tracks" => TrackResource::collection(
                     Track::query()
-                        ->where('featured', 'landing')
+                        ->where("featured", "landing")
                         ->where(function ($query) {
-                            $query->where('status', 'published')
-                                ->orWhere('status', 'soon');
+                            $query
+                                ->where("status", "published")
+                                ->orWhere("status", "soon");
                         })
-                        ->with('workshops')
-                        ->with('challenges')
-                        ->with('tags')
+                        ->with("workshops")
+                        ->with("challenges")
+                        ->with("tags")
                         ->get()
-                )
+                ),
             ];
         });
     }
