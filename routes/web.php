@@ -32,12 +32,22 @@ Route::get("/workshops/{slug}", [WorkshopController::class, "show"]);
 Route::get("/instructors", [InstructorController::class, "index"]);
 Route::get("/instructors/{slug}", [InstructorController::class, "show"]);
 
-Route::get('/reactions', [ReactionController::class, "getReactions"]);
-Route::post('/reactions', [ReactionController::class, "toggle"])->middleware('auth:sanctum');
+Route::get("/reactions", [ReactionController::class, "getReactions"]);
+Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
+    "auth:sanctum"
+);
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
-Route::post('/challenges/{slug}/submit', [ChallengeController::class, 'submit'])->middleware('auth:sanctum');
+Route::post("/challenges/{slug}/submit", [
+    ChallengeController::class,
+    "submit",
+])->middleware("auth:sanctum");
+Route::get("/challenges/{slug}/submissions", [
+    ChallengeController::class,
+    "getSubmissions",
+]);
+
 Route::get("/challenges/{slug}/joined", [
     ChallengeController::class,
     "userJoined",
@@ -73,8 +83,8 @@ Route::post("/dashboard/change-password", [
     "changePassword",
 ]);
 
-Route::get('/upcoming', [CalendarController::class, 'showCalendar']);
+Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
 
-Route::get('/custom-test', [CustomTestController::class, 'handle']);
+Route::get("/custom-test", [CustomTestController::class, "handle"]);
 
 require __DIR__ . "/auth.php";
