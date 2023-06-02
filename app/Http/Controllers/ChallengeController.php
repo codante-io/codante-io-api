@@ -219,9 +219,9 @@ class ChallengeController extends Controller
         $imagePath = "/challenges/$slug/$challengeUser->github_id.png";
 
         $screenshot = Browsershot::url($urlToCapture);
-        $screenshot->setNodeBinary(
-            "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
-        );
+        // $screenshot->setNodeBinary(
+        //     "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
+        // );
         $screenshot->windowSize(1280, 720);
         $screenshot->setDelay(2000);
         $screenshot->setScreenshotType("png");

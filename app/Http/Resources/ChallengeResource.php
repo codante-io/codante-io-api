@@ -32,7 +32,7 @@ class ChallengeResource extends JsonResource
             "tags" => TagResource::collection($this->whenLoaded("tags")),
             // get users without resource
             // "users" => $this->whenLoaded("users"),
-            "users" => UserResource::collection(
+            "users" => UserAvatarResource::collection(
                 //take 7 random users
                 $this->whenLoaded("users")->take(5)
             ),
