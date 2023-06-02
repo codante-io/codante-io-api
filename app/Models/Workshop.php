@@ -57,7 +57,7 @@ class Workshop extends Model
     {
         $attribute_name = "image_url"; 
         $disk = "s3";
-        $destination_path = "workshops/images";
+        $destination_path = "workshops/cover-images";
         $fileName = "$this->id";
         $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName);
     }
