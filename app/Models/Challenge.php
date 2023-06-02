@@ -50,7 +50,7 @@ class Challenge extends Model
     {
         $attribute_name = "image_url";
         $disk = "s3";
-        $destination_path = "challenges/images";
+        $destination_path = "challenges/cover-images";
         $fileName = "$this->id";
         $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName);
     }
