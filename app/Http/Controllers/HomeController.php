@@ -42,6 +42,7 @@ class HomeController extends Controller
                         ->with("workshop")
                         ->with("workshop.lessons")
                         ->withCount("users")
+                        ->with("users")
                         ->with("tags")
                         ->get()
                 ),
