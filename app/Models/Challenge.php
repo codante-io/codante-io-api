@@ -53,4 +53,13 @@ class Challenge extends Model
     {
         return $this->belongsTo(Track::class);
     }
+
+    public function setImageAttribute($value)
+    {
+        $attribute_name = "image_url";
+        $disk = "s3";
+        $destination_path = "challenges/cover-images";
+        $fileName = "$this->id";
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName);
+    }
 }

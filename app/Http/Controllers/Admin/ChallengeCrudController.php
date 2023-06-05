@@ -60,7 +60,14 @@ class ChallengeCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('short_description')->label('Resumo');
         CRUD::field('description');
-        CRUD::field('image_url')->type('url')->label('Link da Imagem');
+
+        $this->crud->addField([
+            'name' => 'image_url',
+            'label' => 'Imagem',
+            'type' => 'upload',
+            'upload' => true,
+            'disk' => 's3',
+        ]);
 
         $this->crud->addField(
             [
