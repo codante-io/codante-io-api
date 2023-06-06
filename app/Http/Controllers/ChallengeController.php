@@ -201,16 +201,23 @@ class ChallengeController extends Controller
             abort(400, "Você já submeteu esse Mini Projeto");
         }
 
-        // Check if the URL is valid
-        $response = \Illuminate\Support\Facades\Http::get(
-            $validated["submission_url"]
-        );
-        $status = $response->status();
+        try {
+            // Check if the URL is valid
+            $response = \Illuminate\Support\Facades\Http::get(
+                $validated["submission_url"]
+            );
 
-        if ($status > 300) {
+            $status = $response->status();
+            if ($status > 300) {
+                abort(
+                    400,
+                    "Não conseguimos acessar a URL informada. Se persistir o erro, entre em contato com a gente."
+                );
+            }
+        } catch (\Exception $e) {
             abort(
                 400,
-                "Não conseguimos acessar a URL informada. Verifique e tente novamente."
+                "Não conseguimos acessar a URL informada. Se persistir o erro, entre em contato com a gente."
             );
         }
 
