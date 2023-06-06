@@ -52,4 +52,13 @@ class Workshop extends Model
     {
         return $query->where('status', '!=', 'draft')->where('status', '!=', 'archived');
     }
+
+    public function setImageAttribute($value)
+    {
+        $attribute_name = "image_url"; 
+        $disk = "s3";
+        $destination_path = "workshops/cover-images";
+        $fileName = "$this->id";
+        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName);
+    }
 }
