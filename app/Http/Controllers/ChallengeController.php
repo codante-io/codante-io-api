@@ -7,14 +7,25 @@ use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
-use GrahamCampbell\GitHub\Facades\GitHub;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Storage;
+use Github\ResultPager;
+use GrahamCampbell\GitHub\Facades\GitHub;
+use GrahamCampbell\GitHub\GitHubManager;
 
 class ChallengeController extends Controller
 {
+    protected $client;
+    protected $paginator;
+
+    public function __construct(GitHubManager $manager)
+    {
+        $this->client = $manager->connection();
+        $this->paginator = new ResultPager($this->client);
+    }
+
     public function index()
     {
         return ChallengeResource::collection(
@@ -44,10 +55,13 @@ class ChallengeController extends Controller
         }
 
         try {
-            # get github forks
-            $forks = GitHub::repo()
-                ->forks()
-                ->all("codante-io", $challenge->slug);
+            $repositoryApi = $this->client->api("repo")->forks();
+            # get all forks paginated
+            $forks = $this->paginator->fetchAll($repositoryApi, "all", [
+                "codante-io",
+                $challenge->slug,
+            ]);
+
             #verify if the user has forked the repo
             $userFork = collect($forks)
                 ->filter(function ($fork) use ($user) {
