@@ -61,7 +61,6 @@ class CalendarController extends Controller
                     ->whereDate("published_at", ">=", now())
                     ->orWhere("published_at", null)
             )
-            ->whereDate("published_at", ">=", now())
             ->select($challengeColumns)
             ->get();
 
