@@ -17,9 +17,7 @@ class ReactionController extends Controller
                 "required|in:" . implode(",", Reaction::$allowedReactionTypes),
         ]);
 
-        $reactableClass = "App\\Models\\" . $data["reactable_type"];
-
-        $this->validateReactable($reactableClass);
+        $reactableClass = Reaction::validateReactable($data["reactable_type"]);
 
         // find if the reactable model exists
         $reactable = $reactableClass::findOrFail($data["reactable_id"]);
@@ -57,57 +55,8 @@ class ReactionController extends Controller
             "reactable_type" => "required",
         ]);
 
-        $reactableClass = "App\\Models\\" . $data["reactable_type"];
-        $this->validateReactable($reactableClass);
+        $reactableClass = Reaction::validateReactable($data["reactable_type"]);
 
-        // find if the reactable model exists
-        $reactable = $reactableClass::findOrFail($data["reactable_id"]);
-
-        // get the reactions count by type
-        $reactions = $reactable
-            ->reactions()
-            ->selectRaw("reaction, count(*) as count")
-            ->groupBy("reaction")
-            ->get();
-
-        // get the user specific reactions
-        if (!auth("sanctum")->user()) {
-            return ["reaction_counts" => $reactions];
-        }
-
-        // get user reactions in an array of types
-        $userReactions = $reactable
-            ->reactions()
-            ->where("user_id", auth("sanctum")->user()->id)
-            ->pluck("reaction")
-            ->toArray();
-
-        return [
-            "reaction_counts" => $reactions,
-            "user_reactions" => $userReactions,
-        ];
-    }
-
-    protected function validateReactable($reactableClass)
-    {
-        // check if reactable model exists, if not, return error
-        if (!class_exists($reactableClass)) {
-            return response()->json(
-                [
-                    "message" => "Reactable model does not exist",
-                ],
-                404
-            );
-        }
-
-        // check if the model is reactable
-        if (!in_array("App\\Traits\\Reactable", class_uses($reactableClass))) {
-            return response()->json(
-                [
-                    "message" => "Model is not reactable",
-                ],
-                404
-            );
-        }
+        return Reaction::getReactions($reactableClass, $data["reactable_id"]);
     }
 }
