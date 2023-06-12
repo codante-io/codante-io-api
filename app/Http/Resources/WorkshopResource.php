@@ -26,6 +26,7 @@ class WorkshopResource extends JsonResource
             'difficulty' => $this->difficulty,
             'duration_in_minutes' => $this->duration_in_minutes,
             'status' => $this->status,
+            'is_standalone' => $this->is_standalone,
             'lessons' => LessonResource::collection($this->whenLoaded('lessons')),
             'instructor' => new InstructorResource($this->whenLoaded('instructor')),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
