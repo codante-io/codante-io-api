@@ -41,6 +41,7 @@ class Challenge extends Model
     public function users()
     {
         return $this->belongsToMany(User::class)->withPivot([
+            "id",
             "completed",
             "fork_url",
             "joined_discord",
@@ -60,6 +61,12 @@ class Challenge extends Model
         $disk = "s3";
         $destination_path = "challenges/cover-images";
         $fileName = "$this->id";
-        $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName);
+        $this->uploadFileToDisk(
+            $value,
+            $attribute_name,
+            $disk,
+            $destination_path,
+            $fileName
+        );
     }
 }
