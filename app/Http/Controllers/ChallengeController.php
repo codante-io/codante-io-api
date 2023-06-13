@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ChallengeResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
+use App\Models\Reaction;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Cache;
@@ -265,11 +266,16 @@ class ChallengeController extends Controller
 
         $submissions = $challengeUsers->map(function ($user) {
             return [
+                "id" => $user->pivot->id,
                 "user_name" => $user->name,
                 "user_avatar_url" => $user->avatar_url,
                 "user_github_user" => $user->github_user,
                 "submission_url" => $user->pivot->submission_url,
                 "submission_image_url" => $user->pivot->submission_image_url,
+                "reactions" => Reaction::getReactions(
+                    "App\\Models\\ChallengeUser",
+                    $user->pivot->id
+                ),
             ];
         });
 
