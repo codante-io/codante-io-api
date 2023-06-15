@@ -24,7 +24,7 @@ class ChallengeResource extends JsonResource
             "status" => $this->status,
             "difficulty" => $this->difficulty,
             "duration_in_minutes" => $this->duration_in_minutes,
-            "repository_url" => $this->repository_url,
+            "repository_name" => $this->repository_name,
             "workshop" => new WorkshopResource($this->whenLoaded("workshop")),
             "instructor" => new InstructorResource(
                 $this->whenLoaded("instructor")
