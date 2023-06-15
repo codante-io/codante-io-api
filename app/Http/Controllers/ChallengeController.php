@@ -60,7 +60,7 @@ class ChallengeController extends Controller
             # get all forks paginated
             $forks = $this->paginator->fetchAll($repositoryApi, "all", [
                 "codante-io",
-                $challenge->slug,
+                $challenge->repository_name,
             ]);
 
             #verify if the user has forked the repo
