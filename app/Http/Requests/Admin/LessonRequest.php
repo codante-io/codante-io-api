@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class LessonRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class LessonRequest extends FormRequest
         return [
             'name' => 'required|min:5|max:255',
             'video_url' => 'required|url',
-            'slug' => 'required|unique:lessons,slug'
+            'slug' => ['required', Rule::unique('lessons')->ignore($this->id)],
         ];
     }
 
