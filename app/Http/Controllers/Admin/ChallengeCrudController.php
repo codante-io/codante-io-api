@@ -131,7 +131,7 @@ class ChallengeCrudController extends CrudController
             ],
         ]);
 
-        CRUD::field('repository_url')->type('url');
+        CRUD::field('repository_name')->type('text')->hint('Nome do repositório no GitHub');
         CRUD::field('published_at')->type('datetime');
 
         $this->crud->addField([
