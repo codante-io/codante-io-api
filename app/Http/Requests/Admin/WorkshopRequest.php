@@ -28,7 +28,7 @@ class WorkshopRequest extends FormRequest
             'name' => 'required|min:5|max:255',
             'status' => 'required',
             'difficulty' => 'required',
-            'slug' => 'required|unique:workshops,slug'
+            'slug' => 'required|unique:workshops,slug,' . $this->id,
         ];
     }
 
