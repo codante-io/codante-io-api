@@ -69,8 +69,7 @@ class WorkshopCrudController extends CrudController
         CRUD::field('name');
         CRUD::field('short_description')->label('Resumo')->limit(255);
         CRUD::field('description')->label('Descrição (markdown)')->type('easymde')->easymdeAttributes(['spellChecker' => false]);
-        CRUD::field('image_url')->type('url')->label('Link da Imagem');
-        CRUD::field('vide_url')->type('url')->label('Link do Vídeo');
+        CRUD::field('video_url')->type('url')->label('Link do Vídeo');
         CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
         $this->crud->addField(
             [
@@ -138,8 +137,10 @@ class WorkshopCrudController extends CrudController
         $this->crud->addField([
             'name' => 'image_url',
             'label' => 'Imagem',
-            'type' => 'upload',
-            'upload' => true,
+            'type' => 'image',
+            'crop' => true,
+            'aspect_ratio' => 16 / 9,
+            // 'upload' => true,
             'disk' => 's3',
         ]);
 
