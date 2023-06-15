@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\TagRequest;
+use App\Http\Requests\Admin\TagRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -43,7 +43,6 @@ class TagCrudController extends CrudController
         CRUD::column('color');
         CRUD::column('created_at');
         CRUD::column('updated_at');
-
     }
 
     /**
@@ -59,14 +58,14 @@ class TagCrudController extends CrudController
         CRUD::field('name');
         CRUD::addField([
             'label' => 'Cor',
-            'name' => 'color', 
+            'name' => 'color',
             'type' => 'color_picker',
             'default'     => '#5282FF',
             'color_picker_options' => [
                 'horizontal' => true,
                 'extensions' => [
                     [
-                        'name' => 'swatches', 
+                        'name' => 'swatches',
                         'options' => [
                             'colors' => [
                                 'primary' => '#337ab7',
@@ -79,7 +78,8 @@ class TagCrudController extends CrudController
                         ]
                     ]
                 ]
-        ]]);
+            ]
+        ]);
     }
 
     /**
