@@ -17,4 +17,22 @@ class Lesson extends Model
     {
         return $this->belongsTo(Workshop::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withPivot(['completed_at']);
+    }
+
+    public function userCompleted(User $user, bool $setComplete = true)
+    {
+        if (!$setComplete) {
+            $this->users()->detach($user->id);
+            return;
+        }
+        $this->users()->syncWithoutDetaching([
+            $user->id => [
+                'completed_at' => now(),
+            ],
+        ]);
+    }
 }
