@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\WorkshopController;
@@ -83,8 +84,10 @@ Route::post("/dashboard/change-password", [
     "changePassword",
 ]);
 
-Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
+Route::post('/lessons/{lesson}/completed', [LessonController::class, 'setCompleted'])->middleware('auth:sanctum');
+Route::post('/lessons/{lesson}/uncompleted', [LessonController::class, 'setUncompleted'])->middleware('auth:sanctum');
 
+Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
 Route::get("/custom-test", [CustomTestController::class, "handle"]);
 
 require __DIR__ . "/auth.php";
