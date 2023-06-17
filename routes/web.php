@@ -39,7 +39,10 @@ Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
 );
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
-Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
+Route::get("/challenges/{slug}", [
+    ChallengeController::class,
+    "show",
+]);
 Route::post("/challenges/{slug}/submit", [
     ChallengeController::class,
     "submit",
@@ -84,8 +87,14 @@ Route::post("/dashboard/change-password", [
     "changePassword",
 ]);
 
-Route::post('/lessons/{lesson}/completed', [LessonController::class, 'setCompleted'])->middleware('auth:sanctum');
-Route::post('/lessons/{lesson}/uncompleted', [LessonController::class, 'setUncompleted'])->middleware('auth:sanctum');
+Route::post("/lessons/{lesson}/completed", [
+    LessonController::class,
+    "setCompleted",
+])->middleware("auth:sanctum");
+Route::post("/lessons/{lesson}/uncompleted", [
+    LessonController::class,
+    "setUncompleted",
+])->middleware("auth:sanctum");
 
 Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
 Route::get("/custom-test", [CustomTestController::class, "handle"]);
