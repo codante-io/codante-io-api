@@ -283,7 +283,6 @@ class ChallengeController extends Controller
     }
     private function getChallenge($slug)
     {
-
         $challenge = Challenge::where("slug", $slug)
             ->where("status", "published")
             ->with("workshop")
@@ -314,6 +313,12 @@ class ChallengeController extends Controller
             ->with("tags")
             ->firstOrFail();
 
+        if (
+            !$challenge->workshop ||
+            $challenge->workshop->lessons->count() === 0
+        ) {
+            return $challenge;
+        }
 
         $challenge->workshop->lessons->each(function ($lesson) {
             $lesson->user_completed = $lesson->users->count() > 0;
