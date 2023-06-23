@@ -6,6 +6,7 @@ use App\Http\Resources\ChallengeResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\Reaction;
+use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Github\ResultPager;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
+use Illuminate\Support\Facades\Auth;
 
 class ChallengeController extends Controller
 {
@@ -86,14 +88,12 @@ class ChallengeController extends Controller
 
     public function show($slug)
     {
-        // add cache 5minutes
-        $challenge = Challenge::where("slug", $slug)
-            ->where("status", "published")
-            ->with("workshop")
-            ->with("workshop.lessons")
-            ->withCount("users")
-            ->with("tags")
-            ->firstOrFail();
+        // if not logged in, we show cached version
+        if (!Auth::guard("sanctum")->check()) {
+            $challenge = $this->getChallenge($slug);
+        } else {
+            $challenge = $this->getChallengeWithCompletedLessons($slug);
+        }
 
         $cacheKey = "challenge_" . $challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
@@ -280,5 +280,46 @@ class ChallengeController extends Controller
         });
 
         return response()->json(["data" => $submissions]);
+    }
+    private function getChallenge($slug)
+    {
+
+        $challenge = Challenge::where("slug", $slug)
+            ->where("status", "published")
+            ->with("workshop")
+            ->with("workshop.lessons")
+            ->withCount("users")
+            ->with("tags")
+            ->firstOrFail();
+
+        return $challenge;
+    }
+
+    private function getChallengeWithCompletedLessons($slug)
+    {
+        $challenge = Challenge::where("slug", $slug)
+            ->where("status", "published")
+            ->with("workshop")
+            ->with("workshop.lessons")
+            ->with([
+                "workshop",
+                "workshop.lessons",
+                "workshop.lessons.users" => function ($query) {
+                    $query
+                        ->select("users.id")
+                        ->where("user_id", Auth::guard("sanctum")->id());
+                },
+            ])
+            ->withCount("users")
+            ->with("tags")
+            ->firstOrFail();
+
+
+        $challenge->workshop->lessons->each(function ($lesson) {
+            $lesson->user_completed = $lesson->users->count() > 0;
+            unset($lesson->users);
+        });
+
+        return $challenge;
     }
 }
