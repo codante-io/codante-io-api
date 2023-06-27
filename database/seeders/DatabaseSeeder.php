@@ -4,8 +4,10 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\BlogPost;
 use App\Models\Challenge;
 use App\Models\Lesson;
+use App\Models\Reaction;
 use App\Models\Tag;
 use App\Models\User;
 use App\Models\Workshop;
@@ -48,7 +50,7 @@ class DatabaseSeeder extends Seeder
                     "avatar_url",
                     "https://i.pravatar.cc/300"
                 ),
-                fn() => [
+                fn () => [
                     "completed" => fake()->boolean(),
                     "joined_discord" => fake()->boolean(),
                 ]
@@ -70,7 +72,7 @@ class DatabaseSeeder extends Seeder
                     "avatar_url",
                     "https://i.pravatar.cc/300"
                 ),
-                fn() => [
+                fn () => [
                     "completed" => fake()->boolean(),
                     "joined_discord" => fake()->boolean(),
                 ]
@@ -87,7 +89,7 @@ class DatabaseSeeder extends Seeder
                     ->has(Tag::factory()->count(3))
                     ->set("featured", null)
                     ->set("is_standalone", true),
-                fn() => ["position" => fake()->randomFloat(4, 1, 10)]
+                fn () => ["position" => fake()->randomFloat(4, 1, 10)]
             )
             ->hasAttached(
                 Challenge::factory()
@@ -101,11 +103,16 @@ class DatabaseSeeder extends Seeder
                             ->has(Lesson::factory()->count(4))
                     )
                     ->has(Tag::factory()->count(3)),
-                fn() => ["position" => fake()->randomFloat(4, 1, 10)]
+                fn () => ["position" => fake()->randomFloat(4, 1, 10)]
             )
             ->create();
 
         \App\Models\User::factory(3)->create();
+
+        BlogPost::factory(10)
+            ->has(Tag::factory()->count(3))
+            ->has(Reaction::factory()->count(3))
+            ->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',
