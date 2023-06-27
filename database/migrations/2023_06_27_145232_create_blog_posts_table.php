@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('instructor_id');
             $table->string('title');
             $table->text('content');
+            $table->text('short_description')->nullable();
             $table->string('slug')->unique();
             $table->string('image_url')->nullable();
             $table->string('status')->default('draft')->index();
