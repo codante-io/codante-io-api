@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('content');
             $table->string('slug')->unique();
-            $table->string('featured_image')->nullable();
+            $table->string('image_url')->nullable();
             $table->string('status')->default('draft')->index();
             $table->timestamps();
         });

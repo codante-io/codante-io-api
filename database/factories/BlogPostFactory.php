@@ -22,7 +22,7 @@ class BlogPostFactory extends Factory
             'content' => fake()->paragraphs(4, true),
             'instructor_id' => Instructor::factory(),
             'slug' => fake()->slug(4),
-            'featured_image' => fake()->imageUrl(640, 480),
+            'image_url' => fake()->imageUrl(640, 480),
             'status' => fake()->randomElement(['draft', 'published', 'archived']),
         ];
     }
