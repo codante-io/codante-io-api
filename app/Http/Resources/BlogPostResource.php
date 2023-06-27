@@ -21,6 +21,7 @@ class BlogPostResource extends JsonResource
                 "title",
                 "content",
                 "image_url",
+                "short_description",
                 "slug",
                 "status",
                 "created_at",
