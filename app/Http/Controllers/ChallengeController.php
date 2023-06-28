@@ -287,6 +287,7 @@ class ChallengeController extends Controller
             ->where("status", "published")
             ->with("workshop")
             ->with("workshop.lessons")
+            ->with("workshop.instructor")
             ->withCount("users")
             ->with("tags")
             ->firstOrFail();
@@ -300,6 +301,7 @@ class ChallengeController extends Controller
             ->where("status", "published")
             ->with("workshop")
             ->with("workshop.lessons")
+            ->with("workshop.instructor")
             ->with([
                 "workshop",
                 "workshop.lessons",
