@@ -138,6 +138,14 @@ class ChallengeCrudController extends CrudController
             'name' => 'tags',
             'type' => 'relationship'
         ]);
+
+        $this->crud->addField([
+            'name' => 'position',
+            'type' => 'number',
+            'hint' => 'Posição do desafio na lista',
+            'default' => 1,
+            'attributes' => ["step" => "any"],
+        ]);
     }
 
     /**
