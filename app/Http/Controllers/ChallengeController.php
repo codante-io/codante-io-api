@@ -106,7 +106,7 @@ class ChallengeController extends Controller
             try {
                 $repoInfo = GitHub::repo()->show(
                     "codante-io",
-                    $challenge->slug
+                    $challenge->repository_name
                 );
             } catch (\Exception $e) {
                 $repoInfo = [
