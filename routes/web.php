@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\CustomTestController;
@@ -98,5 +99,8 @@ Route::post("/lessons/{lesson}/uncompleted", [
 
 Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
 Route::get("/custom-test", [CustomTestController::class, "handle"]);
+
+Route::get('/blog-posts', [BlogPostController::class, 'index']);
+Route::get('/blog-posts/{slug}', [BlogPostController::class, 'show']);
 
 require __DIR__ . "/auth.php";

@@ -264,17 +264,17 @@ class ChallengeController extends Controller
             ->wherePivotNotNull("submission_url")
             ->get();
 
-        $submissions = $challengeUsers->map(function ($user) {
+        $submissions = $challengeUsers->map(function ($challengeUser) {
             return [
-                "id" => $user->pivot->id,
-                "user_name" => $user->name,
-                "user_avatar_url" => $user->avatar_url,
-                "user_github_user" => $user->github_user,
-                "submission_url" => $user->pivot->submission_url,
-                "submission_image_url" => $user->pivot->submission_image_url,
+                "id" => $challengeUser->pivot->id,
+                "user_name" => $challengeUser->name,
+                "user_avatar_url" => $challengeUser->avatar_url,
+                "user_github_user" => $challengeUser->github_user,
+                "submission_url" => $challengeUser->pivot->submission_url,
+                "submission_image_url" => $challengeUser->pivot->submission_image_url,
                 "reactions" => Reaction::getReactions(
                     "App\\Models\\ChallengeUser",
-                    $user->pivot->id
+                    $challengeUser->pivot->id
                 ),
             ];
         });

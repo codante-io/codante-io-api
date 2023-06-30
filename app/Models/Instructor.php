@@ -21,4 +21,9 @@ class Instructor extends Model
     {
         return $this->hasMany(Workshop::class);
     }
+
+    public function blogPosts()
+    {
+        return $this->hasMany(BlogPost::class);
+    }
 }
