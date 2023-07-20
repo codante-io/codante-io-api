@@ -13,6 +13,8 @@ class BlogPost extends Model
     use HasFactory;
     use Reactable;
 
+    protected $guarded = ['id'];
+
     public function instructor()
     {
         return $this->belongsTo(Instructor::class);
