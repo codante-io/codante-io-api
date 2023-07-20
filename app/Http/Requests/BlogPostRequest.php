@@ -27,7 +27,7 @@ class BlogPostRequest extends FormRequest
         return [
             'title' => 'required|min:5|max:60',
             'content' => 'required',
-            'instructor' => 'required',
+            'instructor_id' => 'required',
             'short_description' => 'required|min:5|max:400',
             'slug' => 'required|unique:blog_posts,slug,' . $this->id,
             'status' => 'required',
