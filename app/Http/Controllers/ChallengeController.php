@@ -254,6 +254,7 @@ class ChallengeController extends Controller
         $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
             $imagePath
         );
+        $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
     }
 

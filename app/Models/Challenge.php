@@ -48,7 +48,7 @@ class Challenge extends Model
             "joined_discord",
             "submission_url",
             "submission_image_url",
-        ]);
+        ])->withTimestamps();
     }
 
     public function track()
