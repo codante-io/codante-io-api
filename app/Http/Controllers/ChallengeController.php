@@ -266,6 +266,7 @@ class ChallengeController extends Controller
             ->users()
             ->select("users.name", "users.avatar_url", "users.github_user")
             ->wherePivotNotNull("submission_url")
+            ->orderBy('submitted_at', 'desc')
             ->get();
 
         $submissions = $challengeUsers->map(function ($challengeUser) {
