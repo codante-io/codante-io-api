@@ -19,6 +19,7 @@ class WorkshopController extends Controller
                 ->with("lessons")
                 ->with("instructor")
                 ->with("tags")
+                ->orderBy('status')
                 ->visible()
                 ->get()
         );
