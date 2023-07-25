@@ -254,6 +254,7 @@ class ChallengeController extends Controller
         $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
             $imagePath
         );
+        $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
     }
 
@@ -265,6 +266,7 @@ class ChallengeController extends Controller
             ->users()
             ->select("users.name", "users.avatar_url", "users.github_user")
             ->wherePivotNotNull("submission_url")
+            ->orderBy('submitted_at', 'desc')
             ->get();
 
         $submissions = $challengeUsers->map(function ($challengeUser) {
