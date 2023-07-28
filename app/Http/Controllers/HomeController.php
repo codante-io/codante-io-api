@@ -44,6 +44,9 @@ class HomeController extends Controller
                         ->withCount("users")
                         ->with("users")
                         ->with("tags")
+                        ->orderBy("status", "asc")
+                        ->orderBy("position", "asc")
+                        ->orderBy("published_at", "desc")
                         ->get()
                 ),
                 "featured_tracks" => TrackResource::collection(
