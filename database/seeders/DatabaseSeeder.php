@@ -50,13 +50,14 @@ class DatabaseSeeder extends Seeder
                     "avatar_url",
                     "https://i.pravatar.cc/300"
                 ),
-                fn () => [
+                fn() => [
                     "completed" => fake()->boolean(),
                     "joined_discord" => fake()->boolean(),
                 ]
             )
             ->has(Tag::factory()->count(3))
             ->set("featured", null)
+            ->set("position", fake()->randomFloat(4, 1, 10))
             ->create();
 
         \App\Models\Challenge::factory(12)
@@ -72,13 +73,14 @@ class DatabaseSeeder extends Seeder
                     "avatar_url",
                     "https://i.pravatar.cc/300"
                 ),
-                fn () => [
+                fn() => [
                     "completed" => fake()->boolean(),
                     "joined_discord" => fake()->boolean(),
                 ]
             )
             ->has(Tag::factory()->count(3))
             ->set("featured", "landing")
+            ->set("position", fake()->randomFloat(4, 1, 10))
             ->create();
 
         \App\Models\Track::factory(3)
@@ -89,7 +91,7 @@ class DatabaseSeeder extends Seeder
                     ->has(Tag::factory()->count(3))
                     ->set("featured", null)
                     ->set("is_standalone", true),
-                fn () => ["position" => fake()->randomFloat(4, 1, 10)]
+                fn() => ["position" => fake()->randomFloat(4, 1, 10)]
             )
             ->hasAttached(
                 Challenge::factory()
@@ -102,8 +104,10 @@ class DatabaseSeeder extends Seeder
                             ->count(1)
                             ->has(Lesson::factory()->count(4))
                     )
-                    ->has(Tag::factory()->count(3)),
-                fn () => ["position" => fake()->randomFloat(4, 1, 10)]
+                    ->has(Tag::factory()->count(3))
+                    ->set("position", fake()->randomFloat(4, 1, 10)),
+
+                fn() => ["position" => fake()->randomFloat(4, 1, 10)]
             )
             ->create();
 
