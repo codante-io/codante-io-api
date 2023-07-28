@@ -9,8 +9,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\TechnicalAssessmentController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\WorkshopController;
+use App\Models\TechnicalAssessment;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -102,5 +104,7 @@ Route::get("/custom-test", [CustomTestController::class, "handle"]);
 
 Route::get('/blog-posts', [BlogPostController::class, 'index']);
 Route::get('/blog-posts/{slug}', [BlogPostController::class, 'show']);
+
+Route::get('/technical-assessments', [TechnicalAssessmentController::class, 'index']);
 
 require __DIR__ . "/auth.php";
