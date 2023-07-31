@@ -106,5 +106,6 @@ Route::get('/blog-posts', [BlogPostController::class, 'index']);
 Route::get('/blog-posts/{slug}', [BlogPostController::class, 'show']);
 
 Route::get('/technical-assessments', [TechnicalAssessmentController::class, 'index']);
+Route::get('/technical-assessments/{slug}', [TechnicalAssessmentController::class, 'show']);
 
 require __DIR__ . "/auth.php";

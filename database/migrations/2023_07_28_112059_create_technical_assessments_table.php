@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('challenge_id')->nullable();
             $table->string('company_website')->nullable();
             $table->string('company_headquarters')->nullable();
-            $table->string('company_description')->nullable();
+            $table->text('company_description')->nullable();
             $table->string('company_size')->nullable();
             $table->string('company_industry')->nullable();
             $table->string('company_linkedin')->nullable();
