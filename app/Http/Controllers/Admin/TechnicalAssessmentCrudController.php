@@ -53,8 +53,8 @@ class TechnicalAssessmentCrudController extends CrudController
         CRUD::column("company_name");
         CRUD::column("image_url");
         CRUD::column("description");
-        CRUD::column("instructions_text");
-        CRUD::column("instructions_url");
+        // CRUD::column("assessment_instructions_text");
+        CRUD::column("assessment_instructions_url");
         CRUD::column("job_position");
         CRUD::column("jobs_url");
         CRUD::column("updated_at");
@@ -128,12 +128,19 @@ class TechnicalAssessmentCrudController extends CrudController
             ->easymdeAttributes(["spellChecker" => false]);
         CRUD::field("assessment_year");
         CRUD::field("assessment_instructions_url");
-        CRUD::field("instructions_text")
+        CRUD::field("assessment_instructions_text")
             ->type("easymde")
             ->easymdeAttributes([
                 "spellChecker" => false,
             ]);
         CRUD::field("job_position");
+        CRUD::field("company_url")->type('url');
+        CRUD::field("company_headquarters");
+        CRUD::field("company_description")->type('textarea');
+        CRUD::field("company_size");
+        CRUD::field("company_industry");
+        CRUD::field("company_linkedin")->type('url');
+        CRUD::field("company_github")->type('url');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
