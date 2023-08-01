@@ -98,7 +98,8 @@ class TechnicalAssessmentCrudController extends CrudController
             ->target("title");
         $this->crud->addField([
             "name" => "image_url",
-            "label" => "Imagem",
+            "hint" => "Logo PNG (transparente) da empresa - fundo claro",
+            "label" => "Logo da Empresa",
             "type" => "image",
             "crop" => true,
             "aspect_ratio" => 1,
@@ -108,6 +109,7 @@ class TechnicalAssessmentCrudController extends CrudController
         $this->crud->addField([
             "name" => "image_url_dark",
             "label" => "Imagem - Dark Mode",
+            "hint" => "Logo PNG (transparente) da empresa - fundo escuro",
             "type" => "image",
             "crop" => true,
             "aspect_ratio" => 1,
