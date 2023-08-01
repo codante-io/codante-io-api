@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('company_github')->nullable();
             $table->text('assessment_description')->nullable();
             $table->string('assessment_year')->nullable();
+            $table->string('assessment_language')->default('pt');
             $table->string('assessment_instructions_url')->nullable();
             $table->longText('assessment_instructions_text')->nullable();
             $table->string('job_position')->nullable();

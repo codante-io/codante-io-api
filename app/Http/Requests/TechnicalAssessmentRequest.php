@@ -26,35 +26,10 @@ class TechnicalAssessmentRequest extends FormRequest
     {
         return [
             "title" => "required|min:5|max:255",
-            'slug' => 'required|unique:technical_assessments,slug,' . $this->id,
+            "slug" => "required|unique:technical_assessments,slug," . $this->id,
             "type" => "required|in:frontend,backend,fullstack",
             "status" => "required|in:draft,published",
             "company_name" => "required|min:5|max:255",
-            // 'name' => 'required|min:5|max:255'
-        ];
-    }
-
-    /**
-     * Get the validation attributes that apply to the request.
-     *
-     * @return array
-     */
-    public function attributes()
-    {
-        return [
-            //
-        ];
-    }
-
-    /**
-     * Get the validation messages that apply to the request.
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            //
         ];
     }
 }
