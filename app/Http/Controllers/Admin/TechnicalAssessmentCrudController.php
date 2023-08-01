@@ -53,7 +53,6 @@ class TechnicalAssessmentCrudController extends CrudController
         CRUD::column("company_name");
         CRUD::column("image_url");
         CRUD::column("description");
-        // CRUD::column("assessment_instructions_text");
         CRUD::column("assessment_instructions_url");
         CRUD::column("job_position");
         CRUD::column("jobs_url");
