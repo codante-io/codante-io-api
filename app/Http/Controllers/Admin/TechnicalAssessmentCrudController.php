@@ -103,7 +103,6 @@ class TechnicalAssessmentCrudController extends CrudController
             "type" => "image",
             "crop" => true,
             "aspect_ratio" => 1,
-            // 'upload' => true,
             "disk" => "s3",
         ]);
         $this->crud->addField([
