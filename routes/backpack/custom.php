@@ -25,4 +25,6 @@ Route::group([
     Route::crud('workshop', 'WorkshopCrudController');
     Route::crud('blog-post', 'BlogPostCrudController');
     Route::crud('technical-assessment', 'TechnicalAssessmentCrudController');
+    Route::crud('backups', 'BackupCrudController');
+    Route::crud('backup-disks', 'BackupDiskCrudController');
 }); // this should be the absolute last line of this file
