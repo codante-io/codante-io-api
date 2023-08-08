@@ -29,7 +29,7 @@ class TechnicalAssessmentRequest extends FormRequest
             "slug" => "required|unique:technical_assessments,slug," . $this->id,
             "type" => "required|in:frontend,backend,fullstack",
             "status" => "required|in:draft,published",
-            "company_name" => "required|min:5|max:255",
+            "company_name" => "required|min:2|max:255",
         ];
     }
 }
