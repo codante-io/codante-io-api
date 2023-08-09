@@ -166,10 +166,10 @@ return [
         'notifiable' => \Spatie\Backup\Notifications\Notifiable::class,
 
         'mail' => [
-            'to' => 'robertotcestari@gmail.com',
+            'to' => 'contato@codante.io',
 
             'from' => [
-                'address' => env('MAIL_FROM_ADDRESS', 'contato@codante.com.br'),
+                'address' => env('MAIL_FROM_ADDRESS', 'contato@codante.io'),
                 'name' => env('MAIL_FROM_NAME', 'Backup Codante'),
             ],
         ],
