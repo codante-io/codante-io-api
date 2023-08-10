@@ -38,6 +38,7 @@ class TechnicalAssessmentResource extends JsonResource
             'assessment_instructions_text' => $this->assessment_instructions_text,
             'job_position' => $this->job_position,
             'has_challenge' => !is_null($this->challenge_id),
+            'zipped_files_url' => $this->zipped_files_url,
         ];
 
         return $resource;
