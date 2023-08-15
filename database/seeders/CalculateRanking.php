@@ -75,7 +75,7 @@ class CalculateRanking extends Seeder
             )
             ->select(
                 "reactions.id",
-                "reactions.user_id",
+                "challenge_user.user_id",
                 "challenge_user.submitted_at",
                 "challenge_user.created_at"
             )
