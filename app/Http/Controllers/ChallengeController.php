@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChallengeCompleted;
+use App\Events\ChallengeForked;
+use App\Events\ChallengeJoined;
 use App\Http\Resources\ChallengeResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\Reaction;
 use App\Models\Workshop;
+use DB;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Cache;
@@ -42,7 +46,7 @@ class ChallengeController extends Controller
                 ->with("tags")
                 ->orderBy("status", "asc")
                 ->orderBy("position", "asc")
-                ->orderBy('published_at', 'desc')
+                ->orderBy("published_at", "desc")
                 ->get()
         );
     }
@@ -79,6 +83,8 @@ class ChallengeController extends Controller
                 # update challengeUser record with the fork url
                 $challengeUser->pivot->fork_url = $userFork["html_url"];
                 $challengeUser->pivot->save();
+
+                event(new ChallengeForked($challengeUser, $challenge, $user));
 
                 return response()->json(["data" => true]);
             }
@@ -137,6 +143,16 @@ class ChallengeController extends Controller
         }
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $challenge->users()->syncWithoutDetaching($request->user()->id);
+
+        // Get challenge user to send to event
+        $challengeUser = $challenge
+            ->users()
+            ->where("user_id", $request->user()->id)
+            ->first();
+
+        event(
+            new ChallengeJoined($challengeUser, $challenge, $request->user())
+        );
 
         // send email
         Mail::to($request->user()->email)->send(
@@ -256,6 +272,11 @@ class ChallengeController extends Controller
         );
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
+
+        // Trigger event to award points
+        event(
+            new ChallengeCompleted($challengeUser, $challenge, $request->user())
+        );
     }
 
     public function getSubmissions(Request $request, $slug)
@@ -266,7 +287,7 @@ class ChallengeController extends Controller
             ->users()
             ->select("users.name", "users.avatar_url", "users.github_user")
             ->wherePivotNotNull("submission_url")
-            ->orderBy('submitted_at', 'desc')
+            ->orderBy("submitted_at", "desc")
             ->get();
 
         $submissions = $challengeUsers->map(function ($challengeUser) {
@@ -276,7 +297,8 @@ class ChallengeController extends Controller
                 "user_avatar_url" => $challengeUser->avatar_url,
                 "user_github_user" => $challengeUser->github_user,
                 "submission_url" => $challengeUser->pivot->submission_url,
-                "submission_image_url" => $challengeUser->pivot->submission_image_url,
+                "submission_image_url" =>
+                    $challengeUser->pivot->submission_image_url,
                 "reactions" => Reaction::getReactions(
                     "App\\Models\\ChallengeUser",
                     $challengeUser->pivot->id

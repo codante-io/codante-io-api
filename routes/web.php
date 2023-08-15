@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\TechnicalAssessmentController;
 use App\Http\Controllers\TrackController;
@@ -42,10 +43,7 @@ Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
 );
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
-Route::get("/challenges/{slug}", [
-    ChallengeController::class,
-    "show",
-]);
+Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
 Route::post("/challenges/{slug}/submit", [
     ChallengeController::class,
     "submit",
@@ -102,10 +100,18 @@ Route::post("/lessons/{lesson}/uncompleted", [
 Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
 Route::get("/custom-test", [CustomTestController::class, "handle"]);
 
-Route::get('/blog-posts', [BlogPostController::class, 'index']);
-Route::get('/blog-posts/{slug}', [BlogPostController::class, 'show']);
+Route::get("/blog-posts", [BlogPostController::class, "index"]);
+Route::get("/blog-posts/{slug}", [BlogPostController::class, "show"]);
 
-Route::get('/technical-assessments', [TechnicalAssessmentController::class, 'index']);
-Route::get('/technical-assessments/{slug}', [TechnicalAssessmentController::class, 'show']);
+Route::get("/technical-assessments", [
+    TechnicalAssessmentController::class,
+    "index",
+]);
+Route::get("/technical-assessments/{slug}", [
+    TechnicalAssessmentController::class,
+    "show",
+]);
+
+Route::get("/ranking", [RankingController::class, "getRanking"]);
 
 require __DIR__ . "/auth.php";

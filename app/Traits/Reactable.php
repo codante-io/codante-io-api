@@ -9,7 +9,12 @@ trait Reactable
 {
     public function reactions()
     {
-        return $this->morphMany(Reaction::class, "reactions", "reactable_type", "reactable_id");
+        return $this->morphMany(
+            Reaction::class,
+            "reactions",
+            "reactable_type",
+            "reactable_id"
+        );
     }
 
     public function isReactedBy(string $reaction, User $user)
@@ -22,10 +27,18 @@ trait Reactable
 
     public function removeReaction(string $reaction, User $user)
     {
-        return $this->reactions()
+        $reactionRecord = $this->reactions()
             ->where("user_id", $user->id)
             ->where("reaction", $reaction)
-            ->delete();
+            ->first();
+
+        if ($reactionRecord) {
+            $reactionId = $reactionRecord->id;
+            $reactionRecord->delete();
+            return $reactionId;
+        }
+
+        return null;
     }
 
     public function react(string $reaction, User $user)

@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Events\ChallengeCompleted;
+use App\Events\ChallengeForked;
+use App\Events\ChallengeJoined;
+use App\Events\ReactionCreated;
+use App\Events\ReactionDeleted;
+use App\Listeners\AwardPoints;
 use App\Listeners\Registered as RegisteredListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -20,6 +26,11 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
             RegisteredListener::class,
         ],
+        ChallengeCompleted::class => [AwardPoints::class],
+        ChallengeJoined::class => [AwardPoints::class],
+        ChallengeForked::class => [AwardPoints::class],
+        ReactionCreated::class => [AwardPoints::class],
+        ReactionDeleted::class => [AwardPoints::class],
     ];
 
     /**
