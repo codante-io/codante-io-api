@@ -8,6 +8,5 @@ class CustomTestController extends Controller
 {
     public function handle()
     {
-
     }
 }
