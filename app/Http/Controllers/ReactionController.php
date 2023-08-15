@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ReactionCreated;
+use App\Events\ReactionDeleted;
 use App\Models\Reaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ReactionController extends Controller
 {
@@ -26,10 +27,12 @@ class ReactionController extends Controller
         if (
             $reactable->isReactedBy($data["reaction"], auth("sanctum")->user())
         ) {
-            $reactable->removeReaction(
+            $reactionId = $reactable->removeReaction(
                 $data["reaction"],
                 auth("sanctum")->user()
             );
+
+            event(new ReactionDeleted($reactionId, $reactable));
             return response()->json([
                 "message" => "Reaction removed successfully",
                 "result" => "destroy",
@@ -38,7 +41,11 @@ class ReactionController extends Controller
         }
 
         // create the reaction
-        $reactable->react($data["reaction"], auth("sanctum")->user());
+        $reaction = $reactable->react(
+            $data["reaction"],
+            auth("sanctum")->user()
+        );
+        event(new ReactionCreated($reaction->id, $reactable));
 
         return response()->json([
             "message" => "Reaction created successfully",
