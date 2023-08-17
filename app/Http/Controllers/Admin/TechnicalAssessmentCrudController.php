@@ -81,8 +81,9 @@ class TechnicalAssessmentCrudController extends CrudController
         CRUD::field("status")
             ->type("select_from_array")
             ->options([
-                "draft" => "Draft",
-                "published" => "Published",
+                "draft" => "Rascunho",
+                "published" => "Publicado",
+                "outdated" => "Desatualizado"
             ]);
         CRUD::field("type")
             ->type("select_from_array")
@@ -141,6 +142,7 @@ class TechnicalAssessmentCrudController extends CrudController
         CRUD::field("company_industry");
         CRUD::field("company_linkedin")->type('url');
         CRUD::field("company_github")->type('url');
+        CRUD::field("outdated_details")->type('textarea');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
