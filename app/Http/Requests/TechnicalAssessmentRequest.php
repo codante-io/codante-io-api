@@ -28,7 +28,7 @@ class TechnicalAssessmentRequest extends FormRequest
             "title" => "required|min:2|max:255",
             "slug" => "required|unique:technical_assessments,slug," . $this->id,
             "type" => "required|in:frontend,backend,fullstack",
-            "status" => "required|in:draft,published",
+            "status" => "required|in:draft,published,outdated",
             "company_name" => "required|min:2|max:255",
         ];
     }
