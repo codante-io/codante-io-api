@@ -12,14 +12,17 @@ class TechnicalAssessmentController extends Controller
     public function index()
     {
         return TechnicalAssessmentCardResource::collection(
-            TechnicalAssessment::where("status", "published")
-                ->orWhere("status", "outdated")
+            TechnicalAssessment::where(function ($query) {
+                $query
+                    ->where("status", "published")
+                    ->orWhere("status", "outdated");
+            })
                 ->with([
                     "tags" => function ($query) {
                         $query->select("name");
                     },
                 ])
-                ->orderBy('status', 'desc')
+                ->orderBy("status", "desc")
                 ->get()
         );
     }
@@ -28,8 +31,11 @@ class TechnicalAssessmentController extends Controller
     {
         return new TechnicalAssessmentResource(
             TechnicalAssessment::where("slug", $slug)
-                ->where("status", "published")
-                ->orWhere("status", "outdated")
+                ->where(function ($query) {
+                    $query
+                        ->where("status", "published")
+                        ->orWhere("status", "outdated");
+                })
                 ->with([
                     "tags" => function ($query) {
                         $query->select("name");
