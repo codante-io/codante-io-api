@@ -6,6 +6,7 @@ use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
 use App\Http\Resources\ChallengeResource;
+use App\Http\Resources\ChallengeCardResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\Reaction;
@@ -35,14 +36,16 @@ class ChallengeController extends Controller
 
     public function index()
     {
-        return ChallengeResource::collection(
+        return ChallengeCardResource::collection(
             Challenge::query()
+                ->select("id", "name", "slug", "short_description", "image_url", "status", "difficulty")
                 ->where("status", "published")
                 ->orWhere("status", "soon")
-                ->with("workshop")
-                ->with("workshop.lessons")
+                ->with("workshop:id,challenge_id")
                 ->withCount("users")
-                ->with("users")
+                ->with(["users" => function ($query) {
+                    $query->select("users.id", "users.avatar_url")->limit(5);
+                }])
                 ->with("tags")
                 ->orderBy("status", "asc")
                 ->orderBy("position", "asc")
