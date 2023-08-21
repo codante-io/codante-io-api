@@ -36,6 +36,7 @@ class ChallengeController extends Controller
 
     public function index()
     {
+        Auth::shouldUse("sanctum");
         return ChallengeCardResource::collection(
             Challenge::query()
                 ->select("id", "name", "slug", "short_description", "image_url", "status", "difficulty")
