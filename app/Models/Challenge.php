@@ -7,9 +7,11 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use \Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Challenge extends Model
 {
+    use HasEagerLimit;
     use CrudTrait;
     use HasFactory;
     use Reactable;
