@@ -58,6 +58,17 @@ class Challenge extends Model
         return $this->belongsTo(Track::class);
     }
 
+
+    public function userJoined(): bool
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        return $this->users()->where("user_id", auth()->id())->exists();
+    }
+
+
     public function setImageUrlAttribute($value)
     {
         $attribute_name = "image_url";
