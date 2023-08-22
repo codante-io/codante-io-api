@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
-use App\Http\Resources\ChallengeResource;
+use App\Http\Resources\ChallengeCardResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\Reaction;
@@ -35,14 +35,19 @@ class ChallengeController extends Controller
 
     public function index()
     {
-        return ChallengeResource::collection(
+        Auth::shouldUse("sanctum");
+        return ChallengeCardResource::collection(
             Challenge::query()
+                ->select("id", "name", "slug", "short_description", "image_url", "status", "difficulty")
                 ->where("status", "published")
                 ->orWhere("status", "soon")
-                ->with("workshop")
-                ->with("workshop.lessons")
+                ->with("workshop:id,challenge_id")
                 ->withCount("users")
-                ->with("users")
+                ->with(["users" => function ($query) {
+                    $query
+                        ->select("users.id", "users.avatar_url")
+                        ->limit(5);
+                }])
                 ->with("tags")
                 ->orderBy("status", "asc")
                 ->orderBy("position", "asc")
@@ -97,12 +102,14 @@ class ChallengeController extends Controller
 
     public function show($slug)
     {
+        Auth::shouldUse("sanctum");
         // if not logged in, we show cached version
-        if (!Auth::guard("sanctum")->check()) {
+        if (!Auth::check()) {
             $challenge = $this->getChallenge($slug);
         } else {
             $challenge = $this->getChallengeWithCompletedLessons($slug);
         }
+        $challenge->current_user_is_enrolled = $challenge->userJoined();
 
         $cacheKey = "challenge_" . $challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
