@@ -7,9 +7,11 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use \Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Challenge extends Model
 {
+    use HasEagerLimit;
     use CrudTrait;
     use HasFactory;
     use Reactable;
@@ -55,6 +57,17 @@ class Challenge extends Model
     {
         return $this->belongsTo(Track::class);
     }
+
+
+    public function userJoined(): bool
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        return $this->users()->where("user_id", auth()->id())->exists();
+    }
+
 
     public function setImageUrlAttribute($value)
     {
