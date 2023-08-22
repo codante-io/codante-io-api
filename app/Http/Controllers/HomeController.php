@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ChallengeResource;
+use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\HomeResource;
 use App\Http\Resources\TrackResource;
 use App\Http\Resources\WorkshopResource;
@@ -31,7 +31,7 @@ class HomeController extends Controller
                         ->with("tags")
                         ->get()
                 ),
-                "featured_challenges" => ChallengeResource::collection(
+                "featured_challenges" => ChallengeCardResource::collection(
                     Challenge::query()
                         ->where("featured", "landing")
                         ->where(function ($query) {
