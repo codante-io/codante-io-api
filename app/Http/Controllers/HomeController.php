@@ -33,16 +33,31 @@ class HomeController extends Controller
                 ),
                 "featured_challenges" => ChallengeCardResource::collection(
                     Challenge::query()
+                        ->select(
+                            "id",
+                            "name",
+                            "slug",
+                            "short_description",
+                            "image_url",
+                            "status",
+                            "difficulty"
+                        )
                         ->where("featured", "landing")
                         ->where(function ($query) {
                             $query
                                 ->where("status", "published")
                                 ->orWhere("status", "soon");
                         })
-                        ->with("workshop")
-                        ->with("workshop.lessons")
+                        ->with("workshop:id,challenge_id")
                         ->withCount("users")
-                        ->with("users")
+                        ->with([
+                            "users" => function ($query) {
+                                $query
+                                    ->select("users.id", "users.avatar_url")
+                                    ->inRandomOrder()
+                                    ->limit(5);
+                            },
+                        ])
                         ->with("tags")
                         ->orderBy("status", "asc")
                         ->orderBy("position", "asc")

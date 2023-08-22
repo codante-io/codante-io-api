@@ -46,6 +46,7 @@ class ChallengeController extends Controller
                 ->with(["users" => function ($query) {
                     $query
                         ->select("users.id", "users.avatar_url")
+                        ->inRandomOrder()
                         ->limit(5);
                 }])
                 ->with("tags")
@@ -305,7 +306,7 @@ class ChallengeController extends Controller
                 "user_github_user" => $challengeUser->github_user,
                 "submission_url" => $challengeUser->pivot->submission_url,
                 "submission_image_url" =>
-                    $challengeUser->pivot->submission_image_url,
+                $challengeUser->pivot->submission_image_url,
                 "reactions" => Reaction::getReactions(
                     "App\\Models\\ChallengeUser",
                     $challengeUser->pivot->id
