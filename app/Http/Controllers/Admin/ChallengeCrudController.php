@@ -40,6 +40,7 @@ class ChallengeCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        CRUD::column('id');
         CRUD::column('name');
         CRUD::column('status');
         CRUD::column('track_id');
