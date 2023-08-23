@@ -137,6 +137,22 @@ class ChallengeCrudController extends CrudController
         CRUD::field("repository_name")
             ->type("text")
             ->hint("Nome do repositório no GitHub");
+
+        $this->crud->addField([
+            // Table
+            "name" => "resources",
+            "label" => "Recursos",
+            "type" => "table",
+            "entity_singular" => "resource", // used on the "Add X" button
+            "columns" => [
+                "name" => "Nome do Recurso",
+                "type" => "Tipo: 'file' | 'figma'",
+                "url" => "Resource URL",
+            ],
+            "max" => 10, // maximum rows allowed in the table
+            "min" => 0, // minimum rows allowed in the table
+        ]);
+
         CRUD::field("published_at")->type("datetime");
 
         $this->crud->addField([
