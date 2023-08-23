@@ -39,6 +39,7 @@ class WorkshopCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        CRUD::column('id');
         CRUD::column('name');
         CRUD::column('instructor_id');
         CRUD::column('challenge_id');
