@@ -22,35 +22,35 @@ class ChallengeCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
     {
         CRUD::setModel(\App\Models\Challenge::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/challenge');
-        CRUD::setEntityNameStrings('challenge', 'challenges');
+        CRUD::setRoute(config("backpack.base.route_prefix") . "/challenge");
+        CRUD::setEntityNameStrings("challenge", "challenges");
     }
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
-        CRUD::column('name');
-        CRUD::column('status');
-        CRUD::column('track_id');
-        CRUD::column('track_position');
-        CRUD::column('difficulty');
+        CRUD::column("id");
+        CRUD::column("name");
+        CRUD::column("status");
+        CRUD::column("track_id");
+        CRUD::column("track_position");
+        CRUD::column("difficulty");
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
@@ -58,100 +58,104 @@ class ChallengeCrudController extends CrudController
     {
         CRUD::setValidation(ChallengeRequest::class);
 
-        CRUD::field('name');
-        CRUD::field('short_description')->label('Resumo');
-        CRUD::field('description');
+        CRUD::field("name");
+        CRUD::field("short_description")->label("Resumo");
+        CRUD::field("description")
+            ->label("Descrição (markdown)")
+            ->type("easymde")
+            ->easymdeAttributes(["spellChecker" => false]);
 
         $this->crud->addField([
-            'name' => 'image_url',
-            'label' => 'Imagem',
-            'type' => 'upload',
-            'upload' => true,
-            'disk' => 's3',
+            "name" => "image_url",
+            "label" => "Imagem",
+            "type" => "upload",
+            "upload" => true,
+            "disk" => "s3",
         ]);
 
-        $this->crud->addField(
-            [
-                'name' => 'tracks',
-                'type' => 'relationship',
-            ]
-        );
+        $this->crud->addField([
+            "name" => "tracks",
+            "type" => "relationship",
+        ]);
 
         // CRUD::field('track_position')->type('number');
-        CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
-        CRUD::field('base_color')->hint('Cor base do desafio (classe do tailwind). Não se esqueça de fazer o import no arquivo tailwind.config.js');
-
-        $this->crud->addField(
-            [
-                'name'        => 'status',
-                'label'       => 'Status',
-                'type'        => 'radio',
-                'options'     => [
-                    'archived' => 'archived',
-                    'draft' => 'draft',
-                    'published' => 'published',
-                    'soon' => 'soon'
-                ],
-                'wrapper' => [
-                    'class' => 'form-group col-md-6',
-                ],
-            ],
-        );
-        $this->crud->addField(
-            [
-                'name'        => 'difficulty',
-                'label'       => 'Dificuldade (nível)',
-                'type'        => 'radio',
-                'options'     => [
-                    1 => 1,
-                    2 => 2,
-                    3 => 3,
-                ],
-                'wrapper' => [
-                    'class' => 'form-group col-md-6',
-                ],
-            ],
+        CRUD::field("slug")
+            ->type("slug")
+            ->hint("Se não preenchido, será gerado automaticamente")
+            ->target("name");
+        CRUD::field("base_color")->hint(
+            "Cor base do desafio (classe do tailwind). Não se esqueça de fazer o import no arquivo tailwind.config.js"
         );
 
         $this->crud->addField([
-            'label' => 'Duração (em minutos)',
-            'name' => 'duration_in_minutes',
-            'type' => 'number',
-            'wrapper' => [
-                'class' => 'form-group col-md-6',
+            "name" => "status",
+            "label" => "Status",
+            "type" => "radio",
+            "options" => [
+                "archived" => "archived",
+                "draft" => "draft",
+                "published" => "published",
+                "soon" => "soon",
+            ],
+            "wrapper" => [
+                "class" => "form-group col-md-6",
+            ],
+        ]);
+        $this->crud->addField([
+            "name" => "difficulty",
+            "label" => "Dificuldade (nível)",
+            "type" => "radio",
+            "options" => [
+                1 => 1,
+                2 => 2,
+                3 => 3,
+            ],
+            "wrapper" => [
+                "class" => "form-group col-md-6",
             ],
         ]);
 
         $this->crud->addField([
-            'label' => 'Featured',
-            'hint' => 'Por exemplo, "landing"',
-            'name' => 'featured',
-            'type' => 'text',
-            'wrapper' => [
-                'class' => 'form-group col-md-6',
+            "label" => "Duração (em minutos)",
+            "name" => "duration_in_minutes",
+            "type" => "number",
+            "wrapper" => [
+                "class" => "form-group col-md-6",
             ],
         ]);
 
-        CRUD::field('repository_name')->type('text')->hint('Nome do repositório no GitHub');
-        CRUD::field('published_at')->type('datetime');
+        $this->crud->addField([
+            "label" => "Featured",
+            "hint" => 'Por exemplo, "landing"',
+            "name" => "featured",
+            "type" => "text",
+            "wrapper" => [
+                "class" => "form-group col-md-6",
+            ],
+        ]);
+
+        CRUD::field("repository_name")
+            ->type("text")
+            ->hint("Nome do repositório no GitHub");
+        CRUD::field("published_at")->type("datetime");
 
         $this->crud->addField([
-            'name' => 'tags',
-            'type' => 'relationship'
+            "name" => "tags",
+            "type" => "relationship",
         ]);
 
         $this->crud->addField([
-            'name' => 'position',
-            'type' => 'number',
-            'hint' => 'Posição do desafio na lista',
-            'default' => 1,
-            'attributes' => ["step" => "any"],
+            "name" => "position",
+            "type" => "number",
+            "hint" => "Posição do desafio na lista",
+            "default" => 1,
+            "attributes" => ["step" => "any"],
         ]);
     }
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
