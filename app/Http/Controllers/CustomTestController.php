@@ -9,7 +9,6 @@ class CustomTestController extends Controller
 {
     public function handle()
     {
-        $user = Auth::user();
-        $user->subscribeToPlan(1);
+        return view('custom-test');
     }
 }
