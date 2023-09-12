@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class CustomTestController extends Controller
+class SubscriptionController extends Controller
 {
-    public function handle()
+    public function subscribe()
     {
         $user = Auth::user();
         $user->subscribeToPlan(1);
