@@ -10,6 +10,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TechnicalAssessmentController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\WorkshopController;
@@ -113,5 +114,7 @@ Route::get("/technical-assessments/{slug}", [
 ]);
 
 Route::get("/ranking", [RankingController::class, "getRanking"]);
+
+Route::post('/subscribe/{plan_id}', [SubscriptionController::class, 'subscribe'])->middleware('auth:sanctum');
 
 require __DIR__ . "/auth.php";
