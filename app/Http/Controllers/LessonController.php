@@ -38,4 +38,18 @@ class LessonController extends Controller
             "lesson" => $lesson->id,
         ]);
     }
+
+    public function getLessonThumbnail(Lesson $lesson)
+    {
+        if (!$lesson) {
+            abort(404);
+        }
+
+        $thumbnail = $lesson->getThumbnail();
+
+        return response()->json([
+            "message" => "Lesson Thumbnail",
+            "thumbnail" => $thumbnail,
+        ]);
+    }
 }

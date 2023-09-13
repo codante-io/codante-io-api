@@ -116,5 +116,6 @@ Route::get("/technical-assessments/{slug}", [
 Route::get("/ranking", [RankingController::class, "getRanking"]);
 
 Route::post('/subscribe/{plan_id}', [SubscriptionController::class, 'subscribe'])->middleware('auth:sanctum');
+Route::get('/lesson-thumbnail/{lesson}', [LessonController::class, 'getLessonThumbnail']);
 
 require __DIR__ . "/auth.php";
