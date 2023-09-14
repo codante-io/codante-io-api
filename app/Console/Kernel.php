@@ -23,6 +23,12 @@ class Kernel extends ConsoleKernel
                 ExpiredPlanService::handle();
             })
             ->dailyAt("03:00");
+
+        $schedule
+            ->call(function () {
+                (new \App\Services\VimeoThumbnailService())->CheckAllVideoThumbnails();
+            })
+            ->dailyAt("04:00");
     }
 
     /**
