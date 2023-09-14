@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('lessons', function (Blueprint $table) {
             $table->boolean('is_free')->default(false)->after('video_url');
+            $table->string('thumbnail_url')->nullable()->after('video_url');
         });
     }
 
