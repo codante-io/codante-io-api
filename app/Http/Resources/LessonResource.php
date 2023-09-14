@@ -23,6 +23,7 @@ class LessonResource extends JsonResource
             "is_free" => $this->is_free,
             "user_can_view" => $this->canViewVideo(),
             "video_url" => $this->canViewVideo() ? $this->video_url : null,
+            "thumbnail_url" => $this->thumbnail_url,
             "duration_in_seconds" => $this->duration_in_seconds,
             "slug" => $this->slug,
             "created_at" => $this->created_at,
