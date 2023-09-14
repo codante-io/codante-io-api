@@ -83,7 +83,7 @@ class ChallengeController extends Controller
         }
 
         try {
-            $repositoryApi = $this->client->api("repo")->forks();
+            $repositoryApi = $this->client->repo()->forks();
             # get all forks paginated
             $forks = $this->paginator->fetchAll($repositoryApi, "all", [
                 "codante-io",
