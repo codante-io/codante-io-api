@@ -37,35 +37,36 @@ class ChallengeController extends Controller
     public function index()
     {
         Auth::shouldUse("sanctum");
-        return ChallengeCardResource::collection(
-            Challenge::query()
-                ->select(
-                    "id",
-                    "name",
-                    "slug",
-                    "short_description",
-                    "image_url",
-                    "status",
-                    "difficulty"
-                )
-                ->where("status", "published")
-                ->orWhere("status", "soon")
-                ->with("workshop:id,challenge_id")
-                ->withCount("users")
-                ->with([
-                    "users" => function ($query) {
-                        $query
-                            ->select("users.id", "users.avatar_url")
-                            ->inRandomOrder()
-                            ->limit(5);
-                    },
-                ])
-                ->with("tags")
-                ->orderBy("status", "asc")
-                ->orderBy("position", "asc")
-                ->orderBy("published_at", "desc")
-                ->get()
-        );
+
+        $challenges = Challenge::query()
+            ->select(
+                "id",
+                "name",
+                "slug",
+                "short_description",
+                "image_url",
+                "status",
+                "difficulty"
+            )
+            ->where("status", "published")
+            ->orWhere("status", "soon")
+            ->with("workshop:id,challenge_id")
+            ->withCount("users")
+            ->with([
+                "users" => function ($query) {
+                    $query
+                        ->select("users.id", "users.avatar_url")
+                        ->inRandomOrder()
+                        ->limit(5);
+                },
+            ])
+            ->with("tags")
+            ->orderBy("status", "asc")
+            ->orderBy("position", "asc")
+            ->orderBy("published_at", "desc")
+            ->get();
+
+        return ChallengeCardResource::collection($challenges);
     }
 
     public function hasForkedRepo(Request $request, $slug)
@@ -76,7 +77,6 @@ class ChallengeController extends Controller
             ->users()
             ->where("user_id", $user->id)
             ->firstOrFail();
-
 
         if ($challengeUser->pivot->fork_url) {
             return response()->json(["data" => true]);
@@ -155,8 +155,6 @@ class ChallengeController extends Controller
         }
 
         return new ChallengeResource($challenge);
-
-        // return response()->json(["data" => $challenge]);
     }
 
     public function join(Request $request, $slug)
