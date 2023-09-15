@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Services\ExpiredPlanService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,6 +17,18 @@ class Kernel extends ConsoleKernel
         $schedule
             ->command("backup:run --only-to-disk=s3-backups-db --only-db")
             ->dailyAt("02:00");
+
+        $schedule
+            ->call(function () {
+                ExpiredPlanService::handle();
+            })
+            ->dailyAt("03:00");
+
+        $schedule
+            ->call(function () {
+                (new \App\Services\VimeoThumbnailService())->CheckAllVideoThumbnails();
+            })
+            ->dailyAt("04:00");
     }
 
     /**

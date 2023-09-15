@@ -6,6 +6,7 @@ use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
 use App\Http\Resources\ChallengeCardResource;
+use App\Http\Resources\ChallengeResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\Reaction;
@@ -36,25 +37,36 @@ class ChallengeController extends Controller
     public function index()
     {
         Auth::shouldUse("sanctum");
-        return ChallengeCardResource::collection(
-            Challenge::query()
-                ->select("id", "name", "slug", "short_description", "image_url", "status", "difficulty")
-                ->where("status", "published")
-                ->orWhere("status", "soon")
-                ->with("workshop:id,challenge_id")
-                ->withCount("users")
-                ->with(["users" => function ($query) {
+
+        $challenges = Challenge::query()
+            ->select(
+                "id",
+                "name",
+                "slug",
+                "short_description",
+                "image_url",
+                "status",
+                "difficulty"
+            )
+            ->where("status", "published")
+            ->orWhere("status", "soon")
+            ->with("workshop:id,challenge_id")
+            ->withCount("users")
+            ->with([
+                "users" => function ($query) {
                     $query
                         ->select("users.id", "users.avatar_url")
                         ->inRandomOrder()
                         ->limit(5);
-                }])
-                ->with("tags")
-                ->orderBy("status", "asc")
-                ->orderBy("position", "asc")
-                ->orderBy("published_at", "desc")
-                ->get()
-        );
+                },
+            ])
+            ->with("tags")
+            ->orderBy("status", "asc")
+            ->orderBy("position", "asc")
+            ->orderBy("published_at", "desc")
+            ->get();
+
+        return ChallengeCardResource::collection($challenges);
     }
 
     public function hasForkedRepo(Request $request, $slug)
@@ -104,13 +116,14 @@ class ChallengeController extends Controller
     public function show($slug)
     {
         Auth::shouldUse("sanctum");
+
         // if not logged in, we show cached version
         if (!Auth::check()) {
             $challenge = $this->getChallenge($slug);
         } else {
             $challenge = $this->getChallengeWithCompletedLessons($slug);
         }
-        $challenge->current_user_is_enrolled = $challenge->userJoined();
+        // $challenge->current_user_is_enrolled = $challenge->userJoined();
 
         $cacheKey = "challenge_" . $challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
@@ -141,7 +154,7 @@ class ChallengeController extends Controller
             $challenge->forks = $repoInfo["forks_count"];
         }
 
-        return response()->json(["data" => $challenge]);
+        return new ChallengeResource($challenge);
     }
 
     public function join(Request $request, $slug)

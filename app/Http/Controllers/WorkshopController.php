@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\WorkshopRequest;
+use App\Http\Resources\LessonResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Tag;
 use App\Models\Workshop;
@@ -19,7 +21,7 @@ class WorkshopController extends Controller
                 ->with("lessons")
                 ->with("instructor")
                 ->with("tags")
-                ->orderBy('status')
+                ->orderBy("status")
                 ->visible()
                 ->get()
         );
@@ -27,8 +29,10 @@ class WorkshopController extends Controller
 
     public function show($slug)
     {
+        Auth::shouldUse("sanctum");
+
         // if not logged in, we show cached version
-        if (!Auth::guard("sanctum")->check()) {
+        if (!Auth::check()) {
             return $this->showCachedWorkshop($slug);
         }
 
