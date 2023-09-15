@@ -48,10 +48,4 @@ class Lesson extends Model
             ],
         ]);
     }
-
-    // public function getThumbnail()
-    // {
-    //     $thumbnail = (new VimeoThumbnail($this->vimeo_id))->getVideoThumbnail();
-    //     return $thumbnail;
-    // }
 }
