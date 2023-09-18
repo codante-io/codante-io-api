@@ -24,6 +24,7 @@ class GithubLoginController extends AuthenticatedSessionController
             $githubUserData = Socialite::driver('github')->userFromToken($token['github_token']);
 
             $user = User::where('email', $githubUserData->getEmail())->first();
+            $isNewSignup = false;
 
             if (!$user) {
                 $user = User::create([
@@ -36,6 +37,7 @@ class GithubLoginController extends AuthenticatedSessionController
                     'email_verified_at' => now(),
                 ]);
 
+                $isNewSignup = true;
                 event(new Registered($user));
                 // send UserRegistered email
                 Mail::to($user->email)->send(new UserRegistered($user));
@@ -55,6 +57,7 @@ class GithubLoginController extends AuthenticatedSessionController
             return response()
                 ->json([
                     'token' => $token,
+                    'is_new_signup' => $isNewSignup,
                 ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 401);
