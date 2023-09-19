@@ -39,6 +39,23 @@ class WorkshopCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+
+        // create a filter to only show standalone workshops
+        $this->crud->addFilter(
+            [
+                'name' => 'is_standalone',
+                'type' => 'simple',
+                'label' => 'É independente?'
+            ],
+            true,
+            function ($value) { // if the filter is active
+                // convert "true" to true
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                $this->crud->addClause('where', 'is_standalone', $value);
+            }
+        );
+
+
         CRUD::column('id');
         CRUD::column('name');
         CRUD::column('instructor_id');
