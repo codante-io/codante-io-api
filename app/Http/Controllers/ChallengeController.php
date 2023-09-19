@@ -237,7 +237,7 @@ class ChallengeController extends Controller
             ->take(20);
         return [
             "count" => $participantsCount,
-            "avatar_and_subscription" => $participantsInfo,
+            "avatars" => $participantsInfo,
         ];
     }
 
