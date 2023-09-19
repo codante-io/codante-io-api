@@ -55,7 +55,7 @@ class ChallengeController extends Controller
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->select("users.id", "users.avatar_url")
+                        ->select("users.id", "users.avatar_url", "users.is_pro")
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -225,16 +225,19 @@ class ChallengeController extends Controller
     {
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $participantsCount = $challenge->users()->count();
-        $participantsAvatars = $challenge
+        $participantsInfo = $challenge
             ->users()
             ->get()
             ->map(function ($user) {
-                return $user->avatar_url;
+                return [
+                    "avatar_url" => $user->avatar_url,
+                    "is_pro" => $user->is_pro,
+                ];
             })
             ->take(20);
         return [
             "count" => $participantsCount,
-            "avatars" => $participantsAvatars,
+            "avatar_and_subscription" => $participantsInfo,
         ];
     }
 
