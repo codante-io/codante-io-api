@@ -43,8 +43,6 @@ class ChallengeCrudController extends CrudController
         CRUD::column("id");
         CRUD::column("name");
         CRUD::column("status");
-        CRUD::column("track_id");
-        CRUD::column("track_position");
         CRUD::column("difficulty");
     }
 
