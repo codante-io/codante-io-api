@@ -48,6 +48,7 @@ class UserActionPoints extends Model
     {
         $query = UserActionPoints::selectRaw(
             "users.name, " .
+                "users.is_pro, " .
                 "users.avatar_url, " .
                 "sum(user_action_points.points) as points, " .
                 "SUM(CASE WHEN user_action_points.action_name = 'challenge_completed' THEN 1 ELSE 0 END) AS completed_challenge_count, " .
@@ -55,7 +56,7 @@ class UserActionPoints extends Model
         )
             ->where("users.is_admin", false)
             ->join("users", "users.id", "=", "user_action_points.user_id")
-            ->groupBy("users.name", "users.avatar_url")
+            ->groupBy("users.name", "users.avatar_url", "users.is_pro")
             ->orderByDesc("points")
             ->limit(10);
 
