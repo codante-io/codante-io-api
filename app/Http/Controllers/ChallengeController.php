@@ -63,7 +63,7 @@ class ChallengeController extends Controller
             ->with("tags")
             ->orderBy("status", "asc")
             ->orderBy("position", "asc")
-            ->orderBy("published_at", "desc")
+            ->orderBy("created_at", "desc")
             ->get();
 
         return ChallengeCardResource::collection($challenges);

@@ -15,21 +15,21 @@ class ChallengeCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "slug" => $this->slug,
-            "short_description" => $this->short_description,
-            "image_url" => $this->image_url,
-            "status" => $this->status,
-            "difficulty" => $this->difficulty,
-            "has_workshop" => $this->whenLoaded("workshop") ? true : false,
-            "tags" => TagResource::collection($this->whenLoaded("tags")),
-            "users" => UserAvatarResource::collection(
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'short_description' => $this->short_description,
+            'image_url' => $this->image_url,
+            'status' => $this->status,
+            'difficulty' => $this->difficulty,
+            'has_solution' => $this->whenLoaded('workshop') ? true : false,
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'users' => UserAvatarResource::collection(
                 //take 5 random users
-                $this->whenLoaded("users")->take(5)
+                $this->whenLoaded('users')->take(5)
             ),
-            "enrolled_users_count" => $this->users_count,
-            "current_user_is_enrolled" => $this->userJoined(),
+            'enrolled_users_count' => $this->users_count,
+            'current_user_is_enrolled' => $this->userJoined(),
         ];
     }
 }
