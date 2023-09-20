@@ -88,6 +88,14 @@ class Challenge extends Model
         return true;
     }
 
+    public function isWeeklyFeatured()
+    {
+        return $this->weekly_featured_start_date &&
+            $this->weekly_featured_start_date->isPast() &&
+            $this->solution_publish_date &&
+            $this->solution_publish_date->isFuture();
+    }
+
     public function setImageUrlAttribute($value)
     {
         $attribute_name = "image_url";
