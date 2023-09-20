@@ -27,6 +27,7 @@ class ChallengeResource extends JsonResource
             "featured" => $this->featured,
             "short_description" => $this->short_description,
             "description" => $this->description,
+            "has_solution" => $this->hasSolution(),
             "enrolled_users_count" => $this->users_count,
             "current_user_is_enrolled" => $this->userJoined(),
             "tags" => TagResource::collection($this->whenLoaded("tags")),
