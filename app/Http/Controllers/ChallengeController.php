@@ -309,7 +309,7 @@ class ChallengeController extends Controller
 
         $challengeUsers = $challenge
             ->users()
-            ->select("users.name", "users.avatar_url", "users.github_user")
+            ->select("users.name", "users.avatar_url", "users.github_user", "users.is_pro")
             ->wherePivotNotNull("submission_url")
             ->orderBy("submitted_at", "desc")
             ->get();
@@ -321,6 +321,7 @@ class ChallengeController extends Controller
                 "user_avatar_url" => $challengeUser->avatar_url,
                 "user_github_user" => $challengeUser->github_user,
                 "submission_url" => $challengeUser->pivot->submission_url,
+                "is_pro" => $challengeUser->is_pro,
                 "submission_image_url" =>
                 $challengeUser->pivot->submission_image_url,
                 "reactions" => Reaction::getReactions(
