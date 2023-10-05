@@ -246,6 +246,8 @@ class ChallengeController extends Controller
         // Validate the request
         $validated = $request->validate([
             "submission_url" => "required|url",
+            "metadata.twitter_username" => "nullable",
+            "metadata.rinha_largest_filename" => "nullable",
         ]);
 
         // Check if the user has joined the challenge
@@ -291,6 +293,7 @@ class ChallengeController extends Controller
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
+        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
         $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
             $imagePath
         );
@@ -309,7 +312,12 @@ class ChallengeController extends Controller
 
         $challengeUsers = $challenge
             ->users()
-            ->select("users.name", "users.avatar_url", "users.github_user", "users.is_pro")
+            ->select(
+                "users.name",
+                "users.avatar_url",
+                "users.github_user",
+                "users.is_pro"
+            )
             ->wherePivotNotNull("submission_url")
             ->orderBy("submitted_at", "desc")
             ->get();
@@ -324,7 +332,7 @@ class ChallengeController extends Controller
                 "fork_url" => $challengeUser->pivot->fork_url,
                 "is_pro" => $challengeUser->is_pro,
                 "submission_image_url" =>
-                $challengeUser->pivot->submission_image_url,
+                    $challengeUser->pivot->submission_image_url,
                 "reactions" => Reaction::getReactions(
                     "App\\Models\\ChallengeUser",
                     $challengeUser->pivot->id
