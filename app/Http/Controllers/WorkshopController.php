@@ -22,7 +22,7 @@ class WorkshopController extends Controller
                 ->with("instructor")
                 ->with("tags")
                 ->orderBy("status")
-                ->visible()
+                ->listed()
                 ->get()
         );
     }
@@ -51,6 +51,7 @@ class WorkshopController extends Controller
                         ->with("lessons")
                         ->with("instructor")
                         ->with("tags")
+                        ->visible()
                         ->firstOrFail()
                 );
             }
@@ -70,6 +71,7 @@ class WorkshopController extends Controller
             ])
             ->with("instructor")
             ->with("tags")
+            ->visible()
             ->firstOrFail();
 
         $workshop->lessons->each(function ($lesson) {

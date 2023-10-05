@@ -48,8 +48,7 @@ class ChallengeController extends Controller
                 "status",
                 "difficulty"
             )
-            ->where("status", "published")
-            ->orWhere("status", "soon")
+            ->listed()
             ->with("workshop:id,challenge_id")
             ->withCount("users")
             ->with([
@@ -345,7 +344,7 @@ class ChallengeController extends Controller
     private function getChallenge($slug)
     {
         $challenge = Challenge::where("slug", $slug)
-            ->where("status", "published")
+            ->visible()
             ->with("workshop")
             ->with("workshop.lessons")
             ->with("workshop.instructor")
@@ -359,7 +358,7 @@ class ChallengeController extends Controller
     private function getChallengeWithCompletedLessons($slug)
     {
         $challenge = Challenge::where("slug", $slug)
-            ->where("status", "published")
+            ->visible()
             ->with("workshop")
             ->with("workshop.lessons")
             ->with("workshop.instructor")
