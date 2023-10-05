@@ -321,6 +321,7 @@ class ChallengeController extends Controller
                 "user_avatar_url" => $challengeUser->avatar_url,
                 "user_github_user" => $challengeUser->github_user,
                 "submission_url" => $challengeUser->pivot->submission_url,
+                "fork_url" => $challengeUser->pivot->fork_url,
                 "is_pro" => $challengeUser->is_pro,
                 "submission_image_url" =>
                 $challengeUser->pivot->submission_image_url,
