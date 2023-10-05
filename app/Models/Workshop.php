@@ -15,14 +15,14 @@ class Workshop extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $guarded = ["id"];
     protected $casts = [
-        'published_at' => 'datetime',
+        "published_at" => "datetime",
     ];
 
     public function getTypeAttribute()
     {
-        return 'workshop';
+        return "workshop";
     }
 
     public function lessons()
@@ -37,12 +37,12 @@ class Workshop extends Model
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, 'taggable');
+        return $this->morphToMany(Tag::class, "taggable");
     }
 
     public function tracks(): MorphToMany
     {
-        return $this->morphToMany(Track::class, 'trackable');
+        return $this->morphToMany(Track::class, "trackable");
     }
 
     public function challenge(): BelongsTo
@@ -52,7 +52,17 @@ class Workshop extends Model
 
     public function scopeVisible($query)
     {
-        return $query->where('status', '!=', 'draft')->where('status', '!=', 'archived');
+        return $query
+            ->where("status", "!=", "draft")
+            ->where("status", "!=", "archived");
+    }
+
+    public function scopeListed($query)
+    {
+        return $query
+            ->where("status", "!=", "draft")
+            ->where("status", "!=", "archived")
+            ->where("status", "!=", "unlisted");
     }
 
     // public function setImageUrlAttribute($value)
@@ -68,14 +78,17 @@ class Workshop extends Model
     {
         $attribute_name = "image_url";
         // or use your own disk, defined in config/filesystems.php
-        $disk = 's3';
+        $disk = "s3";
         // destination path relative to the disk above
         $destination_path = "workshops/cover-images";
 
         // if the image was erased
         if (empty($value)) {
             // delete the image from disk
-            if (isset($this->{$attribute_name}) && !empty($this->{$attribute_name})) {
+            if (
+                isset($this->{$attribute_name}) &&
+                !empty($this->{$attribute_name})
+            ) {
                 \Storage::disk($disk)->delete($this->{$attribute_name});
             }
             // set null on database column
@@ -83,21 +96,29 @@ class Workshop extends Model
         }
 
         // if a base64 was sent, store it in the db
-        if (Str::startsWith($value, 'data:image')) {
+        if (Str::startsWith($value, "data:image")) {
             // 0. Make the image
-            $image = Image::make($value)->encode('jpg', 90)->resize(1280, 720, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $image = Image::make($value)
+                ->encode("jpg", 90)
+                ->resize(1280, 720, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
 
             // 1. Generate a filename.
-            $filename = md5($value . time()) . '.jpg';
+            $filename = md5($value . time()) . ".jpg";
 
             // 2. Store the image on disk.
-            \Storage::disk($disk)->put($destination_path . '/' . $filename, $image->stream());
+            \Storage::disk($disk)->put(
+                $destination_path . "/" . $filename,
+                $image->stream()
+            );
 
             // 3. Delete the previous image, if there was one.
-            if (isset($this->{$attribute_name}) && !empty($this->{$attribute_name})) {
+            if (
+                isset($this->{$attribute_name}) &&
+                !empty($this->{$attribute_name})
+            ) {
                 \Storage::disk($disk)->delete($this->{$attribute_name});
             }
 
@@ -107,7 +128,9 @@ class Workshop extends Model
             // is the public URL (everything that comes after the domain name)
             // $public_destination_path = Str::replaceFirst('public/', '', $destination_path);
             // $this->attributes[$attribute_name] = $public_destination_path . '/' . $filename;
-            $this->attributes[$attribute_name] = \Storage::url($destination_path . '/' . $filename);
+            $this->attributes[$attribute_name] = \Storage::url(
+                $destination_path . "/" . $filename
+            );
         } elseif (!empty($value)) {
             // if value isn't empty, but it's not an image, assume it's the model value for that attribute.
             $this->attributes[$attribute_name] = $this->{$attribute_name};
