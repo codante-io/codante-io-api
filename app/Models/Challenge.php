@@ -7,7 +7,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use \Staudenmeir\EloquentEagerLimit\HasEagerLimit;
+use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Challenge extends Model
 {
@@ -44,14 +44,17 @@ class Challenge extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot([
-            "id",
-            "completed",
-            "fork_url",
-            "joined_discord",
-            "submission_url",
-            "submission_image_url",
-        ])->withTimestamps();
+        return $this->belongsToMany(User::class)
+            ->withPivot([
+                "id",
+                "completed",
+                "fork_url",
+                "joined_discord",
+                "submission_url",
+                "submission_image_url",
+                "metadata",
+            ])
+            ->withTimestamps();
     }
 
     public function track()
@@ -59,16 +62,16 @@ class Challenge extends Model
         return $this->belongsTo(Track::class);
     }
 
-
     public function userJoined(): bool
     {
         if (!auth()->check()) {
             return false;
         }
 
-        return $this->users()->where("user_id", auth()->id())->exists();
+        return $this->users()
+            ->where("user_id", auth()->id())
+            ->exists();
     }
-
 
     public function setImageUrlAttribute($value)
     {
@@ -98,7 +101,9 @@ class Challenge extends Model
             $this->{$attribute_name} &&
             $this->{$attribute_name} != null
         ) {
-            \Storage::disk($disk)->delete(Str::replace(\Storage::url("/"), "", $this->{$attribute_name}));
+            \Storage::disk($disk)->delete(
+                Str::replace(\Storage::url("/"), "", $this->{$attribute_name})
+            );
             $this->attributes[$attribute_name] = null;
         }
 
@@ -114,8 +119,8 @@ class Challenge extends Model
         if (
             request()->hasFile($attribute_name) &&
             request()
-            ->file($attribute_name)
-            ->isValid()
+                ->file($attribute_name)
+                ->isValid()
         ) {
             // 1. Generate a new file name
             $file = request()->file($attribute_name);
@@ -128,8 +133,8 @@ class Challenge extends Model
                         random_int(1, 9999) .
                         time()
                 ) .
-                "." .
-                $file->getClientOriginalExtension();
+                    "." .
+                    $file->getClientOriginalExtension();
 
             // 2. Move the new file to the correct path
             $file_path = $file->storeAs(
