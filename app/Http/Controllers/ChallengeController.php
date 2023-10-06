@@ -46,7 +46,9 @@ class ChallengeController extends Controller
                 "short_description",
                 "image_url",
                 "status",
-                "difficulty"
+                "difficulty",
+                "weekly_featured_start_date",
+                "solution_publish_date"
             )
             ->listed()
             ->with("workshop:id,challenge_id")
@@ -62,7 +64,7 @@ class ChallengeController extends Controller
             ->with("tags")
             ->orderBy("status", "asc")
             ->orderBy("position", "asc")
-            ->orderBy("published_at", "desc")
+            ->orderBy("created_at", "desc")
             ->get();
 
         return ChallengeCardResource::collection($challenges);
