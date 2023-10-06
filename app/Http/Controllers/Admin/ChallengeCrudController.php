@@ -94,6 +94,7 @@ class ChallengeCrudController extends CrudController
                 "draft" => "draft",
                 "published" => "published",
                 "soon" => "soon",
+                "unlisted" => "unlisted",
             ],
             "wrapper" => [
                 "class" => "form-group col-md-6",
