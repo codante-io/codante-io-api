@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 
+// TODO: trocar o published_at já que não temos mais essa coluna na tabela. 
 class CalendarController extends Controller
 {
     public function showCalendar()

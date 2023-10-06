@@ -29,7 +29,6 @@ class ChallengeFactory extends Factory
             'duration_in_minutes' => fake()->numberBetween(60, 300),
             'repository_name' => fake()->url(),
             'featured' => fake()->randomElement(['landing', null, 'new']),
-            'published_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

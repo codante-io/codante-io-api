@@ -22,7 +22,7 @@ class ChallengeCardResource extends JsonResource
             "image_url" => $this->image_url,
             "status" => $this->status,
             "difficulty" => $this->difficulty,
-            "has_workshop" => $this->whenLoaded("workshop") ? true : false,
+            "has_solution" => $this->whenLoaded("workshop") ? true : false,
             "tags" => TagResource::collection($this->whenLoaded("tags")),
             "users" => UserAvatarResource::collection(
                 //take 5 random users
@@ -30,6 +30,9 @@ class ChallengeCardResource extends JsonResource
             ),
             "enrolled_users_count" => $this->users_count,
             "current_user_is_enrolled" => $this->userJoined(),
+            "weekly_featured_start_date" => $this->weekly_featured_start_date,
+            "solution_publish_date" => $this->solution_publish_date,
+            "is_weekly_featured" => $this->isWeeklyFeatured(),
         ];
     }
 }

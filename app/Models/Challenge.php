@@ -17,8 +17,11 @@ class Challenge extends Model
     use Reactable;
 
     protected $guarded = ["id"];
+
     protected $casts = [
         "published_at" => "datetime",
+        "weekly_featured_start_date" => "datetime",
+        "solution_publish_date" => "datetime",
         "resources" => "array",
     ];
 
@@ -87,6 +90,27 @@ class Challenge extends Model
         return $this->users()
             ->where("user_id", auth()->id())
             ->exists();
+    }
+
+    public function hasSolution(): bool
+    {
+        if (
+            !$this->workshop ||
+            $this->workshop->status !== "published" ||
+            $this->workshop->lessons->count() < 1
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function isWeeklyFeatured()
+    {
+        return $this->weekly_featured_start_date &&
+            $this->weekly_featured_start_date->isPast() &&
+            $this->solution_publish_date &&
+            $this->solution_publish_date->isFuture();
     }
 
     public function setImageUrlAttribute($value)
