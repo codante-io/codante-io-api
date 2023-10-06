@@ -50,14 +50,13 @@ class ChallengeController extends Controller
                 "weekly_featured_start_date",
                 "solution_publish_date"
             )
-            ->where("status", "published")
-            ->orWhere("status", "soon")
+            ->listed()
             ->with("workshop:id,challenge_id")
             ->withCount("users")
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->select("users.id", "users.avatar_url")
+                        ->select("users.id", "users.avatar_url", "users.is_pro")
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -227,16 +226,19 @@ class ChallengeController extends Controller
     {
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $participantsCount = $challenge->users()->count();
-        $participantsAvatars = $challenge
+        $participantsInfo = $challenge
             ->users()
             ->get()
             ->map(function ($user) {
-                return $user->avatar_url;
+                return [
+                    "avatar_url" => $user->avatar_url,
+                    "is_pro" => $user->is_pro,
+                ];
             })
             ->take(20);
         return [
             "count" => $participantsCount,
-            "avatars" => $participantsAvatars,
+            "avatars" => $participantsInfo,
         ];
     }
 
@@ -245,6 +247,8 @@ class ChallengeController extends Controller
         // Validate the request
         $validated = $request->validate([
             "submission_url" => "required|url",
+            "metadata.twitter_username" => "nullable",
+            "metadata.rinha_largest_filename" => "nullable",
         ]);
 
         // Check if the user has joined the challenge
@@ -290,6 +294,7 @@ class ChallengeController extends Controller
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
+        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
         $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
             $imagePath
         );
@@ -308,7 +313,12 @@ class ChallengeController extends Controller
 
         $challengeUsers = $challenge
             ->users()
-            ->select("users.name", "users.avatar_url", "users.github_user")
+            ->select(
+                "users.name",
+                "users.avatar_url",
+                "users.github_user",
+                "users.is_pro"
+            )
             ->wherePivotNotNull("submission_url")
             ->orderBy("submitted_at", "desc")
             ->get();
@@ -320,6 +330,8 @@ class ChallengeController extends Controller
                 "user_avatar_url" => $challengeUser->avatar_url,
                 "user_github_user" => $challengeUser->github_user,
                 "submission_url" => $challengeUser->pivot->submission_url,
+                "fork_url" => $challengeUser->pivot->fork_url,
+                "is_pro" => $challengeUser->is_pro,
                 "submission_image_url" =>
                     $challengeUser->pivot->submission_image_url,
                 "reactions" => Reaction::getReactions(
@@ -334,7 +346,7 @@ class ChallengeController extends Controller
     private function getChallenge($slug)
     {
         $challenge = Challenge::where("slug", $slug)
-            ->where("status", "published")
+            ->visible()
             ->with("workshop")
             ->with("workshop.lessons")
             ->with("workshop.instructor")
@@ -348,7 +360,7 @@ class ChallengeController extends Controller
     private function getChallengeWithCompletedLessons($slug)
     {
         $challenge = Challenge::where("slug", $slug)
-            ->where("status", "published")
+            ->visible()
             ->with("workshop")
             ->with("workshop.lessons")
             ->with("workshop.instructor")

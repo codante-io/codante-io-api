@@ -55,6 +55,7 @@ class Challenge extends Model
                 "joined_discord",
                 "submission_url",
                 "submission_image_url",
+                "metadata",
             ])
             ->withTimestamps();
     }
@@ -62,6 +63,22 @@ class Challenge extends Model
     public function track()
     {
         return $this->belongsTo(Track::class);
+    }
+
+    public function scopeVisible($query)
+    {
+        return $query
+            ->where("status", "!=", "soon")
+            ->where("status", "!=", "draft")
+            ->where("status", "!=", "archived");
+    }
+
+    public function scopeListed($query)
+    {
+        return $query
+            ->where("status", "!=", "draft")
+            ->where("status", "!=", "archived")
+            ->where("status", "!=", "unlisted");
     }
 
     public function userJoined(): bool

@@ -28,12 +28,15 @@ class ChallengeResource extends JsonResource
             "short_description" => $this->short_description,
             "description" => $this->description,
             "has_solution" => $this->hasSolution(),
+            "resources" => $this->resources,
             "enrolled_users_count" => $this->users_count,
             "current_user_is_enrolled" => $this->userJoined(),
             "tags" => TagResource::collection($this->whenLoaded("tags")),
             "workshop" => new WorkshopResource($this->whenLoaded("workshop")),
             "weekly_featured_start_date" => $this->weekly_featured_start_date,
             "solution_publish_date" => $this->solution_publish_date,
+            "stars" => $this->stars,
+            "forks" => $this->forks,
         ];
     }
 }
