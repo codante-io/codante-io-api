@@ -41,6 +41,7 @@ class BlogPostCrudController extends CrudController
     {
         CRUD::column("instructor_id");
         CRUD::column("title");
+        CRUD::column("type");
         CRUD::column("content");
         CRUD::column("short_description");
         CRUD::column("slug");
@@ -69,6 +70,10 @@ class BlogPostCrudController extends CrudController
         CRUD::field("title")
             ->type("text")
             ->attributes(["maxlength" => 60]);
+        CRUD::field("type")
+            ->type("select_from_array")
+            ->options(["blog" => "Blog Post", "page" => "Página"])
+            ->default("blog");
         CRUD::field("content")
             ->type("easymde")
             ->easymdeAttributes(["spellChecker" => "false"]);
