@@ -12,6 +12,7 @@ class BlogPostController extends Controller
     {
         return BlogPostResource::collection(
             BlogPost::where("status", "published")
+                ->where("type", "blog")
                 ->with("tags")
                 ->with("reactions")
                 ->get()
@@ -22,6 +23,27 @@ class BlogPostController extends Controller
     {
         return new BlogPostResource(
             BlogPost::where("slug", $slug)
+                ->where("type", "blog")
+                ->where(function ($query) {
+                    $query
+                        ->where("status", "published")
+                        ->orWhere("status", "unlisted");
+                })
+                ->with("tags")
+                ->firstOrFail()
+        );
+    }
+
+    public function showPage(string $slug)
+    {
+        return new BlogPostResource(
+            BlogPost::where("slug", $slug)
+                ->where("type", "page")
+                ->where(function ($query) {
+                    $query
+                        ->where("status", "published")
+                        ->orWhere("status", "unlisted");
+                })
                 ->with("tags")
                 ->firstOrFail()
         );
