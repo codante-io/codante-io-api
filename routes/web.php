@@ -102,6 +102,7 @@ Route::get("/custom-test", [CustomTestController::class, "handle"]);
 
 Route::get("/blog-posts", [BlogPostController::class, "index"]);
 Route::get("/blog-posts/{slug}", [BlogPostController::class, "show"]);
+Route::get("/pages/{slug}", [BlogPostController::class, "showPage"]);
 
 Route::get("/technical-assessments", [
     TechnicalAssessmentController::class,
