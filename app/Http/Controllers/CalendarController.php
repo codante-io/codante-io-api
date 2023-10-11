@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 
-// TODO: trocar o published_at já que não temos mais essa coluna na tabela. 
 class CalendarController extends Controller
 {
     public function showCalendar()
@@ -59,8 +58,8 @@ class CalendarController extends Controller
             ->with("tags", fn ($query) => $query->select("name"))
             ->where(
                 fn ($query) => $query
-                    ->whereDate("published_at", ">=", now())
-                    ->orWhere("published_at", null)
+                    ->whereDate("solution_publish_date", ">=", now())
+                    ->orWhere("solution_publish_date", null)
             )
             ->select($challengeColumns)
             ->get();
