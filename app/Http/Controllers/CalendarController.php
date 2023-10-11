@@ -33,8 +33,7 @@ class CalendarController extends Controller
 
         // pegar os próximos workshops (soon + data)
         $workshops = Workshop::query()
-            ->where("status", "!=", "unlisted")
-            ->where("status", "soon")
+            ->listed()
             ->where("is_standalone", true)
             ->with(
                 "instructor",
@@ -55,8 +54,7 @@ class CalendarController extends Controller
             ->get();
 
         $challenges = Challenge::query()
-            ->where("status", "!=", "unlisted")
-            ->where("status", "!=", "draft")
+            ->listed()
             ->with("tags", fn ($query) => $query->select("name"))
             ->where(
                 fn ($query) => $query
