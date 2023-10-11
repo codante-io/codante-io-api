@@ -2,15 +2,16 @@
 
 namespace Deployer;
 
-require 'recipe/laravel.php';
+require "recipe/laravel.php";
 
 // Config
 
-set('repository', 'git@github.com:codante-io/codante-io-api.git');
+set("repository", "git@github.com:codante-io/codante-io-api.git");
 
-add('shared_files', []);
-add('shared_dirs', []);
-add('writable_dirs', []);
+add("shared_files", []);
+add("shared_dirs", []);
+add("writable_dirs", []);
+set("keep_releases", 3);
 
 // Hosts
 
@@ -18,10 +19,10 @@ add('writable_dirs', []);
 //     ->set('remote_user', 'robertotcestari')
 //     ->set('deploy_path', '/var/www/codante-io-api');
 
+host("216.238.108.237")
+    ->set("remote_user", "robertotcestari")
+    ->set("deploy_path", "/var/www/codante-io-api");
 
-host('216.238.108.237')
-    ->set('remote_user', 'robertotcestari')
-    ->set('deploy_path', '/var/www/codante-io-api');
 // Hooks
 
-after('deploy:failed', 'deploy:unlock');
+after("deploy:failed", "deploy:unlock");
