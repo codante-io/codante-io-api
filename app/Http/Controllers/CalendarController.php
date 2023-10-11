@@ -59,8 +59,8 @@ class CalendarController extends Controller
             ->with("tags", fn ($query) => $query->select("name"))
             ->where(
                 fn ($query) => $query
-                    ->whereDate("published_at", ">=", now())
-                    ->orWhere("published_at", null)
+                    ->whereDate("solution_publish_date", ">=", now())
+                    ->orWhere("solution_publish_date", null)
             )
             ->select($challengeColumns)
             ->get();
