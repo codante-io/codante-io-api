@@ -62,6 +62,7 @@ class ChallengeController extends Controller
                 },
             ])
             ->with("tags")
+            ->orderByRaw('-EXISTS (SELECT 1 FROM workshops WHERE workshops.challenge_id = challenges.id)')
             ->orderBy("status", "asc")
             ->orderBy("position", "asc")
             ->orderBy("created_at", "desc")
