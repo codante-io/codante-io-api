@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\BugsnagWebhookController;
-use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,24 +15,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get("/user", function (Request $request) {
+Route::get('/user', function (Request $request) {
     if ($request->user()) {
-        return response()->json(new UserResource($request->user()));
+        return $request->user();
     }
 
-    return ["message" => "Não autenticado"];
-})->middleware("auth:sanctum");
+    return ['message' => 'Não autenticado'];
+})->middleware('auth:sanctum');
 
-Route::get("/workshops", function () {
+
+
+Route::get('/workshops', function () {
     return \App\Models\Workshop::all();
 });
 
-Route::get("/workshops/{slug}", function ($slug) {
-    return \App\Models\Workshop::where("slug", $slug)->firstOrFail();
+Route::get('/workshops/{slug}', function ($slug) {
+    return \App\Models\Workshop::where('slug', $slug)->firstOrFail();
 });
 
 //BugsnagWebhook
-Route::post("bugsnag/notification", [
-    BugsnagWebhookController::class,
-    "notify",
-]);
+Route::post('bugsnag/notification', [BugsnagWebhookController::class, 'notify']);
