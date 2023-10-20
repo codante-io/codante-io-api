@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get("/user", function (Request $request) {
     if ($request->user()) {
+        // o json deve estar aqui para retirar o wrapper "data": https://stackoverflow.com/a/66464348
         return response()->json(new UserResource($request->user()));
     }
 
