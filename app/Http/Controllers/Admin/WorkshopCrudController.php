@@ -120,6 +120,22 @@ class WorkshopCrudController extends CrudController
                 3 => 3,
             ],
         ]);
+
+        $this->crud->addField([
+            // Table
+            "name" => "resources",
+            "label" => "Recursos",
+            "type" => "table",
+            "entity_singular" => "resource", // used on the "Add X" button
+            "columns" => [
+                "name" => "Nome do Recurso",
+                "type" => "Tipo: 'file' | 'figma' | 'url' | 'github'",
+                "url" => "Resource URL",
+            ],
+            "max" => 10, // maximum rows allowed in the table
+            "min" => 0, // minimum rows allowed in the table
+        ]);
+
         CRUD::field("duration_in_minutes");
         $this->crud->addField([
             "name" => "instructor_id",
