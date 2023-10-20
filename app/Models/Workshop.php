@@ -18,6 +18,7 @@ class Workshop extends Model
     protected $guarded = ["id"];
     protected $casts = [
         "published_at" => "datetime",
+        "resources" => "array",
     ];
 
     public function getTypeAttribute()
