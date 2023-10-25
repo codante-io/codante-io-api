@@ -22,6 +22,7 @@ class WorkshopController extends Controller
                 ->with("instructor")
                 ->with("tags")
                 ->orderBy("status")
+                ->orderBy("published_at", "desc")
                 ->listed()
                 ->get()
         );
