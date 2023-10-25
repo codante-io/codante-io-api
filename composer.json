@@ -21,6 +21,7 @@
         "laravel/socialite": "^5.6",
         "laravel/tinker": "^2.8",
         "league/flysystem-aws-s3-v3": "^3.15",
+        "pagarme/pagarme-php": "^4.1",
         "spatie/browsershot": "^3.57",
         "spatie/laravel-backup": "^8.1",
         "staudenmeir/eloquent-eager-limit": "^1.0",

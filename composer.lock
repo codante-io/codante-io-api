@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c2e6e42529af5dbb4dd3f60ecafcf1e",
+    "content-hash": "c35ecc47f05a4f416509d7ecad9b1a3b",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -4635,6 +4635,54 @@
                 }
             ],
             "time": "2023-02-08T01:06:31+00:00"
+        },
+        {
+            "name": "pagarme/pagarme-php",
+            "version": "v4.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pagarme/pagarme-php.git",
+                "reference": "a70d32904369d9fad1afc9c8ef998d4c785c2947"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pagarme/pagarme-php/zipball/a70d32904369d9fad1afc9c8ef998d4c785c2947",
+                "reference": "a70d32904369d9fad1afc9c8ef998d4c785c2947",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": ">=6.3",
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.7",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "lib",
+            "autoload": {
+                "psr-4": {
+                    "PagarMe\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Pagar.Me PHP Library",
+            "homepage": "http://pagar.me",
+            "keywords": [
+                "api",
+                "pagamento brasil",
+                "pagamentos",
+                "pagar.me",
+                "pagarme",
+                "payments brazil"
+            ],
+            "support": {
+                "issues": "https://github.com/pagarme/pagarme-php/issues",
+                "source": "https://github.com/pagarme/pagarme-php/tree/v4.1.2"
+            },
+            "time": "2020-09-09T13:55:40+00:00"
         },
         {
             "name": "php-http/cache-plugin",
@@ -12838,5 +12886,5 @@
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
