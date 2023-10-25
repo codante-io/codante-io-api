@@ -43,8 +43,12 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
 
-    public function subscribeToPlan($planId, $providerId = null, $acquisitionType = "purchase")
-    {
+    public function subscribeToPlan(
+        $planId,
+        $providerId = null,
+        $acquisitionType = "purchase",
+        $status = "pending"
+    ) {
         $plan = Plan::findOrFail($planId);
 
         $subscription = new Subscription();
@@ -61,7 +65,7 @@ class User extends Authenticatable
             $subscription->ends_at = null;
         }
 
-        $subscription->status = "pending";
+        $subscription->status = $status;
         $subscription->acquisition_type = $acquisitionType;
         $subscription->save();
     }
