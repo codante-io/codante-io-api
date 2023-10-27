@@ -47,7 +47,10 @@ class User extends Authenticatable
         $planId,
         $providerId = null,
         $acquisitionType = "purchase",
-        $status = "pending"
+        $status = "pending",
+        $paymentMethod = null,
+        $boletoUrl = null,
+        $pricePaidInCents = null
     ) {
         $plan = Plan::findOrFail($planId);
 
@@ -66,6 +69,9 @@ class User extends Authenticatable
         }
 
         $subscription->status = $status;
+        $subscription->payment_method = $paymentMethod;
+        $subscription->boleto_url = $boletoUrl;
+        $subscription->price_paid_in_cents = $pricePaidInCents;
         $subscription->acquisition_type = $acquisitionType;
         $subscription->save();
     }

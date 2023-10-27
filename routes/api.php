@@ -25,6 +25,10 @@ Route::get("/user", function (Request $request) {
     return ["message" => "Não autenticado"];
 })->middleware("auth:sanctum");
 
+Route::get("/user/subscriptions", function (Request $request) {
+    return response()->json(new UserResource($request->user()));
+})->middleware("auth:sanctum");
+
 Route::get("/workshops", function () {
     return \App\Models\Workshop::all();
 });

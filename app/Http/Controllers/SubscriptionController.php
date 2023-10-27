@@ -60,11 +60,21 @@ class SubscriptionController extends Controller
             1,
             $transaction->id,
             "purchase",
-            $transactionStatus
+            $transactionStatus,
+            $requestData["paymentMethod"],
+            $transaction->boleto_url ?? null
         );
 
         if ($transactionStatus === "active") {
             $user->upgradeUserToPro();
         }
+
+        return $transaction;
+    }
+
+    public function showAllSubscriptions()
+    {
+        $subscriptions = auth()->user()->subscriptions;
+        return auth()->user()->subscriptions;
     }
 }
