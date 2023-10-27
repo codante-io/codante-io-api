@@ -30,6 +30,27 @@ class WorkshopCrudController extends CrudController
         CRUD::setModel(\App\Models\Workshop::class);
         CRUD::setRoute(config("backpack.base.route_prefix") . "/workshop");
         CRUD::setEntityNameStrings("workshop", "workshops");
+
+        $this->crud->addSaveAction([
+            "name" => "save_action_one",
+            "redirect" => function ($crud, $request, $itemId) {
+                // dd("oi");
+                Artisan::call("cache:clear");
+                return $crud->route;
+            }, // what's the redirect URL, where the user will be taken after saving?
+
+            // OPTIONAL:
+            "button_text" => "Salvar e Limpar Cache! (streaming)", // override text appearing on the button
+            // You can also provide translatable texts, for example:
+            // 'button_text' => trans('backpack::crud.save_action_one'),
+            "visible" => function ($crud) {
+                return true;
+            }, // customize when this save action is visible for the current operation
+            "referrer_url" => function ($crud, $request, $itemId) {
+                return $crud->route;
+            }, // override http_referrer_url
+            "order" => 1, // change the order save actions are in
+        ]);
     }
 
     /**
@@ -99,6 +120,9 @@ class WorkshopCrudController extends CrudController
             ->type("slug")
             ->hint("Se não preenchido, será gerado automaticamente")
             ->target("name");
+
+        CRUD::field("streaming_url")->type("text");
+
         $this->crud->addField([
             "name" => "status",
             "label" => "Status",
@@ -197,10 +221,5 @@ class WorkshopCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
-    }
-
-    protected function onAfterSave($id)
-    {
-        Artisan::call("cache:clear");
     }
 }
