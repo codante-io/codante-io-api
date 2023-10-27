@@ -33,6 +33,7 @@ class WorkshopResource extends JsonResource
                 $this->whenLoaded("instructor")
             ),
             "tags" => TagResource::collection($this->whenLoaded("tags")),
+            "streaming_url" => $this->streaming_url,
             "resources" => $this->resources,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
