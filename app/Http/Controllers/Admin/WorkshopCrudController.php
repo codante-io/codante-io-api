@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\WorkshopRequest;
+use Artisan;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -106,6 +107,7 @@ class WorkshopCrudController extends CrudController
                 "archived" => "archived",
                 "draft" => "draft",
                 "published" => "published",
+                "streaming" => "streaming",
                 "soon" => "soon",
                 "unlisted" => "unlisted",
             ],
@@ -195,5 +197,10 @@ class WorkshopCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+    }
+
+    protected function onAfterSave($id)
+    {
+        Artisan::call("cache:clear");
     }
 }
