@@ -34,7 +34,6 @@ class WorkshopCrudController extends CrudController
         $this->crud->addSaveAction([
             "name" => "save_action_one",
             "redirect" => function ($crud, $request, $itemId) {
-                // dd("oi");
                 Artisan::call("cache:clear");
                 return $crud->route;
             }, // what's the redirect URL, where the user will be taken after saving?
