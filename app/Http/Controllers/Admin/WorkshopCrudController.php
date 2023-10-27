@@ -127,6 +127,8 @@ class WorkshopCrudController extends CrudController
             "name" => "status",
             "label" => "Status",
             "type" => "radio",
+            "hint" =>
+                "Se for streaming, preencha o link do streaming acima. Depois use a opção SALVAR LIMPANDO O CACHE",
             "options" => [
                 "archived" => "archived",
                 "draft" => "draft",
