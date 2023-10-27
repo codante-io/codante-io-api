@@ -18,6 +18,12 @@ class HomeController extends Controller
     {
         return Cache::remember("home_content", 60 * 60, function () {
             return [
+                "live_streaming_workshop" => Workshop::where(
+                    "status",
+                    "streaming"
+                )
+                    ->select("id", "name", "slug")
+                    ->first(),
                 "featured_workshops" => WorkshopResource::collection(
                     Workshop::query()
                         ->where("featured", "landing")
