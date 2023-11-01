@@ -22,6 +22,7 @@ use Github\ResultPager;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ChallengeController extends Controller
 {
@@ -306,6 +307,79 @@ class ChallengeController extends Controller
         event(
             new ChallengeCompleted($challengeUser, $challenge, $request->user())
         );
+    }
+
+    public function updateSubmission(Request $request, $slug)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            "submission_url" => "required|url",
+            "metadata.twitter_username" => "nullable",
+            "metadata.rinha_largest_filename" => "nullable",
+        ]);
+
+        // Check if the user has joined the challenge
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challengeUser = $challenge
+            ->users()
+            ->where("user_id", $request->user()->id)
+            ->firstOrFail();
+
+        if (!$challengeUser->pivot["submission_url"]) {
+            abort(400, "Não existe nenhuma submissão para ser atualizada.");
+        }
+
+        $currentChallengePath = $challengeUser->pivot["submission_image_url"];
+
+        // Check if the URL is valid
+        $response = \Illuminate\Support\Facades\Http::get(
+            $validated["submission_url"]
+        );
+        $status = $response->status();
+
+        if ($status > 300) {
+            abort(
+                400,
+                "Não conseguimos acessar a URL informada. Verifique e tente novamente."
+            );
+        }
+
+        // Capture the screenshot
+        $urlToCapture = $validated["submission_url"];
+        $rand = Str::random(10);
+        $imagePath = "/challenges/$slug/$challengeUser->github_id-$rand.png" ;
+
+        $screenshot = Browsershot::url($urlToCapture);
+        // $screenshot->setNodeBinary(
+        //     "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
+        // );
+        $screenshot->windowSize(1280, 720);
+        $screenshot->setDelay(2000);
+        $screenshot->setScreenshotType("png");
+        $screenshot->optimize();
+        
+        // $storageRes = Storage::disk("s3")->put(
+        //     $imagePath,
+        //     $screenshot->screenshot()
+        // );
+        $storageRes = Storage::put(
+            $imagePath,
+            $screenshot->screenshot()
+        );
+
+        $storageRes = Storage::delete($currentChallengePath);
+
+        // Saves in DB
+        $challengeUser->pivot->submission_url = $validated["submission_url"];
+        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
+        $challengeUser->pivot->submission_image_url = Storage::url(
+            $imagePath
+        );
+        // $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
+        //     $imagePath
+        // );
+        $challengeUser->pivot->updated_at = now();
+        $challengeUser->pivot->save();
     }
 
     public function getSubmissions(Request $request, $slug)
