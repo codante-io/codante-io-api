@@ -18,6 +18,7 @@ class SubscriptionResource extends JsonResource
             "id" => $this->id,
             "plan_name" => $this->plan->name ?? null,
             "status" => $this->status,
+            "translated_status" => $this->translatedStatus(),
             "payment_method" => $this->payment_method,
             "boleto_url" => $this->boleto_url,
             "price_paid_in_cents" => $this->price_paid_in_cents,

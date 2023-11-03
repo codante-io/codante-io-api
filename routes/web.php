@@ -117,5 +117,9 @@ Route::get("/technical-assessments/{slug}", [
 Route::get("/ranking", [RankingController::class, "getRanking"]);
 
 Route::post("/subscribe", [SubscriptionController::class, "subscribe"]);
+Route::get("/my-subscription", [
+    SubscriptionController::class,
+    "showSubscription",
+]);
 
 require __DIR__ . "/auth.php";
