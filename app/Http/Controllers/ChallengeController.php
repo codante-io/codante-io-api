@@ -289,7 +289,7 @@ class ChallengeController extends Controller
         $screenshot->setDelay(2000);
         $screenshot->setScreenshotType("png");
         $screenshot->optimize();
-        $storageRes = Storage::disk("s3")->put(
+        $storageRes = Storage::put(
             $imagePath,
             $screenshot->screenshot()
         );
@@ -297,7 +297,7 @@ class ChallengeController extends Controller
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
+        $challengeUser->pivot->submission_image_url = Storage::url(
             $imagePath
         );
         $challengeUser->pivot->submitted_at = now();
@@ -329,7 +329,9 @@ class ChallengeController extends Controller
             abort(400, "Não existe nenhuma submissão para ser atualizada.");
         }
 
-        $currentChallengePath = $challengeUser->pivot["submission_image_url"];
+        $currentChallengeImageUrl = $challengeUser->pivot["submission_image_url"];
+        $baseStorageUrl = Storage::url('');
+        $currentImagePath = Str::after($currentChallengeImageUrl, $baseStorageUrl);
 
         // Check if the URL is valid
         $response = \Illuminate\Support\Facades\Http::get(
@@ -357,17 +359,13 @@ class ChallengeController extends Controller
         $screenshot->setDelay(2000);
         $screenshot->setScreenshotType("png");
         $screenshot->optimize();
-        
-        // $storageRes = Storage::disk("s3")->put(
-        //     $imagePath,
-        //     $screenshot->screenshot()
-        // );
+
         $storageRes = Storage::put(
             $imagePath,
             $screenshot->screenshot()
         );
 
-        $storageRes = Storage::delete($currentChallengePath);
+        Storage::delete($currentImagePath);
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
@@ -375,9 +373,6 @@ class ChallengeController extends Controller
         $challengeUser->pivot->submission_image_url = Storage::url(
             $imagePath
         );
-        // $challengeUser->pivot->submission_image_url = Storage::disk("s3")->url(
-        //     $imagePath
-        // );
         $challengeUser->pivot->updated_at = now();
         $challengeUser->pivot->save();
     }
@@ -467,3 +462,8 @@ class ChallengeController extends Controller
         return $challenge;
     }
 }
+
+
+// private function getScreenShot() {
+//     // ...
+// }
