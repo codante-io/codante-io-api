@@ -264,6 +264,11 @@ class ChallengeController extends Controller
             abort(400, "Você já submeteu esse Mini Projeto");
         }
 
+        // Check if the URL is not from a github repository
+        if (Str::contains($validated["submission_url"], "github.com")) {
+            abort(400, "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente.");
+        }
+
         // Check if the URL is valid
         $response = \Illuminate\Support\Facades\Http::get(
             $validated["submission_url"]
@@ -327,6 +332,15 @@ class ChallengeController extends Controller
 
         if (!$challengeUser->pivot["submission_url"]) {
             abort(400, "Não existe nenhuma submissão para ser atualizada.");
+        }
+
+        if ($validated["submission_url"] === $challengeUser->pivot["submission_url"]) {
+            abort(400, "Adicione um link diferente do atual.");
+        }
+
+        // Check if the URL is not from a github repository
+        if (Str::contains($validated["submission_url"], "github.com")) {
+            abort(400, "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente.");
         }
 
         $currentChallengeImageUrl = $challengeUser->pivot["submission_image_url"];
