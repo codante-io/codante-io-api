@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SubscriptionResource;
 use App\Models\Plan;
 use App\Notifications\Discord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PagarMe\Client as PagarMe;
 use PagarMe\Exceptions\PagarMeException;
 
@@ -61,7 +63,7 @@ class SubscriptionController extends Controller
             $transaction->id,
             "purchase",
             $transactionStatus,
-            $requestData["paymentMethod"],
+            $transaction->payment_method,
             $transaction->boleto_url ?? null
         );
 
@@ -72,9 +74,35 @@ class SubscriptionController extends Controller
         return $transaction;
     }
 
-    public function showAllSubscriptions()
+    public function showSubscription()
     {
-        $subscriptions = auth()->user()->subscriptions;
-        return auth()->user()->subscriptions;
+        $subscriptions = Auth::user()
+            ->subscriptions()
+            ->orderBy("created_at", "desc")
+            ->get();
+
+        // if there is no subscription, return null
+        if ($subscriptions->count() === 0) {
+            return null;
+        }
+
+        // if there is only one subscription, return this subscription
+        if ($subscriptions->count() === 1) {
+            return new SubscriptionResource($subscriptions->first());
+        }
+
+        // if there is more than one subscription, return the active one
+        $activeSubscription = $subscriptions
+            ->filter(function ($subscription) {
+                return $subscription->status === "active";
+            })
+            ->first();
+
+        if ($activeSubscription) {
+            return new SubscriptionResource($activeSubscription);
+        }
+
+        // if there is no active subscription, return the most recent
+        return new SubscriptionResource($subscriptions->first());
     }
 }
