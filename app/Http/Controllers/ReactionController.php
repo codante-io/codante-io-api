@@ -45,7 +45,10 @@ class ReactionController extends Controller
             $data["reaction"],
             auth("sanctum")->user()
         );
-        event(new ReactionCreated($reaction->id, $reactable));
+
+        if ($reactableClass == "App\\Models\\ChallengeUser") {
+            event(new ReactionCreated($reaction->id, $reactable));
+        }
 
         return response()->json([
             "message" => "Reaction created successfully",
