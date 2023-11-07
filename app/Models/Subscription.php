@@ -39,4 +39,10 @@ class Subscription extends Model
                 return "Boleto Bancário";
         }
     }
+
+    public function changeStatus(string $newStatus)
+    {
+        $this->status = $newStatus;
+        $this->save();
+    }
 }
