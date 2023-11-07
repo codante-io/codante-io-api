@@ -53,25 +53,29 @@ class SubscriptionController extends Controller
         }
 
         // o padrão do status é pending. Mas se vier como paid, vamos marcar já para ativar o plano.
-        $transactionStatus = "pending";
+        $subscriptionStatus = "pending";
         if ($transaction->status === "paid") {
-            $transactionStatus = "active";
+            $subscriptionStatus = "active";
         }
 
-        $user->subscribeToPlan(
+        $subscription = $user->subscribeToPlan(
             1,
             $transaction->id,
             "purchase",
-            $transactionStatus,
+            $subscriptionStatus,
             $transaction->payment_method,
             $transaction->boleto_url ?? null
         );
 
-        if ($transactionStatus === "active") {
+        // Envia email de confirmação de Assinatura
+
+        if ($subscriptionStatus === "active") {
             $user->upgradeUserToPro();
+
+            // Envia email de confirmação de pagamento.
         }
 
-        return $transaction;
+        return new SubscriptionResource($subscription);
     }
 
     public function showSubscription()
