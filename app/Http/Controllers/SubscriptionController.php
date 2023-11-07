@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SubscriptionResource;
+use App\Mail\PaymentConfirmed;
+use App\Mail\UserJoinedChallenge;
+use App\Mail\UserSubscribedToPlan;
 use App\Models\Plan;
 use App\Notifications\Discord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use PagarMe\Client as PagarMe;
 use PagarMe\Exceptions\PagarMeException;
 
@@ -68,11 +72,17 @@ class SubscriptionController extends Controller
         );
 
         // Envia email de confirmação de Assinatura
+        Mail::to($user->email)->send(
+            new UserSubscribedToPlan($user, $subscription)
+        );
 
         if ($subscriptionStatus === "active") {
             $user->upgradeUserToPro();
 
             // Envia email de confirmação de pagamento.
+            Mail::to($user->email)->send(
+                new PaymentConfirmed($user, $subscription)
+            );
         }
 
         return new SubscriptionResource($subscription);
