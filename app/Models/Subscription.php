@@ -29,4 +29,14 @@ class Subscription extends Model
                 return "Pendente";
         }
     }
+
+    public function translatedPaymentMethod()
+    {
+        switch ($this->payment_method) {
+            case "credit_card":
+                return "Cartão de Crédito";
+            case "boleto":
+                return "Boleto Bancário";
+        }
+    }
 }

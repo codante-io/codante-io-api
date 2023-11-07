@@ -51,7 +51,7 @@ class User extends Authenticatable
         $paymentMethod = null,
         $boletoUrl = null,
         $pricePaidInCents = null
-    ) {
+    ): Subscription {
         $plan = Plan::findOrFail($planId);
 
         $subscription = new Subscription();
@@ -74,6 +74,8 @@ class User extends Authenticatable
         $subscription->price_paid_in_cents = $pricePaidInCents;
         $subscription->acquisition_type = $acquisitionType;
         $subscription->save();
+
+        return $subscription;
     }
 
     public function upgradeUserToPro()
