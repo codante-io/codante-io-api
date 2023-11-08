@@ -42,14 +42,14 @@ class SubscriptionController extends Controller
             $message = "Erro Pagarme Transaction - " . $e->getMessage();
             $message .= " - User - " . $user->email;
 
-            new Discord($message, "notificacoes");
+            new Discord($message, "notificacoes-site");
             abort(500, $e->getMessage());
         } catch (\Exception $e) {
             $message =
                 "Erro Pagarme: " . $e->getCode() . " - " . $e->getMessage();
             $message .= " - User - " . $user->email;
 
-            new Discord($message, "notificacoes");
+            new Discord($message, "notificacoes-site");
             abort(
                 500,
                 "Houve um erro com o provedor de pagamentos 😥. Entre em contato com a nossa equipe."
