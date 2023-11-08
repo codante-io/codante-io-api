@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\BugsnagWebhookController;
-use App\Http\Controllers\Plans\PagarmeWebhooks;
+use App\Http\Controllers\PagarmeWebhooks;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

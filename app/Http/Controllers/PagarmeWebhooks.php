@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Plans;
+namespace App\Http\Controllers;
 
 use App\Mail\PaymentConfirmed;
 use App\Mail\PaymentRefunded;
-use App\Models\Pagamento;
+use App\Mail\PaymentRefused;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\Discord;
-use App\Notifications\Slack;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Mail;
@@ -19,35 +17,80 @@ class PagarmeWebhooks
 {
     public function handleWebhook(Request $request)
     {
-        $statusPagarme = $request->current_status;
-        $method =
-            "handle" .
-            str_replace(
-                " ",
-                "",
-                Str::title(str_replace("_", " ", $statusPagarme))
-            );
+        new Discord("Entrando nos Webhooks...", "notificacoes-site");
+        new Discord(
+            "Status do request do Pagarme é $request->current_status...",
+            "notificacoes-site"
+        );
+        // Validando o postback
 
-        if (method_exists($this, $method)) {
-            return $this->{$method}($request);
+        // Se não for uma transaction, não vamos fazer nada.
+        if ($request->object !== "transaction") {
+            new Discord("Erro, não há transaction", "notificacoes-site");
+            return new Response();
         }
 
-        return $this->missingMethod($request);
-    }
+        // Se não for um evento de status, não vamos fazer nada.
+        if ($request->event !== "transaction_status_changed") {
+            new Discord("Erro, evento não trackeado", "notificacoes-site");
+            return new Response();
+        }
 
-    public function handlePaid($request)
-    {
-        new Discord("chamando handle paid", "notificacoes-compra");
-
-        $providerId = $request->post("id");
+        // Se não encontrarmos uma subscription com o provider_id, não vamos fazer nada.
         $subscription = Subscription::where(
             "provider_id",
-            $providerId
+            $request->post("id")
         )->first();
+
+        if (!$subscription) {
+            return new Response();
+        }
+
+        // Se não validar a assinatura, não fazemos nada.
+        $isValid = $this->validatePostBack($request);
+        if (!$isValid) {
+            return new Response('{"message": "not valid signature"}', 401);
+        }
+
         $user = User::find($subscription->user_id);
+
+        // Vamos chamar os métodos de acordo com o status da transação.
+        $newStatus = $request->current_status;
+
+        switch ($newStatus) {
+            case "paid":
+                // Ativar o plano
+                $this->handlePaid($request, $subscription, $user);
+                break;
+            case "pending_refund":
+            case "refunded":
+                // Cancelar o plano
+                $this->handleRefunded($request, $subscription, $user);
+                break;
+            case "refused":
+                $this->handleRefused($request, $subscription, $user);
+                break;
+            case "chargedback":
+                $this->handleChargeback($request, $subscription, $user);
+                break;
+            case "waiting_payment":
+                break;
+            default:
+                break;
+        }
+
+        return new Response();
+    }
+
+    public function handlePaid($request, Subscription $subscription, User $user)
+    {
+        new Discord("chamando handlePaid", "notificacoes-site");
 
         // Muda status para ativo
         $subscription->changeStatus("active");
+
+        // Muda status do User
+        $user->upgradeUserToPro();
 
         // Manda email de pagamento.
         Mail::to($user->email)->queue(
@@ -55,136 +98,98 @@ class PagarmeWebhooks
         );
 
         new Discord(
-            "Pagarme: O novo status do ID " . $providerId . " é Pago",
+            "Pagarme: O novo status do ID " . $request->id . " é Pago",
             "notificacoes-site"
         );
     }
 
-    public function handleRefunded($request)
-    {
-        new Discord("chamando handle refunded", "notificacoes-compra");
+    public function handleRefunded(
+        $request,
+        Subscription $subscription,
+        User $user
+    ) {
+        new Discord("chamando handle refunded", "notificacoes-site");
 
-        return new Response();
+        // Muda status para refunded
+        $subscription->changeStatus("refunded");
 
-        // $charge_id = $request->post("id");
-
-        // $a = new AddPlanToUsers();
-        // $a->changeStatusByProviderId("pme_" . $charge_id, "canceled");
-
-        // $pagamento = Pagamento::where(
-        //     "transaction_code",
-        //     "pme_" . $charge_id
-        // )->first();
-        // $pagamento->status_text = "Reembolsado";
-        // $pagamento->payment_status = config("planos.payments.status.refunded");
-        // $pagamento->save();
-
-        // $user = User::find($pagamento->user_id);
-        // \Mail::to($user->email)->queue(new PaymentRefunded($user));
-
-        // new Discord(
-        //     "Pagarme: O novo status do ID pme_" .
-        //         $charge_id .
-        //         " é: " .
-        //         $pagamento->status_text,
-        //     "notificacoes-compra"
-        // );
-    }
-
-    public function handleRefused($request)
-    {
-        new Discord("chamando handle refused", "notificacoes-compra");
-
-        return new Response();
-
-        // $charge_id = $request->post("id");
-
-        // // Se não for achado o plano, significa que nenhuma transação foi feita - então nada mais é necessário fazer no backend.
-        // // Vamos retornar então um response 200 para evitar novos postbacks.
-        // if (!Subscription::where("provider_id", "pme_" . $charge_id)->first()) {
-        //     return new Response();
-        // }
-
-        // $a = new AddPlanToUsers();
-        // $a->changeStatusByProviderId("pme_" . $charge_id, "canceled");
-
-        // $pagamento = Pagamento::where(
-        //     "transaction_code",
-        //     "pme_" . $charge_id
-        // )->first();
-        // $pagamento->status_text = "Falho";
-        // $pagamento->payment_status = config("planos.payments.status.fail");
-        // $pagamento->save();
-
-        // $user = User::find($pagamento->user_id);
-        // \Mail::to($user->email)->queue(new PaymentRefunded($user));
-
-        // new Discord(
-        //     "Pagarme: O novo status do ID pme_" .
-        //         $charge_id .
-        //         " é: " .
-        //         $pagamento->status_text,
-        //     "notificacoes-compra"
-        // );
-    }
-
-    public function handleAuthorized($request)
-    {
-        new Discord("chamando handle authorized", "notificacoes-compra");
-        new Discord(
-            "O ID - " . $request->post("id") . " foi autorizado.",
-            "notificacoes-compra"
+        // Manda email de Refund.
+        Mail::to($user->email)->queue(
+            new PaymentRefunded($user, $subscription)
         );
 
-        return new Response();
+        // Muda status do User
+        $user->downgradeUserFromPro();
     }
 
-    public function handleWaitingPayment($request)
-    {
-        new Discord("chamando handle Waiting Payment", "notificacoes-compra");
-        new Discord(
-            "O ID - " . $request->post("id") . " está aguardando pagamento.",
-            "notificacoes-compra"
-        );
+    public function handleRefused(
+        $request,
+        Subscription $subscription,
+        User $user
+    ) {
+        new Discord("chamando handle refused", "notificacoes-site");
 
-        return new Response();
+        // Muda status para refunded
+        $subscription->changeStatus("refused");
+
+        // Manda email de Refund.
+        Mail::to($user->email)->queue(new PaymentRefused($user, $subscription));
+
+        // Muda status do User
+        $user->downgradeUserFromPro();
     }
 
-    public function handlePendingRefund($request)
-    {
-        new Discord("chamando handle Pending Refund", "notificacoes-compra");
-        new Discord(
-            "O ID - " . $request->post("id") . " está pendente de Refund.",
-            "notificacoes-compra"
-        );
+    public function handleChargeback(
+        $request,
+        Subscription $subscription,
+        User $user
+    ) {
+        new Discord("chamando handleChargeback", "notificacoes-site");
 
-        return new Response();
+        // Muda status para chargedback
+        $subscription->changeStatus("chargedback");
+
+        // Muda status do User
+        $user->downgradeUserFromPro();
     }
 
-    public function handleProcessing($request)
+    private function validatePostBack($request)
     {
-        new Discord("chamando handle Processing", "notificacoes-compra");
-        new Discord(
-            "O ID - " . $request->post("id") . " está processando.",
-            "notificacoes-compra"
-        );
+        // get the signature sent by Pagar.me
+        $signature = $request->header("X-Hub-Signature");
+        $signature = Str::of($signature)
+            ->replace("sha1=", "")
+            ->trim()
+            ->toString();
 
-        return new Response();
-    }
+        // get the payload sent by Pagar.me
+        $payload = $request->getContent();
 
-    public function missingMethod($request)
-    {
-        $transactionId = "";
+        // get the public key from Pagar.me
+        $publicKey = config("services.pagarme.api_key");
 
-        new Discord(
-            "chamando missing method - " .
-                $request->event .
-                " - " .
-                $request->post("id") ??
-                "",
-            "notificacoes-site"
-        );
+        // generate the signature using the public key and the payload sent by Pagar.me
+        $generatedSignature = hash_hmac("sha1", $payload, $publicKey);
+        $generatedSignature = Str::of($generatedSignature)
+            ->trim()
+            ->toString();
 
-        return new Response();
+        new Discord("Validando request...", "notificacoes-site");
+
+        // check if the signature sent by Pagar.me is the same as the one generated by us
+        if ($generatedSignature !== $signature) {
+            new Discord(
+                "Assinatura da Requisição não validada :/",
+                "notificacoes-site"
+            );
+
+            return false;
+        } else {
+            new Discord(
+                "Assinatura da Requisição válida!",
+                "notificacoes-site"
+            );
+            return true;
+        }
     }
 }

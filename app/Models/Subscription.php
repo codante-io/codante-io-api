@@ -25,6 +25,8 @@ class Subscription extends Model
                 return "Cancelada";
             case "expired":
                 return "Vencida";
+            case "refunded":
+                return "Reembolsada";
             default:
                 return "Pendente";
         }
