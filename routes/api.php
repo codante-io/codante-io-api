@@ -46,3 +46,5 @@ Route::post("bugsnag/notification", [
 
 // Pagarme Webhook
 Route::post("pagarme/notification", [PagarmeWebhooks::class, "handleWebhook"]);
+
+Route::get("/pagarme/get-link");
