@@ -51,4 +51,9 @@ Route::post("pagarme/notification", [PagarmeWebhooks::class, "handleWebhook"]);
 Route::get("/pagarme/get-link", [
     PagarmeController::class,
     "createOrderAndGetCheckoutLink",
-])->middleware("auth:sanctum", "verified");
+])->middleware("auth:sanctum");
+
+Route::get("/pagarme/get-subscription-by-order-id/{pagarmeOrderID}", [
+    PagarmeController::class,
+    "getSubscriptionByPagarmeOrderId",
+])->middleware("auth:sanctum");

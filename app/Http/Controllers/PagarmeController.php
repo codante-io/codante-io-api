@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Http;
 
 class PagarmeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("auth:sanctum");
+    }
+
     public function createOrderAndGetCheckoutLink()
     {
         $user = Auth::user();
@@ -19,7 +24,7 @@ class PagarmeController extends Controller
         // to get pagarme checkout link we need to create an order:
 
         $response = Http::withBasicAuth(
-            config("services.pagarme.api_key_v5"),
+            config("services.pagarme.api_key"),
             ""
         )->post($endpoint, [
             "customer" => [
@@ -132,5 +137,38 @@ class PagarmeController extends Controller
             "pagarmeOrderID" => $pagarmeOrder["id"],
             "subscription" => new SubscriptionResource($subscription),
         ];
+    }
+
+    // Função para retornar na página de sucesso.
+    // Vamos pegar também o status dela para saber se foi pago ou não.
+    public function getSubscriptionByPagarmeOrderId($pagarmeOrderID)
+    {
+        // vamos checar se o usuário está autenticado e é o owner da subscription
+
+        $user = Auth::user();
+        $subscription = $user
+            ->subscriptions()
+            ->where("provider_id", $pagarmeOrderID)
+            ->first();
+
+        if (!$subscription || $subscription->user_id !== $user->id) {
+            return response()->json(["message" => "Não autorizado"], 401);
+        }
+
+        $endpoint = "https://api.pagar.me/core/v5/orders/{$pagarmeOrderID}";
+
+        $response = Http::withBasicAuth(
+            config("services.pagarme.api_key"),
+            ""
+        )->get($endpoint);
+
+        $responseData = $response->json();
+
+        // vamos fazer update do status da subscription
+        if ($responseData["status"] === "paid") {
+            $subscription->changeStatus("active");
+        }
+
+        return new SubscriptionResource($subscription);
     }
 }

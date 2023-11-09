@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\PaymentConfirmed;
-use App\Mail\PaymentRefunded;
-use App\Mail\PaymentRefused;
+use App\Mail\SubscriptionCanceled;
+use App\Mail\UserSubscribedToPlan;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\Discord;
@@ -18,10 +18,10 @@ class PagarmeWebhooks
     public function handleWebhook(Request $request)
     {
         $eventType = $request->post("type");
+        $pagarmeOrderId = $request->post("data")["id"];
 
-        new Discord("Entrando nos Webhooks...", "notificacoes-site");
         new Discord(
-            "Status do request do Pagarme é $request->current_status...",
+            "Entrando nos Webhooks... (Evento $eventType)",
             "notificacoes-site"
         );
 
@@ -34,12 +34,12 @@ class PagarmeWebhooks
         // Se não encontrarmos uma subscription com o provider_id, não vamos fazer nada.
         $subscription = Subscription::where(
             "provider_id",
-            $request->post("id")
+            $pagarmeOrderId
         )->first();
 
         if (!$subscription) {
             new Discord(
-                "Erro, não há subscription com o id {$request->post("id")}",
+                "Erro, não há subscription com o id {$pagarmeOrderId}",
                 "notificacoes-site"
             );
             return new Response();
@@ -49,12 +49,12 @@ class PagarmeWebhooks
 
         // Vamos chamar os métodos de acordo com o status da transação.
 
-        // Se o evento é order.closed, vamos adicionar os dados do pagamento
+        // Se o evento é order.closed, vamos adicionar os dados do pagamento (que até então não temos)
         if ($eventType === "order.closed") {
             $this->handleOrderClosed($request, $subscription, $user);
         }
 
-        $newStatus = $request->post("data")["status"];
+        $newStatus = Str::of($request->post("data")["status"])->lower();
 
         switch ($newStatus) {
             case "paid":
@@ -63,15 +63,11 @@ class PagarmeWebhooks
                 break;
             case "pending":
                 // Cancelar o plano
-                $this->handleRefunded($request, $subscription, $user);
+                $this->handlePending($request, $subscription, $user);
                 break;
-            case "order.updated":
+            case "failed":
+            case "canceled":
                 $this->handleCanceled($request, $subscription, $user);
-                break;
-            case "chargedback":
-                $this->handleChargeback($request, $subscription, $user);
-                break;
-            case "waiting_payment":
                 break;
             default:
                 break;
@@ -96,104 +92,53 @@ class PagarmeWebhooks
         );
 
         new Discord(
-            "Pagarme: O novo status do ID " . $request->id . " é Pago",
+            "Pagarme: O novo status do ID " . $pagarmeOrderId . " é Pago",
             "notificacoes-site"
         );
     }
 
-    public function handleRefunded(
+    public function handleCanceled(
         $request,
         Subscription $subscription,
         User $user
     ) {
-        new Discord("chamando handle refunded", "notificacoes-site");
+        new Discord("chamando handle canceled", "notificacoes-site");
 
         // Muda status para refunded
-        $subscription->changeStatus("refunded");
+        $subscription->changeStatus("canceled");
 
         // Manda email de Refund.
         Mail::to($user->email)->queue(
-            new PaymentRefunded($user, $subscription)
+            new SubscriptionCanceled($user, $subscription)
         );
 
         // Muda status do User
         $user->downgradeUserFromPro();
     }
 
-    public function handleRefused(
+    public function handlePending(
         $request,
         Subscription $subscription,
         User $user
     ) {
-        new Discord("chamando handle refused", "notificacoes-site");
-
-        // Muda status para refunded
-        $subscription->changeStatus("refused");
-
-        // Manda email de Refund.
-        Mail::to($user->email)->queue(new PaymentRefused($user, $subscription));
-
-        // Muda status do User
-        $user->downgradeUserFromPro();
-    }
-
-    public function handleChargeback(
-        $request,
-        Subscription $subscription,
-        User $user
-    ) {
-        new Discord("chamando handleChargeback", "notificacoes-site");
+        new Discord("chamando handlePending", "notificacoes-site");
 
         // Muda status para chargedback
-        $subscription->changeStatus("chargedback");
+        $subscription->changeStatus("pending");
 
         // Muda status do User
         $user->downgradeUserFromPro();
     }
 
-    private function validatePostBack($request)
-    {
-        // get the signature sent by Pagar.me
-        $signature = $request->header("X-Hub-Signature");
-        $signature = Str::of($signature)
-            ->replace("sha1=", "")
-            ->trim()
-            ->toString();
-
-        // get the payload sent by Pagar.me
-        $payload = $request->getContent();
-
-        // get the public key from Pagar.me
-        $apiKey = config("services.pagarme.api_key");
-
-        // generate the signature using the public key and the payload sent by Pagar.me
-        $generatedSignature = hash_hmac("sha1", $payload, $apiKey);
-        $generatedSignature = Str::of($generatedSignature)
-            ->trim()
-            ->toString();
-
-        new Discord("Validando request...", "notificacoes-site");
-
-        // check if the signature sent by Pagar.me is the same as the one generated by us
-        if ($generatedSignature !== $signature) {
-            new Discord(
-                "Assinatura da Requisição não validada :/",
-                "notificacoes-site"
-            );
-
-            return false;
-        } else {
-            new Discord(
-                "Assinatura da Requisição válida!",
-                "notificacoes-site"
-            );
-            return true;
-        }
-    }
-
+    // Essa função serve para completarmos dados de pagamento (por exemplo, meio de pagamento e dados do boleto.)
     protected function handleOrderClosed($request, $subscription, $user)
     {
         new Discord("chamando handleOrderClosed", "notificacoes-site");
+
+        // Nesse momento vamos agradecer por se inscrever.
+        Mail::to($user->email)->send(
+            new UserSubscribedToPlan($user, $subscription)
+        );
 
         $paymentMethod = $request->post("data")["charges"][0]["payment_method"];
         $boletoBarcode = null;
@@ -202,7 +147,7 @@ class PagarmeWebhooks
         if ($paymentMethod === "boleto") {
             $boletoBarcode =
                 $request->post("data")["charges"][0]["last_transaction"][
-                    "barcode"
+                    "line"
                 ] ?? null;
 
             $boletoUrl =

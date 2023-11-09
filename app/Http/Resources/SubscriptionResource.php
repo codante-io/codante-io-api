@@ -22,6 +22,7 @@ class SubscriptionResource extends JsonResource
             "translated_payment_method" => $this->translatedPaymentMethod(),
             "payment_method" => $this->payment_method,
             "boleto_url" => $this->boleto_url,
+            "boleto_barcode" => $this->boleto_barcode,
             "price_paid_in_cents" => $this->price_paid_in_cents,
             "acquisition_type" => $this->acquisition_type,
             "starts_at" => $this->starts_at,
