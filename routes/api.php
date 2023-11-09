@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BugsnagWebhookController;
+use App\Http\Controllers\PagarmeController;
 use App\Http\Controllers\PagarmeWebhooks;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
@@ -47,4 +48,7 @@ Route::post("bugsnag/notification", [
 // Pagarme Webhook
 Route::post("pagarme/notification", [PagarmeWebhooks::class, "handleWebhook"]);
 
-Route::get("/pagarme/get-link");
+Route::get("/pagarme/get-link", [
+    PagarmeController::class,
+    "createOrderAndGetCheckoutLink",
+])->middleware("auth:sanctum", "verified");
