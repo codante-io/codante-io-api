@@ -22,6 +22,7 @@ class Subscription extends Model
             case "active":
                 return "Ativa";
             case "canceled":
+            case "refused":
                 return "Cancelada";
             case "expired":
                 return "Vencida";
@@ -44,6 +45,12 @@ class Subscription extends Model
 
     public function changeStatus(string $newStatus)
     {
+        if ($newStatus === "active") {
+            $this->user->upgradeUserToPro();
+        } else {
+            $this->user->downgradeUserFromPro();
+        }
+
         $this->status = $newStatus;
         $this->save();
     }

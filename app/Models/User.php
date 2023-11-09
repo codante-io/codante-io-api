@@ -75,6 +75,10 @@ class User extends Authenticatable
         $subscription->acquisition_type = $acquisitionType;
         $subscription->save();
 
+        if ($status === "active") {
+            $this->upgradeUserToPro();
+        }
+
         return $subscription;
     }
 

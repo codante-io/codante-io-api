@@ -22,7 +22,6 @@ class PagarmeWebhooks
             "Status do request do Pagarme é $request->current_status...",
             "notificacoes-site"
         );
-        // Validando o postback
 
         // Se não for uma transaction, não vamos fazer nada.
         if ($request->object !== "transaction") {
@@ -43,6 +42,10 @@ class PagarmeWebhooks
         )->first();
 
         if (!$subscription) {
+            new Discord(
+                "Erro, não há subscription com o id {$request->post("id")}",
+                "notificacoes-site"
+            );
             return new Response();
         }
 
@@ -166,10 +169,10 @@ class PagarmeWebhooks
         $payload = $request->getContent();
 
         // get the public key from Pagar.me
-        $publicKey = config("services.pagarme.api_key");
+        $apiKey = config("services.pagarme.api_key");
 
         // generate the signature using the public key and the payload sent by Pagar.me
-        $generatedSignature = hash_hmac("sha1", $payload, $publicKey);
+        $generatedSignature = hash_hmac("sha1", $payload, $apiKey);
         $generatedSignature = Str::of($generatedSignature)
             ->trim()
             ->toString();
