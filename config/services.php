@@ -41,6 +41,7 @@ return [
     ],
 
     "pagarme" => [
+        "api_key_v5" => env("PAGARME_API_KEY_V5"),
         "api_key" => env("PAGARME_API_KEY"),
         "encryption_key" => env("PAGARME_ENCRYPTION_KEY"),
     ],
