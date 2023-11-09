@@ -21,7 +21,9 @@ class WorkshopController extends Controller
                 ->with("lessons")
                 ->with("instructor")
                 ->with("tags")
-                ->orderBy("status")
+                ->orderByRaw(
+                    "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
+                )
                 ->orderBy("published_at", "desc")
                 ->listed()
                 ->get()

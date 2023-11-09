@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\WorkshopRequest;
+use Artisan;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -29,6 +30,26 @@ class WorkshopCrudController extends CrudController
         CRUD::setModel(\App\Models\Workshop::class);
         CRUD::setRoute(config("backpack.base.route_prefix") . "/workshop");
         CRUD::setEntityNameStrings("workshop", "workshops");
+
+        $this->crud->addSaveAction([
+            "name" => "save_action_one",
+            "redirect" => function ($crud, $request, $itemId) {
+                Artisan::call("cache:clear");
+                return $crud->route;
+            }, // what's the redirect URL, where the user will be taken after saving?
+
+            // OPTIONAL:
+            "button_text" => "Salvar e Limpar Cache! (streaming)", // override text appearing on the button
+            // You can also provide translatable texts, for example:
+            // 'button_text' => trans('backpack::crud.save_action_one'),
+            "visible" => function ($crud) {
+                return true;
+            }, // customize when this save action is visible for the current operation
+            "referrer_url" => function ($crud, $request, $itemId) {
+                return $crud->route;
+            }, // override http_referrer_url
+            "order" => 1, // change the order save actions are in
+        ]);
     }
 
     /**
@@ -98,14 +119,20 @@ class WorkshopCrudController extends CrudController
             ->type("slug")
             ->hint("Se não preenchido, será gerado automaticamente")
             ->target("name");
+
+        CRUD::field("streaming_url")->type("text");
+
         $this->crud->addField([
             "name" => "status",
             "label" => "Status",
             "type" => "radio",
+            "hint" =>
+                "Se for streaming, preencha o link do streaming acima. Depois use a opção SALVAR LIMPANDO O CACHE",
             "options" => [
                 "archived" => "archived",
                 "draft" => "draft",
                 "published" => "published",
+                "streaming" => "streaming",
                 "soon" => "soon",
                 "unlisted" => "unlisted",
             ],
