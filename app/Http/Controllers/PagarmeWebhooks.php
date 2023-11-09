@@ -17,6 +17,8 @@ class PagarmeWebhooks
 {
     public function handleWebhook(Request $request)
     {
+        $eventType = $request->post("type");
+
         new Discord("Entrando nos Webhooks...", "notificacoes-site");
         new Discord(
             "Status do request do Pagarme é $request->current_status...",
@@ -24,13 +26,7 @@ class PagarmeWebhooks
         );
 
         // Se não for uma transaction, não vamos fazer nada.
-        if ($request->object !== "transaction") {
-            new Discord("Erro, não há transaction", "notificacoes-site");
-            return new Response();
-        }
-
-        // Se não for um evento de status, não vamos fazer nada.
-        if ($request->event !== "transaction_status_changed") {
+        if (!Str::of($eventType)->contains("order.")) {
             new Discord("Erro, evento não trackeado", "notificacoes-site");
             return new Response();
         }
@@ -49,29 +45,28 @@ class PagarmeWebhooks
             return new Response();
         }
 
-        // Se não validar a assinatura, não fazemos nada.
-        $isValid = $this->validatePostBack($request);
-        if (!$isValid) {
-            return new Response('{"message": "not valid signature"}', 401);
-        }
-
         $user = User::find($subscription->user_id);
 
         // Vamos chamar os métodos de acordo com o status da transação.
-        $newStatus = $request->current_status;
+
+        // Se o evento é order.closed, vamos adicionar os dados do pagamento
+        if ($eventType === "order.closed") {
+            $this->handleOrderClosed($request, $subscription, $user);
+        }
+
+        $newStatus = $request->post("data")["status"];
 
         switch ($newStatus) {
             case "paid":
                 // Ativar o plano
                 $this->handlePaid($request, $subscription, $user);
                 break;
-            case "pending_refund":
-            case "refunded":
+            case "pending":
                 // Cancelar o plano
                 $this->handleRefunded($request, $subscription, $user);
                 break;
-            case "refused":
-                $this->handleRefused($request, $subscription, $user);
+            case "order.updated":
+                $this->handleCanceled($request, $subscription, $user);
                 break;
             case "chargedback":
                 $this->handleChargeback($request, $subscription, $user);
@@ -194,5 +189,32 @@ class PagarmeWebhooks
             );
             return true;
         }
+    }
+
+    protected function handleOrderClosed($request, $subscription, $user)
+    {
+        new Discord("chamando handleOrderClosed", "notificacoes-site");
+
+        $paymentMethod = $request->post("data")["charges"][0]["payment_method"];
+        $boletoBarcode = null;
+        $boletoUrl = null;
+
+        if ($paymentMethod === "boleto") {
+            $boletoBarcode =
+                $request->post("data")["charges"][0]["last_transaction"][
+                    "barcode"
+                ] ?? null;
+
+            $boletoUrl =
+                $request->post("data")["charges"][0]["last_transaction"][
+                    "url"
+                ] ?? null;
+        }
+
+        $subscription->update([
+            "payment_method" => $paymentMethod,
+            "boleto_url" => $boletoUrl,
+            "boleto_barcode" => "$boletoBarcode",
+        ]);
     }
 }

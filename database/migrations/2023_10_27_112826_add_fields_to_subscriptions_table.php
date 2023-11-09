@@ -12,6 +12,10 @@ return new class extends Migration {
     {
         Schema::table("subscriptions", function (Blueprint $table) {
             $table
+                ->string("boleto_barcode")
+                ->nullable()
+                ->after("price_paid_in_cents");
+            $table
                 ->string("boleto_url")
                 ->nullable()
                 ->after("price_paid_in_cents");
