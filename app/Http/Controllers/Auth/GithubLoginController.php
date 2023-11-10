@@ -17,30 +17,34 @@ class GithubLoginController extends AuthenticatedSessionController
     public function githubLogin(Request $request)
     {
         $token = $request->validate([
-            'github_token' => 'required',
+            "github_token" => "required",
         ]);
 
         try {
-            $githubUserData = Socialite::driver('github')->userFromToken($token['github_token']);
+            $githubUserData = Socialite::driver("github")->userFromToken(
+                $token["github_token"]
+            );
 
-            $user = User::where('email', $githubUserData->getEmail())->first();
+            $user = User::where("email", $githubUserData->getEmail())->first();
             $isNewSignup = false;
 
             if (!$user) {
                 $user = User::create([
-                    'name' => $githubUserData->getName() ?? $githubUserData->getNickname(),
-                    'email' => $githubUserData->getEmail(),
-                    'password' => Hash::make(Str::random(10)),
-                    'github_id' => $githubUserData->getId(),
-                    'github_user' => $githubUserData->getNickname(),
-                    'avatar_url' => $githubUserData->getAvatar(),
-                    'email_verified_at' => now(),
+                    "name" =>
+                        $githubUserData->getName() ??
+                        $githubUserData->getNickname(),
+                    "email" => $githubUserData->getEmail(),
+                    "password" => Hash::make(Str::random(10)),
+                    "github_id" => $githubUserData->getId(),
+                    "github_user" => $githubUserData->getNickname(),
+                    "avatar_url" => $githubUserData->getAvatar(),
+                    "email_verified_at" => now(),
                 ]);
 
                 $isNewSignup = true;
                 event(new Registered($user));
                 // send UserRegistered email
-                Mail::to($user->email)->send(new UserRegistered($user));
+                Mail::to($user->email)->queue(new UserRegistered($user));
             }
 
             // update avatar and github id
@@ -54,13 +58,12 @@ class GithubLoginController extends AuthenticatedSessionController
             $this->deleteUserTokens($request);
             $token = $this->createUserToken($request);
 
-            return response()
-                ->json([
-                    'token' => $token,
-                    'is_new_signup' => $isNewSignup,
-                ]);
+            return response()->json([
+                "token" => $token,
+                "is_new_signup" => $isNewSignup,
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            return response()->json(["error" => $e->getMessage()], 401);
         }
     }
 }

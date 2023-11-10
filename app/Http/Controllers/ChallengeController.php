@@ -62,7 +62,9 @@ class ChallengeController extends Controller
                 },
             ])
             ->with("tags")
-            ->orderByRaw('-EXISTS (SELECT 1 FROM workshops WHERE workshops.challenge_id = challenges.id)')
+            ->orderByRaw(
+                "-EXISTS (SELECT 1 FROM workshops WHERE workshops.challenge_id = challenges.id)"
+            )
             ->orderBy("status", "asc")
             ->orderBy("position", "asc")
             ->orderBy("created_at", "desc")
@@ -178,7 +180,7 @@ class ChallengeController extends Controller
         );
 
         // send email
-        Mail::to($request->user()->email)->send(
+        Mail::to($request->user()->email)->queue(
             new UserJoinedChallenge($request->user(), $challenge)
         );
 
