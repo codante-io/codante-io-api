@@ -91,10 +91,7 @@ class PagarmeWebhooks
             new PaymentConfirmed($user, $subscription)
         );
 
-        new Discord(
-            "Pagarme: O novo status do ID " . $pagarmeOrderId . " é Pago",
-            "notificacoes-site"
-        );
+        new Discord("Pagarme: O novo status é Pago", "notificacoes-site");
     }
 
     public function handleCanceled(
