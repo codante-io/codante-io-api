@@ -42,6 +42,8 @@ class Subscription extends Model
                 return "Cartão de Crédito";
             case "boleto":
                 return "Boleto Bancário";
+            case "pix":
+                return "Pix";
         }
     }
 
