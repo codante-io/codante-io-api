@@ -51,7 +51,8 @@ class PagarmeController extends Controller
                             "boleto",
                             "pix",
                         ],
-                        "success_url" => "https://codante.io/assine/sucesso",
+                        "success_url" =>
+                            config("app.frontend_url") . "/assine/sucesso",
                         "pix" => [
                             "expires_in" => 86400,
                         ],
