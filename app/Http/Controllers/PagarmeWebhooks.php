@@ -156,6 +156,18 @@ class PagarmeWebhooks
                 ] ?? null;
         }
 
+        if ($paymentMethod === "pix") {
+            $boletoBarcode =
+                $request->post("data")["charges"][0]["last_transaction"][
+                    "qr_code"
+                ] ?? null;
+
+            $boletoUrl =
+                $request->post("data")["charges"][0]["last_transaction"][
+                    "qr_code_url"
+                ] ?? null;
+        }
+
         $subscription->update([
             "payment_method" => $paymentMethod,
             "boleto_url" => $boletoUrl,
