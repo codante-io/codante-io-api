@@ -78,6 +78,11 @@ class PagarmeWebhooks
 
     public function handlePaid($request, Subscription $subscription, User $user)
     {
+        // se status anterior é ativo, não faz nada.
+        if ($subscription->status === "active") {
+            return;
+        }
+
         new Discord("chamando handlePaid", "notificacoes-site");
 
         // Muda status para ativo
