@@ -60,6 +60,7 @@ return new class extends Migration {
             $table->dropColumn("github_username");
             $table->dropColumn("discord_username");
             $table->dropColumn("birth_date");
+            $table->dropColumn("details");
         });
     }
 };
