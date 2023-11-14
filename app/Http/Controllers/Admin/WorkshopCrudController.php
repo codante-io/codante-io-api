@@ -107,7 +107,8 @@ class WorkshopCrudController extends CrudController
         CRUD::field("name");
         CRUD::field("short_description")
             ->label("Resumo")
-            ->limit(255);
+            ->type("textarea")
+            ->attributes(["maxlength" => 150]);
         CRUD::field("description")
             ->label("Descrição (markdown)")
             ->type("easymde")
