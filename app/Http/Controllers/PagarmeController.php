@@ -171,7 +171,7 @@ class PagarmeController extends Controller
         if ($responseData["status"] === "paid") {
             $subscription->changeStatus("active");
 
-            Mail::to($user->email)->queue(
+            Mail::to($user->email)->send(
                 new PaymentConfirmed($user, $subscription)
             );
         }

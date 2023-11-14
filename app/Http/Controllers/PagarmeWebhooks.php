@@ -92,7 +92,7 @@ class PagarmeWebhooks
         $user->upgradeUserToPro();
 
         // Manda email de pagamento.
-        Mail::to($user->email)->queue(
+        Mail::to($user->email)->send(
             new PaymentConfirmed($user, $subscription)
         );
 
@@ -110,7 +110,7 @@ class PagarmeWebhooks
         $subscription->changeStatus("canceled");
 
         // Manda email de Refund.
-        Mail::to($user->email)->queue(
+        Mail::to($user->email)->send(
             new SubscriptionCanceled($user, $subscription)
         );
 

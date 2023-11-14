@@ -44,7 +44,7 @@ class GithubLoginController extends AuthenticatedSessionController
                 $isNewSignup = true;
                 event(new Registered($user));
                 // send UserRegistered email
-                Mail::to($user->email)->queue(new UserRegistered($user));
+                Mail::to($user->email)->send(new UserRegistered($user));
             }
 
             // update avatar and github id
