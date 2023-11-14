@@ -10,6 +10,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TechnicalAssessmentController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\WorkshopController;
@@ -118,5 +119,13 @@ Route::get("/technical-assessments/{slug}", [
 ]);
 
 Route::get("/ranking", [RankingController::class, "getRanking"]);
+
+Route::post("/subscribe", [SubscriptionController::class, "subscribe"]);
+Route::get("/my-subscription", [
+    SubscriptionController::class,
+    "showSubscription",
+]);
+
+Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
 
 require __DIR__ . "/auth.php";

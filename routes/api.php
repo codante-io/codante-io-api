@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BugsnagWebhookController;
+use App\Http\Controllers\PagarmeController;
+use App\Http\Controllers\PagarmeWebhooks;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +27,10 @@ Route::get("/user", function (Request $request) {
     return ["message" => "Não autenticado"];
 })->middleware("auth:sanctum");
 
+Route::get("/user/subscriptions", function (Request $request) {
+    return response()->json(new UserResource($request->user()));
+})->middleware("auth:sanctum");
+
 Route::get("/workshops", function () {
     return \App\Models\Workshop::all();
 });
@@ -38,3 +44,16 @@ Route::post("bugsnag/notification", [
     BugsnagWebhookController::class,
     "notify",
 ]);
+
+// Pagarme Webhook
+Route::post("pagarme/notification", [PagarmeWebhooks::class, "handleWebhook"]);
+
+Route::get("/pagarme/get-link", [
+    PagarmeController::class,
+    "createOrderAndGetCheckoutLink",
+])->middleware("auth:sanctum");
+
+Route::get("/pagarme/get-subscription-by-order-id/{pagarmeOrderID}", [
+    PagarmeController::class,
+    "getSubscriptionByPagarmeOrderId",
+])->middleware("auth:sanctum");

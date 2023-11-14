@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Services\ExpiredPlanService;
+use App\Services\SyncIsProWithPlans;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -23,6 +24,12 @@ class Kernel extends ConsoleKernel
                 ExpiredPlanService::handle();
             })
             ->dailyAt("03:00");
+
+        $schedule
+            ->call(function () {
+                SyncIsProWithPlans::handle();
+            })
+            ->dailyAt("03:30");
 
         $schedule
             ->call(function () {
