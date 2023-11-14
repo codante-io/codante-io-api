@@ -126,4 +126,6 @@ Route::get("/my-subscription", [
     "showSubscription",
 ]);
 
+Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
+
 require __DIR__ . "/auth.php";

@@ -137,11 +137,6 @@ class PagarmeWebhooks
     {
         new Discord("chamando handleOrderClosed", "notificacoes-site");
 
-        // Nesse momento vamos agradecer por se inscrever.
-        Mail::to($user->email)->send(
-            new UserSubscribedToPlan($user, $subscription)
-        );
-
         $paymentMethod = $request->post("data")["charges"][0]["payment_method"];
         $boletoBarcode = null;
         $boletoUrl = null;
@@ -175,5 +170,10 @@ class PagarmeWebhooks
             "boleto_url" => $boletoUrl,
             "boleto_barcode" => "$boletoBarcode",
         ]);
+
+        // Nesse momento vamos agradecer por se inscrever.
+        Mail::to($user->email)->send(
+            new UserSubscribedToPlan($user, $subscription)
+        );
     }
 }

@@ -34,6 +34,11 @@ class UserSubscribedToPlan extends Mailable
             );
         }
 
+        // se for boleto bancário, a view com o botão de pagamento é diferente
+        if (strtolower($this->subscription->payment_method) === "pix") {
+            return new Content(markdown: "emails.user-subscribed-to-plan-pix");
+        }
+
         return new Content(markdown: "emails.user-subscribed-to-plan");
     }
 }

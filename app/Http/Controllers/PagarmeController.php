@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\SubscriptionResource;
+use App\Mail\PaymentConfirmed;
 use App\Models\Plan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Mail;
 
 class PagarmeController extends Controller
 {
@@ -168,6 +170,10 @@ class PagarmeController extends Controller
         // vamos fazer update do status da subscription
         if ($responseData["status"] === "paid") {
             $subscription->changeStatus("active");
+
+            Mail::to($user->email)->queue(
+                new PaymentConfirmed($user, $subscription)
+            );
         }
 
         return new SubscriptionResource($subscription);
