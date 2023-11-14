@@ -181,7 +181,7 @@ class ChallengeController extends Controller
         );
 
         // send email
-        Mail::to($request->user()->email)->queue(
+        Mail::to($request->user()->email)->send(
             new UserJoinedChallenge($request->user(), $challenge)
         );
 
@@ -268,7 +268,10 @@ class ChallengeController extends Controller
 
         // Check if the URL is not from a github repository
         if (Str::contains($validated["submission_url"], "github.com")) {
-            abort(400, "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente.");
+            abort(
+                400,
+                "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente."
+            );
         }
 
         // Check if the URL is valid
@@ -296,17 +299,12 @@ class ChallengeController extends Controller
         $screenshot->setDelay(2000);
         $screenshot->setScreenshotType("png");
         $screenshot->optimize();
-        $storageRes = Storage::put(
-            $imagePath,
-            $screenshot->screenshot()
-        );
+        $storageRes = Storage::put($imagePath, $screenshot->screenshot());
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = Storage::url(
-            $imagePath
-        );
+        $challengeUser->pivot->submission_image_url = Storage::url($imagePath);
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
 
@@ -336,18 +334,28 @@ class ChallengeController extends Controller
             abort(400, "Não existe nenhuma submissão para ser atualizada.");
         }
 
-        if ($validated["submission_url"] === $challengeUser->pivot["submission_url"]) {
+        if (
+            $validated["submission_url"] ===
+            $challengeUser->pivot["submission_url"]
+        ) {
             abort(400, "Adicione um link diferente do atual.");
         }
 
         // Check if the URL is not from a github repository
         if (Str::contains($validated["submission_url"], "github.com")) {
-            abort(400, "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente.");
+            abort(
+                400,
+                "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente."
+            );
         }
 
-        $currentChallengeImageUrl = $challengeUser->pivot["submission_image_url"];
-        $baseStorageUrl = Storage::url('');
-        $currentImagePath = Str::after($currentChallengeImageUrl, $baseStorageUrl);
+        $currentChallengeImageUrl =
+            $challengeUser->pivot["submission_image_url"];
+        $baseStorageUrl = Storage::url("");
+        $currentImagePath = Str::after(
+            $currentChallengeImageUrl,
+            $baseStorageUrl
+        );
 
         // Check if the URL is valid
         $response = \Illuminate\Support\Facades\Http::get(
@@ -365,7 +373,7 @@ class ChallengeController extends Controller
         // Capture the screenshot
         $urlToCapture = $validated["submission_url"];
         $rand = Str::random(10);
-        $imagePath = "/challenges/$slug/$challengeUser->github_id-$rand.png" ;
+        $imagePath = "/challenges/$slug/$challengeUser->github_id-$rand.png";
 
         $screenshot = Browsershot::url($urlToCapture);
         // $screenshot->setNodeBinary(
@@ -376,19 +384,14 @@ class ChallengeController extends Controller
         $screenshot->setScreenshotType("png");
         $screenshot->optimize();
 
-        $storageRes = Storage::put(
-            $imagePath,
-            $screenshot->screenshot()
-        );
+        $storageRes = Storage::put($imagePath, $screenshot->screenshot());
 
         Storage::delete($currentImagePath);
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = Storage::url(
-            $imagePath
-        );
+        $challengeUser->pivot->submission_image_url = Storage::url($imagePath);
         $challengeUser->pivot->updated_at = now();
         $challengeUser->pivot->save();
     }
@@ -478,7 +481,6 @@ class ChallengeController extends Controller
         return $challenge;
     }
 }
-
 
 // private function getScreenShot() {
 //     // ...
