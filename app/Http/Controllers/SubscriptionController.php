@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PlanResource;
 use App\Http\Resources\SubscriptionResource;
+use App\Models\Plan;
 use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware("auth:sanctum");
+        $this->middleware("auth:sanctum", ["except" => ["getPlanDetails"]]);
     }
 
     public function showSubscription()
@@ -42,5 +44,10 @@ class SubscriptionController extends Controller
 
         // if there is no active subscription, return the most recent
         return new SubscriptionResource($subscriptions->first());
+    }
+
+    public function getPlanDetails()
+    {
+        return new PlanResource(Plan::find(1));
     }
 }

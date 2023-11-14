@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\HomeResource;
+use App\Http\Resources\PlanResource;
 use App\Http\Resources\TrackResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Challenge;
+use App\Models\Plan;
 use App\Models\Track;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
@@ -83,6 +85,7 @@ class HomeController extends Controller
                         ->with("tags")
                         ->get()
                 ),
+                "plan_info" => new PlanResource(Plan::find(1)),
             ];
         });
     }
