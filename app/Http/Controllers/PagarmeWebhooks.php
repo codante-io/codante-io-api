@@ -22,12 +22,12 @@ class PagarmeWebhooks
 
         new Discord(
             "Entrando nos Webhooks... (Evento $eventType)",
-            "notificacoes-site"
+            "notificacoes-compras"
         );
 
         // Se não for uma transaction, não vamos fazer nada.
         if (!Str::of($eventType)->contains("order.")) {
-            new Discord("Erro, evento não trackeado", "notificacoes-site");
+            new Discord("Erro, evento não trackeado", "notificacoes-compras");
             return new Response();
         }
 
@@ -40,7 +40,7 @@ class PagarmeWebhooks
         if (!$subscription) {
             new Discord(
                 "Erro, não há subscription com o id {$pagarmeOrderId}",
-                "notificacoes-site"
+                "notificacoes-compras"
             );
             return new Response();
         }
@@ -83,7 +83,7 @@ class PagarmeWebhooks
             return;
         }
 
-        new Discord("chamando handlePaid", "notificacoes-site");
+        new Discord("chamando handlePaid", "notificacoes-compras");
 
         // Muda status para ativo
         $subscription->changeStatus("active");
@@ -96,7 +96,7 @@ class PagarmeWebhooks
             new PaymentConfirmed($user, $subscription)
         );
 
-        new Discord("Pagarme: O novo status é Pago", "notificacoes-site");
+        new Discord("Pagarme: O novo status é Pago", "notificacoes-compras");
     }
 
     public function handleCanceled(
@@ -104,7 +104,7 @@ class PagarmeWebhooks
         Subscription $subscription,
         User $user
     ) {
-        new Discord("chamando handle canceled", "notificacoes-site");
+        new Discord("chamando handle canceled", "notificacoes-compras");
 
         // Muda status para refunded
         $subscription->changeStatus("canceled");
@@ -123,7 +123,7 @@ class PagarmeWebhooks
         Subscription $subscription,
         User $user
     ) {
-        new Discord("chamando handlePending", "notificacoes-site");
+        new Discord("chamando handlePending", "notificacoes-compras");
 
         // Muda status para chargedback
         $subscription->changeStatus("pending");
@@ -135,7 +135,7 @@ class PagarmeWebhooks
     // Essa função serve para completarmos dados de pagamento (por exemplo, meio de pagamento e dados do boleto.)
     protected function handleOrderClosed($request, $subscription, $user)
     {
-        new Discord("chamando handleOrderClosed", "notificacoes-site");
+        new Discord("chamando handleOrderClosed", "notificacoes-compras");
 
         $paymentMethod = $request->post("data")["charges"][0]["payment_method"];
         $boletoBarcode = null;
