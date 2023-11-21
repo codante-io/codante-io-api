@@ -121,7 +121,11 @@ class WorkshopCrudController extends CrudController
             ->hint("Se não preenchido, será gerado automaticamente")
             ->target("name");
 
-        CRUD::field("streaming_url")->type("text");
+        CRUD::field("streaming_url")
+            ->type("text")
+            ->hint(
+                "O link do streaming do youtube. Não esquecer que o link é diferente - porque aqui é embed"
+            );
 
         $this->crud->addField([
             "name" => "status",
