@@ -6,10 +6,12 @@ use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\HomeResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Resources\TrackResource;
+use App\Http\Resources\UserAvatarResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Challenge;
 use App\Models\Plan;
 use App\Models\Track;
+use App\Models\User;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -20,6 +22,15 @@ class HomeController extends Controller
     {
         return Cache::remember("home_content", 60 * 60, function () {
             return [
+                "avatar_section" => [
+                    "user_count" => User::count(),
+                    "avatars" => UserAvatarResource::collection(
+                        User::select("avatar_url", "is_pro")
+                            ->inRandomOrder()
+                            ->limit(16)
+                            ->get()
+                    ),
+                ],
                 "live_streaming_workshop" => Workshop::where(
                     "status",
                     "streaming"
