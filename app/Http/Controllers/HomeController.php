@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\HomeResource;
 use App\Http\Resources\PlanResource;
+use App\Http\Resources\TestimonialResource;
 use App\Http\Resources\TrackResource;
 use App\Http\Resources\UserAvatarResource;
 use App\Http\Resources\WorkshopResource;
@@ -13,6 +14,7 @@ use App\Models\Plan;
 use App\Models\Track;
 use App\Models\User;
 use App\Models\Workshop;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -83,17 +85,22 @@ class HomeController extends Controller
                         ->orderBy("created_at", "desc")
                         ->get()
                 ),
-                "featured_tracks" => TrackResource::collection(
-                    Track::query()
+                // "featured_tracks" => TrackResource::collection(
+                //     Track::query()
+                //         ->where("featured", "landing")
+                //         ->where(function ($query) {
+                //             $query
+                //                 ->where("status", "published")
+                //                 ->orWhere("status", "soon");
+                //         })
+                //         ->with("workshops")
+                //         ->with("challenges")
+                //         ->with("tags")
+                //         ->get()
+                // ),
+                "featured_testimonials" => TestimonialResource::collection(
+                    Testimonial::query()
                         ->where("featured", "landing")
-                        ->where(function ($query) {
-                            $query
-                                ->where("status", "published")
-                                ->orWhere("status", "soon");
-                        })
-                        ->with("workshops")
-                        ->with("challenges")
-                        ->with("tags")
                         ->get()
                 ),
                 "plan_info" => new PlanResource(Plan::find(1)),
