@@ -122,6 +122,12 @@ class TestimonialCrudController extends CrudController
             "type" => "text",
             "label" => "Origem",
         ]);
+        CRUD::addField([
+            "name" => "featured",
+            "type" => "text",
+            "label" => "Destaque",
+            "hint" => 'Por exemplo, "landing"',
+        ]);
     }
 
     /**
