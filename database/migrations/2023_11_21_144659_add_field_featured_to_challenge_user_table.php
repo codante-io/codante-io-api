@@ -10,18 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create("testimonials", function (Blueprint $table) {
-            $table->id();
-            $table->string("name");
-            $table->text("body");
-            $table->string("avatar_url")->nullable();
-            $table->string("company")->nullable();
-            $table->string("source")->nullable();
+        Schema::table("challenge_user", function (Blueprint $table) {
             $table
                 ->string("featured")
                 ->nullable()
+                ->after("submission_image_url")
                 ->index();
-            $table->timestamps();
         });
     }
 
@@ -30,6 +24,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists("testimonials");
+        Schema::table("challenge_user", function (Blueprint $table) {
+            $table->dropColumn("featured");
+        });
     }
 };

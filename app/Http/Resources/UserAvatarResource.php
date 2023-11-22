@@ -17,6 +17,7 @@ class UserAvatarResource extends JsonResource
         return [
             "avatar_url" => $this->avatar_url,
             "is_pro" => $this->is_pro,
+            "name" => $this->whenNotNull($this->name),
         ];
     }
 }

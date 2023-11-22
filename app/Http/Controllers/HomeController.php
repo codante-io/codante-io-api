@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ChallengeCardResource;
+use App\Http\Resources\ChallengeUserCardCollection;
+use App\Http\Resources\ChallengeUserCardResource;
 use App\Http\Resources\HomeResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Resources\TestimonialResource;
@@ -10,6 +12,7 @@ use App\Http\Resources\TrackResource;
 use App\Http\Resources\UserAvatarResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Challenge;
+use App\Models\ChallengeUser;
 use App\Models\Plan;
 use App\Models\Track;
 use App\Models\User;
@@ -85,22 +88,33 @@ class HomeController extends Controller
                         ->orderBy("created_at", "desc")
                         ->get()
                 ),
-                // "featured_tracks" => TrackResource::collection(
-                //     Track::query()
-                //         ->where("featured", "landing")
-                //         ->where(function ($query) {
-                //             $query
-                //                 ->where("status", "published")
-                //                 ->orWhere("status", "soon");
-                //         })
-                //         ->with("workshops")
-                //         ->with("challenges")
-                //         ->with("tags")
-                //         ->get()
-                // ),
                 "featured_testimonials" => TestimonialResource::collection(
                     Testimonial::query()
                         ->where("featured", "landing")
+                        ->get()
+                ),
+                "featured_submissions" => ChallengeUserCardResource::collection(
+                    ChallengeUser::query()
+                        ->where("featured", "landing")
+                        ->with([
+                            "user" => function ($query) {
+                                $query->select(
+                                    "users.id",
+                                    "users.avatar_url",
+                                    "users.name"
+                                );
+                            },
+                        ])
+                        ->with([
+                            "challenge" => function ($query) {
+                                $query->select(
+                                    "challenges.id",
+                                    "challenges.slug",
+                                    "challenges.name"
+                                );
+                            },
+                        ])
+
                         ->get()
                 ),
                 "plan_info" => new PlanResource(Plan::find(1)),
