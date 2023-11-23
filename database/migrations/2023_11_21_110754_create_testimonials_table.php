@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->string("name");
             $table->text("body");
+            $table->string("social_media_link");
+            $table->string("social_media_nickname");
             $table->string("avatar_url")->nullable();
             $table->string("company")->nullable();
             $table->string("source")->nullable();
