@@ -66,14 +66,23 @@ class Workshop extends Model
             ->where("status", "!=", "unlisted");
     }
 
-    // public function setImageUrlAttribute($value)
-    // {
-    //     $attribute_name = "image_url";
-    //     $disk = "s3";
-    //     $destination_path = "workshops/cover-images";
-    //     $fileName = "$this->id";
-    //     $this->uploadFileToDisk($value, $attribute_name, $disk, $destination_path, $fileName);
-    // }
+    public function getLessonSectionsArray()
+    {
+        $grouped = $this->lessons->groupBy("section");
+
+        if ($grouped->count() === 1) {
+            return null;
+        }
+
+        return $grouped
+            ->map(function ($lessons, $section) {
+                return [
+                    "name" => $section,
+                    "lessons" => $lessons->pluck("id"),
+                ];
+            })
+            ->values();
+    }
 
     public function setImageUrlAttribute($value)
     {
