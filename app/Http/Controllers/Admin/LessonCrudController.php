@@ -21,36 +21,37 @@ class LessonCrudController extends CrudController
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
-     * 
+     *
      * @return void
      */
     public function setup()
     {
         CRUD::setModel(\App\Models\Lesson::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/lesson');
-        CRUD::setEntityNameStrings('lesson', 'lessons');
+        CRUD::setRoute(config("backpack.base.route_prefix") . "/lesson");
+        CRUD::setEntityNameStrings("lesson", "lessons");
     }
 
     /**
      * Define what happens when the List operation is loaded.
-     * 
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
-        CRUD::column('name');
-        CRUD::column('workshop_id');
-        CRUD::column('description');
-        CRUD::column('created_at');
-        CRUD::column('updated_at');
-        CRUD::column('slug');
-        CRUD::column('content');
+        CRUD::column("name");
+        CRUD::column("workshop_id");
+        CRUD::column("description");
+        CRUD::column("created_at");
+        CRUD::column("updated_at");
+        CRUD::column("section");
+        CRUD::column("slug");
+        CRUD::column("content");
     }
 
     /**
      * Define what happens when the Create operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
      * @return void
      */
@@ -58,26 +59,28 @@ class LessonCrudController extends CrudController
     {
         CRUD::setValidation(LessonRequest::class);
 
-        CRUD::field('name');
-        CRUD::field('description');
-        CRUD::field('content');
-        CRUD::field('video_url');
-        CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
-        $this->crud->addField(
-            [
-                'name' => 'workshop_id',
-                'label' => 'Workshop',
-                'type' => 'select',
-                'model' => 'App\Models\Workshop',
-                'entity' => 'workshop',
-                'attribute' => 'name'
-            ]
-        );
+        CRUD::field("name");
+        CRUD::field("description");
+        CRUD::field("content");
+        CRUD::field("video_url");
+        CRUD::field("section");
+        CRUD::field("slug")
+            ->type("slug")
+            ->hint("Se não preenchido, será gerado automaticamente")
+            ->target("name");
+        $this->crud->addField([
+            "name" => "workshop_id",
+            "label" => "Workshop",
+            "type" => "select",
+            "model" => "App\Models\Workshop",
+            "entity" => "workshop",
+            "attribute" => "name",
+        ]);
     }
 
     /**
      * Define what happens when the Update operation is loaded.
-     * 
+     *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
