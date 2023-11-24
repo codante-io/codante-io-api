@@ -14,6 +14,6 @@ class CustomTestController extends Controller
     public function handle()
     {
         // SyncIsProWithPlans::handle();
-        return "olá";
+        return "ok";
     }
 }
