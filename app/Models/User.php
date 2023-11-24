@@ -90,6 +90,15 @@ class User extends Authenticatable
 
     public function downgradeUserFromPro()
     {
+        // do not downgrade if there is an active subscription
+        if (
+            $this->subscriptions()
+                ->where("status", "active")
+                ->count() > 0
+        ) {
+            return;
+        }
+
         $this->is_pro = false;
         $this->save();
     }
