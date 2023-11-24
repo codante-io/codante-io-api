@@ -114,7 +114,7 @@ class HomeController extends Controller
                                 );
                             },
                         ])
-
+                        ->inRandomOrder()
                         ->get()
                 ),
                 "plan_info" => new PlanResource(Plan::find(1)),
