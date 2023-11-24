@@ -11,3 +11,4 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('elfinder') }}"><i class="nav-icon la la-files-o"></i> <span>{{ trans('backpack::crud.file_manager') }}</span></a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('blog-post') }}"><i class="nav-icon la la-rss-square"></i> Blog posts</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('technical-assessment') }}"><i class="nav-icon la la-question"></i> Technical assessments</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('testimonial') }}"><i class="nav-icon la la-question"></i> Testimonials</a></li>
