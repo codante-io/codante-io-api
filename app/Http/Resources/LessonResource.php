@@ -26,6 +26,7 @@ class LessonResource extends JsonResource
             "thumbnail_url" => $this->thumbnail_url,
             "duration_in_seconds" => $this->duration_in_seconds,
             "slug" => $this->slug,
+            "section" => $this->section,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "user_completed" => $this->user_completed ? true : false,
