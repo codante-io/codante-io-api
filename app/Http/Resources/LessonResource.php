@@ -20,7 +20,7 @@ class LessonResource extends JsonResource
             "name" => $this->name,
             "description" => $this->description,
             "content" => $this->content,
-            "is_free" => $this->is_free,
+            "available_to" => $this->available_to,
             "user_can_view" => $this->canViewVideo(),
             "video_url" => $this->canViewVideo() ? $this->video_url : null,
             "thumbnail_url" => $this->thumbnail_url,
@@ -35,11 +35,10 @@ class LessonResource extends JsonResource
 
     private function canViewVideo(): bool
     {
-        if ($this->is_free) {
-            return true;
-        }
-
-        if (!Auth::user()) {
+        if (!Auth::check()) {
+            if ($this->available_to === "all") {
+                return true;
+            }
             return false;
         }
 
