@@ -17,13 +17,18 @@ class LessonPolicy
 
     public function view(User $user, Lesson $lesson): bool
     {
-
-        if ($user || $lesson->is_free) {
+        if ($lesson->available_to === "all") {
             return true;
         }
-        // Check if any of the user's subscriptions are active
-        // return $user->subscriptions->contains(function ($subscription) {
-        //     return $subscription->status === "active";
-        // }) || $lesson->is_free;
+
+        if ($lesson->available_to === "logged_in" && $user) {
+            return true;
+        }
+
+        if ($lesson->available_to === "pro" && $user && $user->is_pro) {
+            return true;
+        }
+
+        return false;
     }
 }
