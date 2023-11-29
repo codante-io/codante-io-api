@@ -133,10 +133,10 @@ class ChallengeCrudController extends CrudController
             ],
         ]);
 
-
         $this->crud->addField([
             "label" => "Weekly Featured Start Date",
-            "hint" => 'A data em que o desafio irá entrar na lista de "Weekly Featured". Se não houver horário, pode considerar 00:00:00',
+            "hint" =>
+                'A data em que o desafio irá entrar na lista de "Weekly Featured". Se não houver horário, pode considerar 00:00:00',
             "name" => "weekly_featured_start_date",
             "type" => "datetime",
             "wrapper" => [
@@ -146,14 +146,14 @@ class ChallengeCrudController extends CrudController
 
         $this->crud->addField([
             "label" => "Solution Publish Date",
-            "hint" => 'A data em que o desafio será resolvido (ou sua resolução disponibilizada). Se não houver horário, pode considerar 00:00:00',
+            "hint" =>
+                "A data em que o desafio será resolvido (ou sua resolução disponibilizada). Se não houver horário, pode considerar 00:00:00",
             "name" => "solution_publish_date",
             "type" => "datetime",
             "wrapper" => [
                 "class" => "form-group col-md-6",
             ],
         ]);
-
 
         CRUD::field("repository_name")
             ->type("text")
@@ -167,13 +167,14 @@ class ChallengeCrudController extends CrudController
             "entity_singular" => "resource", // used on the "Add X" button
             "columns" => [
                 "name" => "Nome do Recurso",
-                "type" => "Tipo: 'file' | 'figma'",
+                "type" => "Tipo: 'file' | 'figma' | 'stackblitz-embed'",
                 "url" => "Resource URL",
             ],
             "max" => 10, // maximum rows allowed in the table
             "min" => 0, // minimum rows allowed in the table
+            "hint" =>
+                "O stackblitz-embed vai fazer override do url do github da solução oficial. Use apenas se quiser substituir o link da solução oficial.",
         ]);
-
 
         $this->crud->addField([
             "name" => "tags",
