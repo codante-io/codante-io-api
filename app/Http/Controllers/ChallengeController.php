@@ -7,8 +7,10 @@ use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
 use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\ChallengeResource;
+use App\Http\Resources\ChallengeUserResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
+use App\Models\ChallengeUser;
 use App\Models\Reaction;
 use App\Models\Workshop;
 use DB;
@@ -398,40 +400,19 @@ class ChallengeController extends Controller
 
     public function getSubmissions(Request $request, $slug)
     {
+        Auth::shouldUse("sanctum");
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
 
-        $challengeUsers = $challenge
-            ->users()
-            ->select(
-                "users.name",
-                "users.avatar_url",
-                "users.github_user",
-                "users.is_pro"
-            )
-            ->wherePivotNotNull("submission_url")
+        $challengeSubmissions = ChallengeUser::where("challenge_id", $challenge->id)
+            ->whereNotNull("submission_url")
+            ->orderBy("is_solution", "desc")
             ->orderBy("submitted_at", "desc")
+            ->with("user:id,name,avatar_url,github_user,is_pro")
             ->get();
 
-        $submissions = $challengeUsers->map(function ($challengeUser) {
-            return [
-                "id" => $challengeUser->pivot->id,
-                "user_name" => $challengeUser->name,
-                "user_avatar_url" => $challengeUser->avatar_url,
-                "user_github_user" => $challengeUser->github_user,
-                "submission_url" => $challengeUser->pivot->submission_url,
-                "fork_url" => $challengeUser->pivot->fork_url,
-                "is_pro" => $challengeUser->is_pro,
-                "submission_image_url" =>
-                    $challengeUser->pivot->submission_image_url,
-                "reactions" => Reaction::getReactions(
-                    "App\\Models\\ChallengeUser",
-                    $challengeUser->pivot->id
-                ),
-            ];
-        });
-
-        return response()->json(["data" => $submissions]);
+        return ChallengeUserResource::collection($challengeSubmissions);
     }
+
     private function getChallenge($slug)
     {
         $challenge = Challenge::where("slug", $slug)
