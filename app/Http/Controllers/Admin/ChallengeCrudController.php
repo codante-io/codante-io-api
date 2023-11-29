@@ -173,7 +173,7 @@ class ChallengeCrudController extends CrudController
             "max" => 10, // maximum rows allowed in the table
             "min" => 0, // minimum rows allowed in the table
             "hint" =>
-                "O stackblitz-embed vai fazer override do url do github da solução oficial. Use apenas se quiser substituir o link da solução oficial.",
+                "O stackblitz-embed vai fazer override do url do github da solução oficial. Use apenas se quiser substituir o link da solução oficial. Coloque o link de embed sem nenhum query parameter.",
         ]);
 
         $this->crud->addField([
