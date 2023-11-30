@@ -43,4 +43,8 @@ return [
     "pagarme" => [
         "api_key" => env("PAGARME_API_KEY"),
     ],
+
+    "email_octopus" => [
+        "api_key" => env("EMAILOCTOPUS_API_KEY"),
+    ],
 ];
