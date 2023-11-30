@@ -86,6 +86,9 @@ class User extends Authenticatable
     {
         $this->is_pro = true;
         $this->save();
+
+        // dispatch the event
+        event(new \App\Events\UserStatusUpdated($this));
     }
 
     public function downgradeUserFromPro()
@@ -101,5 +104,8 @@ class User extends Authenticatable
 
         $this->is_pro = false;
         $this->save();
+
+        // dispatch the event
+        event(new \App\Events\UserStatusUpdated($this));
     }
 }

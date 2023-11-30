@@ -33,4 +33,27 @@ class EmailOctopusService
             ]
         );
     }
+
+    public function updateUser(User $user)
+    {
+        // https://emailoctopus.com/api-documentation/lists/update-contact
+        $isPro = $user->is_pro;
+        $nameParts = explode(" ", trim($user->name));
+        $firstName = $nameParts[0];
+        $lastName = end($nameParts);
+
+        $emailHash = md5(strtolower(trim($user->email)));
+
+        Http::put(
+            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
+            [
+                "api_key" => $this->api_key,
+                "fields" => [
+                    "FirstName" => $firstName,
+                    "LastName" => $lastName,
+                    "is_pro" => $isPro,
+                ],
+            ]
+        );
+    }
 }
