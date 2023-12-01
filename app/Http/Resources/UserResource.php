@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             "is_pro" => $this->is_pro,
             "is_admin" => $this->is_admin,
             "created_at" => $this->created_at,
+            "settings" => $this->settings,
             "avatar" => new UserAvatarResource($this),
         ];
     }

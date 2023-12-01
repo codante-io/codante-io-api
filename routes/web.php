@@ -93,6 +93,11 @@ Route::post("/dashboard/change-password", [
     "changePassword",
 ]);
 
+Route::post("/dashboard/update-settings", [
+    DashboardController::class,
+    "updateSettings",
+]);
+
 Route::post("/lessons/{lesson}/completed", [
     LessonController::class,
     "setCompleted",

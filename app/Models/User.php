@@ -24,6 +24,7 @@ class User extends Authenticatable
 
     protected $casts = [
         "email_verified_at" => "datetime",
+        "settings" => "array",
     ];
 
     public function challenges()
