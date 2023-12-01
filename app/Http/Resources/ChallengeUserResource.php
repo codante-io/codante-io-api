@@ -40,9 +40,6 @@ class ChallengeUserResource extends JsonResource
         if (!$this->is_solution) {
             return true;
         }
-        if (Auth::user()->is_admin) {
-            return true;
-        }
         if (!Auth::check()) {
             return false;
         }
