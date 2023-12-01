@@ -9,6 +9,11 @@ class UserActionPoints extends Model
 {
     use HasFactory;
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected $guarded = ["id"];
 
     public static function awardPoints(
@@ -49,6 +54,7 @@ class UserActionPoints extends Model
         $query = UserActionPoints::selectRaw(
             "users.name, " .
                 "users.is_pro, " .
+                "users.is_admin, " .
                 "users.avatar_url, " .
                 "sum(user_action_points.points) as points, " .
                 "SUM(CASE WHEN user_action_points.action_name = 'challenge_completed' THEN 1 ELSE 0 END) AS completed_challenge_count, " .
@@ -56,7 +62,12 @@ class UserActionPoints extends Model
         )
             ->where("users.is_admin", false)
             ->join("users", "users.id", "=", "user_action_points.user_id")
-            ->groupBy("users.name", "users.avatar_url", "users.is_pro")
+            ->groupBy(
+                "users.name",
+                "users.avatar_url",
+                "users.is_pro",
+                "users.is_admin"
+            )
             ->orderByDesc("points")
             ->limit(10);
 
