@@ -23,13 +23,13 @@ class UserAvatarResource extends JsonResource
 
     private function getBadgeName()
     {
-        if ($this->is_admin) {
-            return "admin";
-        }
-
         // if user dont want to show badge
         if ($this->settings && $this->settings["show_badge"] === false) {
             return null;
+        }
+
+        if ($this->is_admin) {
+            return "admin";
         }
 
         if ($this->is_pro) {
