@@ -20,10 +20,10 @@ class UserResource extends JsonResource
             "email" => $this->email,
             "github_id" => $this->github_id,
             "github_user" => $this->github_user,
-            "avatar_url" => $this->avatar_url,
             "is_pro" => $this->is_pro,
             "is_admin" => $this->is_admin,
             "created_at" => $this->created_at,
+            "avatar" => new UserAvatarResource($this),
         ];
     }
 }
