@@ -16,9 +16,19 @@ class UserAvatarResource extends JsonResource
     {
         return [
             "avatar_url" => $this->avatar_url,
-            "is_pro" => $this->is_pro,
             "name" => $this->whenNotNull($this->name),
-            "is_admin" => $this->is_admin,
+            "badge" => $this->getBadgeName(),
         ];
+    }
+
+    private function getBadgeName()
+    {
+        if ($this->is_admin) {
+            return "admin";
+        }
+        if ($this->is_pro) {
+            return "pro";
+        }
+        return null;
     }
 }
