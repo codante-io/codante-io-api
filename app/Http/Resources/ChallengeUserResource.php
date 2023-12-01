@@ -19,17 +19,16 @@ class ChallengeUserResource extends JsonResource
         return [
             "id" => $this->id,
             "user_name" => $this->user->name,
-            "user_avatar_url" => $this->user->avatar_url,
             "user_github_user" => $this->user->github_user,
             "submission_url" => $this->submission_url,
             "fork_url" => $this->canViewForkUrl() ? $this->fork_url : null,
             "is_pro" => $this->user->is_pro,
-            "is_admin" => $this->user->is_admin,
             "submission_image_url" => $this->submission_image_url,
             "reactions" => Reaction::getReactions(
                 "App\\Models\\ChallengeUser",
                 $this->id
             ),
+            "avatar" => new UserAvatarResource($this->user),
             "is_solution" => $this->is_solution,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
@@ -38,7 +37,9 @@ class ChallengeUserResource extends JsonResource
 
     private function canViewForkUrl(): bool
     {
-        if (!$this->is_solution) return true;
+        if (!$this->is_solution) {
+            return true;
+        }
         if (Auth::user()->is_admin) {
             return true;
         }
