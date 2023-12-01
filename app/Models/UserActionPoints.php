@@ -56,6 +56,7 @@ class UserActionPoints extends Model
                 "users.is_pro, " .
                 "users.is_admin, " .
                 "users.avatar_url, " .
+                "users.settings, " .
                 "sum(user_action_points.points) as points, " .
                 "SUM(CASE WHEN user_action_points.action_name = 'challenge_completed' THEN 1 ELSE 0 END) AS completed_challenge_count, " .
                 "SUM(CASE WHEN user_action_points.action_name = 'reaction_received' THEN 1 ELSE 0 END) AS received_reaction_count"
@@ -66,7 +67,8 @@ class UserActionPoints extends Model
                 "users.name",
                 "users.avatar_url",
                 "users.is_pro",
-                "users.is_admin"
+                "users.is_admin",
+                "users.settings"
             )
             ->orderByDesc("points")
             ->limit(10);
@@ -75,6 +77,16 @@ class UserActionPoints extends Model
             $query->whereMonth("user_action_points.created_at", date("m"));
         }
 
-        return $query->get();
+        $users = $query->get();
+
+        // make users->settings as array
+        $users->map(function ($user) {
+            if ($user->settings && is_string($user->settings)) {
+                $user->settings = json_decode($user->settings, true);
+            }
+            return $user;
+        });
+
+        return $users;
     }
 }
