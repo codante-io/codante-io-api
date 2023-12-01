@@ -8,6 +8,7 @@ use App\Events\ChallengeJoined;
 use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\ChallengeResource;
 use App\Http\Resources\ChallengeUserResource;
+use App\Http\Resources\UserAvatarResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
@@ -25,6 +26,7 @@ use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Laravel\Socialite\One\User;
 
 class ChallengeController extends Controller
 {
@@ -234,18 +236,12 @@ class ChallengeController extends Controller
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
             ->users()
+            ->select("users.avatar_url", "users.name", "users.is_pro", "users.is_admin"),
             ->get()
-            ->map(function ($user) {
-                return [
-                    "avatar_url" => $user->avatar_url,
-                    "is_pro" => $user->is_pro,
-                    "is_admin" => $user->is_admin,
-                ];
-            })
             ->take(20);
         return [
             "count" => $participantsCount,
-            "avatars" => $participantsInfo,
+            "avatars" => UserAvatarResource::collection($participantsInfo),
         ];
     }
 
