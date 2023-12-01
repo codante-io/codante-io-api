@@ -61,7 +61,12 @@ class ChallengeController extends Controller
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->select("users.id", "users.avatar_url", "users.is_pro", "users.is_admin")
+                        ->select(
+                            "users.id",
+                            "users.avatar_url",
+                            "users.is_pro",
+                            "users.is_admin"
+                        )
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -236,7 +241,12 @@ class ChallengeController extends Controller
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
             ->users()
-            ->select("users.avatar_url", "users.name", "users.is_pro", "users.is_admin"),
+            ->select(
+                "users.avatar_url",
+                "users.name",
+                "users.is_pro",
+                "users.is_admin"
+            )
             ->get()
             ->take(20);
         return [
@@ -400,7 +410,10 @@ class ChallengeController extends Controller
         Auth::shouldUse("sanctum");
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
 
-        $challengeSubmissions = ChallengeUser::where("challenge_id", $challenge->id)
+        $challengeSubmissions = ChallengeUser::where(
+            "challenge_id",
+            $challenge->id
+        )
             ->whereNotNull("submission_url")
             ->orderBy("is_solution", "desc")
             ->orderBy("submitted_at", "desc")
