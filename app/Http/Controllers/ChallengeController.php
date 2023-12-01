@@ -59,7 +59,7 @@ class ChallengeController extends Controller
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->select("users.id", "users.avatar_url", "users.is_pro")
+                        ->select("users.id", "users.avatar_url", "users.is_pro", "users.is_admin")
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -239,6 +239,7 @@ class ChallengeController extends Controller
                 return [
                     "avatar_url" => $user->avatar_url,
                     "is_pro" => $user->is_pro,
+                    "is_admin" => $user->is_admin,
                 ];
             })
             ->take(20);
@@ -407,7 +408,7 @@ class ChallengeController extends Controller
             ->whereNotNull("submission_url")
             ->orderBy("is_solution", "desc")
             ->orderBy("submitted_at", "desc")
-            ->with("user:id,name,avatar_url,github_user,is_pro")
+            ->with("user:id,name,avatar_url,github_user,is_pro,is_admin")
             ->get();
 
         return ChallengeUserResource::collection($challengeSubmissions);
