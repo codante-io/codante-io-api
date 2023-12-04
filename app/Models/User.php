@@ -44,6 +44,18 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
 
+    public function scopeSelectAvatarFields()
+    {
+        return $this->select(
+            "id",
+            "avatar_url",
+            "is_pro",
+            "is_admin",
+            "name",
+            "settings"
+        );
+    }
+
     public function subscribeToPlan(
         $planId,
         $providerId = null,

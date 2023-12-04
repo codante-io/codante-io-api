@@ -61,12 +61,7 @@ class ChallengeController extends Controller
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->select(
-                            "users.id",
-                            "users.avatar_url",
-                            "users.is_pro",
-                            "users.is_admin"
-                        )
+                        ->selectAvatarFields()
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -80,6 +75,7 @@ class ChallengeController extends Controller
             ->orderBy("created_at", "desc")
             ->get();
 
+        dd($challenges);
         return ChallengeCardResource::collection($challenges);
     }
 
@@ -241,12 +237,7 @@ class ChallengeController extends Controller
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
             ->users()
-            ->select(
-                "users.avatar_url",
-                "users.name",
-                "users.is_pro",
-                "users.is_admin"
-            )
+            ->selectAvatarFields()
             ->get()
             ->take(20);
         return [
@@ -417,7 +408,9 @@ class ChallengeController extends Controller
             ->whereNotNull("submission_url")
             ->orderBy("is_solution", "desc")
             ->orderBy("submitted_at", "desc")
-            ->with("user:id,name,avatar_url,github_user,is_pro,is_admin")
+            ->with("user", function ($query) {
+                $query->selectAvatarFields()->select("id", "github_user");
+            })
             ->get();
 
         return ChallengeUserResource::collection($challengeSubmissions);

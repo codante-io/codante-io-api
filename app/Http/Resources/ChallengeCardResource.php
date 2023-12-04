@@ -25,7 +25,6 @@ class ChallengeCardResource extends JsonResource
             "has_solution" => $this->whenLoaded("workshop") ? true : false,
             "tags" => TagResource::collection($this->whenLoaded("tags")),
             "avatars" => UserAvatarResource::collection(
-                //take 5 random users
                 $this->whenLoaded("users")->take(5)
             ),
             "enrolled_users_count" => $this->users_count,
