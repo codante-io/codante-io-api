@@ -16,8 +16,25 @@ class UserAvatarResource extends JsonResource
     {
         return [
             "avatar_url" => $this->avatar_url,
-            "is_pro" => $this->is_pro,
             "name" => $this->whenNotNull($this->name),
+            "badge" => $this->getBadgeName(),
         ];
+    }
+
+    private function getBadgeName()
+    {
+        // if user dont want to show badge
+        if ($this->settings && $this->settings["show_badge"] === false) {
+            return null;
+        }
+
+        if ($this->is_admin) {
+            return "admin";
+        }
+
+        if ($this->is_pro) {
+            return "pro";
+        }
+        return null;
     }
 }
