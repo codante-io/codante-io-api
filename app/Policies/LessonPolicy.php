@@ -25,7 +25,7 @@ class LessonPolicy
             return true;
         }
 
-        if ($lesson->available_to === "pro" && $user && ($user->is_pro || $user->is_admin)) {
+        if ($lesson->available_to === "pro" && $user && $user->is_pro) {
             return true;
         }
 
