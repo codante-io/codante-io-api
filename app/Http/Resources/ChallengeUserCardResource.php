@@ -18,10 +18,16 @@ class ChallengeUserCardResource extends JsonResource
         return [
             "id" => $this->id,
             "submission_image_url" => $this->submission_image_url,
-            "user_avatar" => new UserAvatarResource(
+            "avatar" => new UserAvatarResource(
                 $this->user
                     ->query()
-                    ->select("avatar_url", "name", "is_pro")
+                    ->select(
+                        "avatar_url",
+                        "name",
+                        "is_pro",
+                        "is_admin",
+                        "settings"
+                    )
                     ->find($this->user_id)
             ),
             "challenge" => $this->whenLoaded("challenge", [

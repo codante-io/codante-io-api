@@ -8,6 +8,7 @@ use App\Events\ChallengeJoined;
 use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\ChallengeResource;
 use App\Http\Resources\ChallengeUserResource;
+use App\Http\Resources\UserAvatarResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
@@ -25,6 +26,7 @@ use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Laravel\Socialite\One\User;
 
 class ChallengeController extends Controller
 {
@@ -59,7 +61,12 @@ class ChallengeController extends Controller
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->select("users.id", "users.avatar_url", "users.is_pro")
+                        ->select(
+                            "users.id",
+                            "users.avatar_url",
+                            "users.is_pro",
+                            "users.is_admin"
+                        )
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -234,17 +241,17 @@ class ChallengeController extends Controller
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
             ->users()
+            ->select(
+                "users.avatar_url",
+                "users.name",
+                "users.is_pro",
+                "users.is_admin"
+            )
             ->get()
-            ->map(function ($user) {
-                return [
-                    "avatar_url" => $user->avatar_url,
-                    "is_pro" => $user->is_pro,
-                ];
-            })
             ->take(20);
         return [
             "count" => $participantsCount,
-            "avatars" => $participantsInfo,
+            "avatars" => UserAvatarResource::collection($participantsInfo),
         ];
     }
 
@@ -403,11 +410,14 @@ class ChallengeController extends Controller
         Auth::shouldUse("sanctum");
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
 
-        $challengeSubmissions = ChallengeUser::where("challenge_id", $challenge->id)
+        $challengeSubmissions = ChallengeUser::where(
+            "challenge_id",
+            $challenge->id
+        )
             ->whereNotNull("submission_url")
             ->orderBy("is_solution", "desc")
             ->orderBy("submitted_at", "desc")
-            ->with("user:id,name,avatar_url,github_user,is_pro")
+            ->with("user:id,name,avatar_url,github_user,is_pro,is_admin")
             ->get();
 
         return ChallengeUserResource::collection($challengeSubmissions);

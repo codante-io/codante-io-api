@@ -30,7 +30,7 @@ class HomeController extends Controller
                 "avatar_section" => [
                     "user_count" => User::count(),
                     "avatars" => UserAvatarResource::collection(
-                        User::select("avatar_url", "is_pro")
+                        User::select("avatar_url", "is_pro", "is_admin")
                             ->inRandomOrder()
                             ->limit(16)
                             ->get()
@@ -77,7 +77,7 @@ class HomeController extends Controller
                         ->with([
                             "users" => function ($query) {
                                 $query
-                                    ->select("users.id", "users.avatar_url")
+                                    ->select("users.id", "users.avatar_url", "users.is_admin")
                                     ->inRandomOrder()
                                     ->limit(5);
                             },
