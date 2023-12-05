@@ -79,9 +79,6 @@ class HomeController extends Controller
                             "users" => function ($query) {
                                 $query
                                     ->select("users.id", "users.name", "users.is_pro", "users.avatar_url", "users.is_admin")
-                                    ->when(Auth::check(), function ($query) {
-                                        $query->orderByRaw("users.id = ? DESC", [auth()->id()]);
-                                    })
                                     ->inRandomOrder()
                                     ->limit(5);
                             },
