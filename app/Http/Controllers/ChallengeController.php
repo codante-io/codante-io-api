@@ -67,6 +67,9 @@ class ChallengeController extends Controller
                             "users.is_pro",
                             "users.is_admin"
                         )
+                        ->when(Auth::check(), function ($query) {
+                            $query->orderByRaw("users.id = ? DESC", [auth()->id()]);
+                        })
                         ->inRandomOrder()
                         ->limit(5);
                 },
