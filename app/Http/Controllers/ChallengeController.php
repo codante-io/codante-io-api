@@ -61,7 +61,14 @@ class ChallengeController extends Controller
             ->with([
                 "users" => function ($query) {
                     $query
-                        ->selectAvatarFields()
+                        ->select(
+                            "users.id",
+                            "name",
+                            "is_pro",
+                            "is_admin",
+                            "avatar_url",
+                            "settings"
+                        )
                         ->inRandomOrder()
                         ->limit(5);
                 },
@@ -75,7 +82,6 @@ class ChallengeController extends Controller
             ->orderBy("created_at", "desc")
             ->get();
 
-        dd($challenges);
         return ChallengeCardResource::collection($challenges);
     }
 

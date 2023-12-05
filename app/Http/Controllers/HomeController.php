@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ChallengeCardResource;
-use App\Http\Resources\ChallengeUserCardCollection;
 use App\Http\Resources\ChallengeUserCardResource;
-use App\Http\Resources\HomeResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Resources\TestimonialResource;
 use App\Http\Resources\TrackResource;
@@ -18,7 +16,7 @@ use App\Models\Track;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Models\Testimonial;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
@@ -32,7 +30,7 @@ class HomeController extends Controller
                     "avatars" => UserAvatarResource::collection(
                         User::selectAvatarFields()
                             ->inRandomOrder()
-                            ->limit(16)
+                            ->take(16)
                             ->get()
                     ),
                 ],
