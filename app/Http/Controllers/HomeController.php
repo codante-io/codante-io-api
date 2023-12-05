@@ -81,7 +81,7 @@ class HomeController extends Controller
                                     ->select("users.id", "users.name", "users.is_pro", "users.avatar_url", "users.is_admin")
                                     ->inRandomOrder()
                                     ->limit(5);
-                            },
+                            }, // nao ordena por usuário logado pois informaçoes estão cacheadas
                         ])
                         ->with("tags")
                         ->orderBy("status", "asc")
