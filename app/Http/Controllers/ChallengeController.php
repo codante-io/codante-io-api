@@ -240,6 +240,7 @@ class ChallengeController extends Controller
 
     public function getChallengeParticipantsBanner(Request $request, $slug)
     {
+        Auth::shouldUse("sanctum");
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
@@ -250,8 +251,12 @@ class ChallengeController extends Controller
                 "users.is_pro",
                 "users.is_admin"
             )
+            ->when(Auth::check(), function ($query) {
+                $query->orderByRaw("users.id = ? DESC", [auth()->id()]);
+            })
             ->get()
             ->take(20);
+
         return [
             "count" => $participantsCount,
             "avatars" => UserAvatarResource::collection($participantsInfo),
