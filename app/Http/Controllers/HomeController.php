@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ChallengeCardResource;
-use App\Http\Resources\ChallengeUserCardCollection;
 use App\Http\Resources\ChallengeUserCardResource;
-use App\Http\Resources\HomeResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Resources\TestimonialResource;
-use App\Http\Resources\TrackResource;
 use App\Http\Resources\UserAvatarResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Challenge;
@@ -18,8 +15,6 @@ use App\Models\Track;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Models\Testimonial;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
@@ -33,7 +28,7 @@ class HomeController extends Controller
                     "avatars" => UserAvatarResource::collection(
                         User::select("avatar_url", "is_pro", "is_admin")
                             ->inRandomOrder()
-                            ->limit(16)
+                            ->take(16)
                             ->get()
                     ),
                 ],
@@ -78,7 +73,13 @@ class HomeController extends Controller
                         ->with([
                             "users" => function ($query) {
                                 $query
-                                    ->select("users.id", "users.name", "users.is_pro", "users.avatar_url", "users.is_admin")
+                                    ->select(
+                                        "users.id",
+                                        "users.name",
+                                        "users.is_pro",
+                                        "users.avatar_url",
+                                        "users.is_admin"
+                                    )
                                     ->inRandomOrder()
                                     ->limit(5);
                             }, // nao ordena por usuário logado pois informaçoes estão cacheadas
