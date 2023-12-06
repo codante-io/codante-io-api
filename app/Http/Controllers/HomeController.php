@@ -19,6 +19,7 @@ use App\Models\User;
 use App\Models\Workshop;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
@@ -77,10 +78,10 @@ class HomeController extends Controller
                         ->with([
                             "users" => function ($query) {
                                 $query
-                                    ->select("users.id", "users.avatar_url", "users.is_admin")
+                                    ->select("users.id", "users.name", "users.is_pro", "users.avatar_url", "users.is_admin")
                                     ->inRandomOrder()
                                     ->limit(5);
-                            },
+                            }, // nao ordena por usuário logado pois informaçoes estão cacheadas
                         ])
                         ->with("tags")
                         ->orderBy("status", "asc")
