@@ -10,6 +10,7 @@ use App\Events\ReactionDeleted;
 use App\Events\UserStatusUpdated;
 use App\Listeners\AwardPoints;
 use App\Listeners\Registered as RegisteredListener;
+use App\Listeners\SendDiscordNotificationChallengeSubmitted;
 use App\Listeners\UserStatusUpdated as UserStatusUpdatedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -28,7 +29,10 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
             RegisteredListener::class,
         ],
-        ChallengeCompleted::class => [AwardPoints::class],
+        ChallengeCompleted::class => [
+            AwardPoints::class,
+            SendDiscordNotificationChallengeSubmitted::class,
+        ],
         ChallengeJoined::class => [AwardPoints::class],
         ChallengeForked::class => [AwardPoints::class],
         ReactionCreated::class => [AwardPoints::class],
