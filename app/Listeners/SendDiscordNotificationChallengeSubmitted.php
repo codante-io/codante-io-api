@@ -24,8 +24,30 @@ class SendDiscordNotificationChallengeSubmitted
     {
         // Discord Message
         new Discord(
-            "🎉 __Nova Submissão Enviada__!\nO Mini Projeto **{$event->challenge->name}** foi concluído por **{$event->user->name}**\n[Vem dar uma espiada!](https://codante.io/mini-projetos/{$event->challenge->slug}/submissoes)!",
-            "submissoes"
+            "{$this->getRandomMessageGreeting()}O Mini Projeto **{$event->challenge->name}** foi concluído por **{$event->user->name}**\n ​ \n",
+            "submissoes",
+            [
+                [
+                    "title" => "Submissão de {$event->user->name}",
+                    "description" => "Mini Projeto: {$event->challenge->name}",
+                    "url" => "https://codante.io/mini-projetos/{$event->challenge->slug}/submissoes",
+                    "color" => 0x0099ff,
+                    "image" => [
+                        "url" =>
+                            $event->challengeUser->pivot->submission_image_url,
+                    ],
+                ],
+            ]
         );
+    }
+
+    private function getRandomMessageGreeting()
+    {
+        $messages = [
+            "🎉 __Nova Submissão Enviada__!\n ​ \n",
+            "👉🏽 __Mais um projeto concluído com sucesso__!\n ​ \n",
+            "🧑🏽‍💻 __Praticando é que se  evolui__!\n ​ \n",
+        ];
+        return $messages[array_rand($messages)];
     }
 }
