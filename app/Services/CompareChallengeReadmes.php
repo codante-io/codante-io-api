@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Challenge;
-use App\Models\Subscription;
-use App\Models\User;
 use App\Notifications\Discord;
 use Mistralys\Diff\Diff;
 
@@ -22,14 +20,14 @@ class CompareChallengeReadmes
 
         foreach ($challenges as $challenge) {
             $this->testChallengeDescription($challenge->slug);
-            // wait 0.5 seconds to avoid rate limit
-            sleep(0.5);
+            // wait 1 seconds to avoid rate limit
+            sleep(1);
         }
 
         // Discord Message
         new Discord(
             "==== 🎉 Finalizada comparação de Readmes de todos os Mini Projetos.",
-            "notificacoes-site ===="
+            "notificacoes-site"
         );
     }
 
