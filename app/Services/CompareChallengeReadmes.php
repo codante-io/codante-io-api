@@ -14,11 +14,23 @@ class CompareChallengeReadmes
     {
         $challenges = Challenge::where("status", "published")->get("slug");
 
+        // Discord Message
+        new Discord(
+            "==== 🔍 Iniciando comparação de Readmes de todos os Mini Projetos... ====",
+            "notificacoes-site"
+        );
+
         foreach ($challenges as $challenge) {
             $this->testChallengeDescription($challenge->slug);
-            // wait 1 second between each request
-            sleep(1);
+            // wait 0.5 seconds to avoid rate limit
+            sleep(0.5);
         }
+
+        // Discord Message
+        new Discord(
+            "==== 🎉 Finalizada comparação de Readmes de todos os Mini Projetos.",
+            "notificacoes-site ===="
+        );
     }
 
     public static function getDiffHtml(string $slug)
@@ -86,14 +98,14 @@ class CompareChallengeReadmes
             )->toArray();
 
             $isEqual = true;
-            $appURL =
+            $diffUrl =
                 config("app.url") . "/admin/compare-readmes/$challengeSlug";
 
             foreach ($diff as $line) {
                 if ($line[1] !== 0) {
                     // Log a message or throw an exception if the descriptions are different
                     new Discord(
-                        "A descrição do desafio $challenge->slug é diferente do README do GitHub. 😞 - Acesse $appURL para ver a diff completa",
+                        "❌ Mini Projeto **$challenge->slug**: diferença nos Readmes. Diff: $diffUrl",
                         "notificacoes-site"
                     );
                     $isEqual = false;
@@ -103,12 +115,10 @@ class CompareChallengeReadmes
 
             if ($isEqual) {
                 new Discord(
-                    "O MP $challenge->slug está com o Readme igual ao do Github 🎉",
+                    "✅ Mini Projeto **$challenge->slug**: Readmes iguais.",
                     "notificacoes-site"
                 );
             }
-        } else {
-            // Log::warning("Challenge with slug $challengeSlug not found.");
         }
     }
 }
