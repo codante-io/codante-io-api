@@ -35,5 +35,14 @@ Route::group(
 
         Route::get("test-readmes/{slug}", "CompareReadmeController@test");
         Route::get("compare-readmes/{slug}", "CompareReadmeController@compare");
+
+        Route::get(
+            "challenge-notification/discord-launched-mp/{challenge}",
+            "ChallengeCrudController@notifyDiscordChallengeLaunched"
+        );
+        Route::get(
+            "challenge-notification/discord-launched-solution/{challenge}",
+            "ChallengeCrudController@notifyDiscordChallengeSolutionLaunched"
+        );
     }
 ); // this should be the absolute last line of this file

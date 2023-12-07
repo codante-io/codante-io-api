@@ -14,19 +14,25 @@ class Discord extends Notification
     use Notifiable;
     use Queueable;
 
-    public function __construct($message, $channel = 'notificacoes')
-    {
-        $channels = config('discord.channels');
+    public function __construct(
+        $message,
+        $channel = "notificacoes",
+        $embeds = null
+    ) {
+        $channels = config("discord.channels");
 
         $webhookUrl = $channels[$channel];
 
         try {
-            Http::post($webhookUrl, ['content' => $message]);
+            Http::post($webhookUrl, [
+                "content" => $message,
+                "embeds" => $embeds,
+            ]);
         } catch (Exception $e) {
             Mail::to("contato@trilhante.com.br")
-            ->from("contato@trilhante.com.br")
-            ->subject("CODANTE - Erro na notificação do Discord")
-            ->html($e->getMessage());
+                ->from("contato@trilhante.com.br")
+                ->subject("CODANTE - Erro na notificação do Discord")
+                ->html($e->getMessage());
         }
     }
 }
