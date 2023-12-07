@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Services\CompareChallengeReadmes;
 use App\Services\ExpiredPlanService;
 use App\Services\SyncIsProWithPlans;
 use Illuminate\Console\Scheduling\Schedule;
@@ -36,6 +37,12 @@ class Kernel extends ConsoleKernel
                 (new \App\Services\VimeoThumbnailService())->CheckAllVideoThumbnails();
             })
             ->dailyAt("04:00");
+
+        $schedule
+            ->call(function () {
+                (new CompareChallengeReadmes())->checkAll();
+            })
+            ->weeklyOn(1, "04:30");
     }
 
     /**
