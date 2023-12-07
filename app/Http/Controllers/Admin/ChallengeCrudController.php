@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\ChallengeRequest;
-use App\Models\Track;
+use App\Models\Challenge;
+use App\Notifications\Discord;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -188,6 +189,26 @@ class ChallengeCrudController extends CrudController
             "default" => 1,
             "attributes" => ["step" => "any"],
         ]);
+
+        $this->crud->addField([
+            "name" => "notifica",
+            "type" => "notify-discord",
+            "data" => [
+                "title" => "Discord: MP Lançado",
+                "notification-url" =>
+                    "/admin/challenge-notification/discord-launched-mp/",
+            ],
+        ]);
+
+        $this->crud->addField([
+            "name" => "notifica1",
+            "type" => "notify-discord",
+            "data" => [
+                "title" => "Discord: MP Resolução Disponível",
+                "notification-url" =>
+                    "/admin/challenge-notification/discord-launched-solution/",
+            ],
+        ]);
     }
 
     /**
@@ -199,5 +220,45 @@ class ChallengeCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         $this->setupCreateOperation();
+    }
+
+    protected function notifyDiscordChallengeLaunched(Challenge $challenge)
+    {
+        new Discord(
+            "Fala pessoal (@here)! Acabamos de lançar mais um Mini Projeto no Codante:\n ​ \n**{$challenge->name}!** 🚀\n ​ \nAcesse o link abaixo para acessar o Mini-Projeto e para participar! 👇 \n ​ \n",
+            "notificacoes-site",
+            [
+                [
+                    "title" => $challenge->name,
+                    "description" => "Mini Projeto do Codante",
+                    "url" => "https://codante.io/mini-projetos/$challenge->slug",
+                    "color" => 0x0099ff,
+                    "image" => [
+                        "url" => $challenge->image_url,
+                    ],
+                ],
+            ]
+        );
+    }
+
+    protected function notifyDiscordChallengeSolutionLaunched(
+        Challenge $challenge
+    ) {
+        new Discord(
+            "Fala pessoal (@here)! Acabamos de disponibilizar no Codante:\n ​ \nResolução do Mini Projeto: **{$challenge->name}!**\n ​ \nNo link abaixo você encontra tanto a resolução em vídeo como o código da resolução! 👇 \n ​ \n",
+            "notificacoes-site",
+            [
+                [
+                    "title" => "Resolução de: $challenge->name",
+                    "description" =>
+                        "Resolução em Vídeo e Código do Mini Projeto",
+                    "url" => "https://codante.io/mini-projetos/$challenge->slug/resolucao",
+                    "color" => 0x0099ff,
+                    "image" => [
+                        "url" => $challenge->image_url,
+                    ],
+                ],
+            ]
+        );
     }
 }
