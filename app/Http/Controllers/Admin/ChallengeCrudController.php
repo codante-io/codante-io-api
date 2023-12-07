@@ -246,7 +246,7 @@ class ChallengeCrudController extends CrudController
     ) {
         new Discord(
             "Fala pessoal (@here)! Acabamos de disponibilizar no Codante:\n ​ \nResolução do Mini Projeto: **{$challenge->name}!**\n ​ \nNo link abaixo você encontra tanto a resolução em vídeo como o código da resolução! 👇 \n ​ \n",
-            "notificacoes-site",
+            "comunicados",
             [
                 [
                     "title" => "Resolução de: $challenge->name",
