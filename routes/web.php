@@ -92,7 +92,10 @@ Route::post("/dashboard/change-password", [
     DashboardController::class,
     "changePassword",
 ]);
-
+Route::post("/dashboard/change-linkedin-url", [
+    DashboardController::class,
+    "changeLinkedinUrl",
+]);
 Route::post("/dashboard/update-settings", [
     DashboardController::class,
     "updateSettings",
