@@ -103,7 +103,8 @@ class HomeController extends Controller
                                 $query->select(
                                     "users.id",
                                     "users.avatar_url",
-                                    "users.name"
+                                    "users.name",
+                                    "users.github_user"
                                 );
                             },
                         ])
