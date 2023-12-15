@@ -40,11 +40,11 @@ class DashboardController extends Controller
     public function changeLinkedinUrl(Request $request)
     {
         $request->validate([
-            "linkedin_url" => "required|url",
+            "linkedin_user" => "required|string",
         ]);
 
         $user = $request->user();
-        $user->linkedin_url = $request->linkedin_url;
+        $user->linkedin_user = $request->linkedin_user;
         $user->save();
 
         return $user;
