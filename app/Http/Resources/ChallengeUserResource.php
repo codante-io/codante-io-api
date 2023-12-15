@@ -33,7 +33,7 @@ class ChallengeUserResource extends JsonResource
             "is_solution" => $this->is_solution,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
-            "linkedin_url" => $this->user->linkedin_url,
+            "linkedin_user" => $this->user->linkedin_user,
         ];
     }
 
