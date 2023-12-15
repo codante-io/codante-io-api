@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('linkedin_url')->default('')->after('github_user');
+            $table->string('linkedin_url')->nullable()->after('github_user');
         });
     }
 
