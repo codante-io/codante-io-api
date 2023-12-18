@@ -18,13 +18,14 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
 
-    protected $fillable = ["name", "email", "password"];
+    protected $fillable = ["name", "password"];
 
     protected $hidden = ["password", "remember_token"];
 
     protected $casts = [
         "email_verified_at" => "datetime",
         "settings" => "array",
+        "discord_data" => "array",
     ];
 
     public function challenges()
