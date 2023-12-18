@@ -37,7 +37,7 @@ class DashboardController extends Controller
         return $user;
     }
 
-    public function changeLinkedinUrl(Request $request)
+    public function changeLinkedinUser(Request $request)
     {
         $request->validate([
             "linkedin_user" => "required|string",
