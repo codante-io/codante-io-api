@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -50,6 +52,14 @@ class DashboardController extends Controller
         $settings["show_badge"] = $request->show_badge; // Modify the settings
         $user->settings = $settings; // Set the settings back on the model
         $user->save();
+
+        return new UserResource($user);
+    }
+
+    public function updateUser(UpdateUserRequest $request, User $user)
+    {
+        dd($user);
+        $user->update($request->validated());
 
         return new UserResource($user);
     }

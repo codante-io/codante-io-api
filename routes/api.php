@@ -3,6 +3,7 @@
 use App\Http\Controllers\BugsnagWebhookController;
 use App\Http\Controllers\PagarmeController;
 use App\Http\Controllers\PagarmeWebhooks;
+use App\Http\Controllers\UserController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,15 @@ Route::get("/user", function (Request $request) {
 
     return ["message" => "Não autenticado"];
 })->middleware("auth:sanctum");
+
+Route::put("/user", [UserController::class, "update"])->middleware(
+    "auth:sanctum"
+);
+
+Route::post("/user/discord", [
+    UserController::class,
+    "updateDiscord",
+])->middleware("auth:sanctum");
 
 Route::get("/user/subscriptions", function (Request $request) {
     return response()->json(new UserResource($request->user()));
