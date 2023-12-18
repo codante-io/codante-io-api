@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             "email" => $this->email,
             "github_id" => $this->github_id,
             "github_user" => $this->github_user,
+            "discord_user" => $this->discord_user,
             "is_pro" => $this->is_pro,
             "is_admin" => $this->is_admin,
             "created_at" => $this->created_at,
