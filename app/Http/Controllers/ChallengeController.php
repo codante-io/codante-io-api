@@ -441,10 +441,14 @@ class ChallengeController extends Controller
         $user = User::where("github_user", $githubUser)
             ->select("id", "name")
             ->firstOrFail();
+        $challengeUser = ChallengeUser::where("challenge_id", $challenge->id)
+            ->where("user_id", $user->id)
+            ->firstOrFail();
 
         return [
             "challenge_name" => $challenge->name,
             "user_name" => $user->name,
+            "submission_image_url" => $challengeUser->submission_image_url,
         ];
     }
 
