@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             "created_at" => $this->created_at,
             "settings" => $this->settings,
             "avatar" => new UserAvatarResource($this),
+            "linkedin_user" => $this->linkedin_user,
         ];
     }
 }
