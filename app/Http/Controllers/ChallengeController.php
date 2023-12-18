@@ -12,12 +12,8 @@ use App\Http\Resources\UserAvatarResource;
 use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
-use App\Models\Reaction;
-use App\Models\Workshop;
-use DB;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Laravel\Sanctum\PersonalAccessToken;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +22,6 @@ use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Laravel\Socialite\One\User;
 
 class ChallengeController extends Controller
 {
@@ -68,7 +63,9 @@ class ChallengeController extends Controller
                             "users.is_admin"
                         )
                         ->when(Auth::check(), function ($query) {
-                            $query->orderByRaw("users.id = ? DESC", [auth()->id()]);
+                            $query->orderByRaw("users.id = ? DESC", [
+                                auth()->id(),
+                            ]);
                         })
                         ->inRandomOrder()
                         ->limit(5);
@@ -425,10 +422,30 @@ class ChallengeController extends Controller
             ->whereNotNull("submission_url")
             ->orderBy("is_solution", "desc")
             ->orderBy("submitted_at", "desc")
-            ->with("user:id,name,avatar_url,github_user,is_pro,is_admin,linkedin_user")
+            ->with(
+                "user:id,name,avatar_url,github_user,is_pro,is_admin,linkedin_user"
+            )
             ->get();
 
         return ChallengeUserResource::collection($challengeSubmissions);
+    }
+
+    public function getSubmissionFromGithubUser(
+        Request $request,
+        $slug,
+        $githubUser
+    ) {
+        $challenge = Challenge::where("slug", $slug)
+            ->select("id", "name")
+            ->firstOrFail();
+        $user = User::where("github_user", $githubUser)
+            ->select("id", "name")
+            ->firstOrFail();
+
+        return [
+            "challenge_name" => $challenge->name,
+            "user_name" => $user->name,
+        ];
     }
 
     private function getChallenge($slug)

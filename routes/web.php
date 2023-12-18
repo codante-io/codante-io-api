@@ -53,9 +53,15 @@ Route::put("/challenges/{slug}/submit", [
     ChallengeController::class,
     "updateSubmission",
 ])->middleware("auth:sanctum");
+
 Route::get("/challenges/{slug}/submissions", [
     ChallengeController::class,
     "getSubmissions",
+]);
+
+Route::get("/challenges/{slug}/submissions/{github_user}", [
+    ChallengeController::class,
+    "getSubmissionFromGithubUser",
 ]);
 
 Route::get("/challenges/{slug}/joined", [
