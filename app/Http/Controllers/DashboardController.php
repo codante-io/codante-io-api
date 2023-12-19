@@ -39,6 +39,19 @@ class DashboardController extends Controller
         return $user;
     }
 
+    public function changeLinkedinUser(Request $request)
+    {
+        $request->validate([
+            "linkedin_user" => "required|string",
+        ]);
+
+        $user = $request->user();
+        $user->linkedin_user = $request->linkedin_user;
+        $user->save();
+
+        return $user;
+    }
+
     public function updateSettings(Request $request)
     {
         // Check if showBadge setting is set
