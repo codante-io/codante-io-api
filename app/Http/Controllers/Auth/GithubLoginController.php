@@ -25,7 +25,9 @@ class GithubLoginController extends AuthenticatedSessionController
                 $token["github_token"]
             );
 
-            $user = User::where("email", $githubUserData->getEmail())->first();
+            $user =
+                User::where("email", $githubUserData->getEmail())->first() ??
+                User::where("github_id", $githubUserData->getId())->first();
             $isNewSignup = false;
 
             if (!$user) {
