@@ -25,7 +25,9 @@ class GithubLoginController extends AuthenticatedSessionController
                 $token["github_token"]
             );
 
-            $user = User::where("email", $githubUserData->getEmail())->first();
+            $user =
+                User::where("email", $githubUserData->getEmail())->first() ??
+                User::where("github_id", $githubUserData->getId())->first();
             $isNewSignup = false;
 
             if (!$user) {
@@ -47,7 +49,7 @@ class GithubLoginController extends AuthenticatedSessionController
                 Mail::to($user->email)->send(new UserRegistered($user));
             }
 
-            // update avatar and github id
+            // update avatar and github id (útil caso o user tenha previamente se cadastra com email e senha)
             $user->avatar_url = $githubUserData->getAvatar();
             $user->github_id = $githubUserData->getId();
             $user->github_user = $githubUserData->getNickname();
