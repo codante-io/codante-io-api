@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
@@ -42,6 +43,8 @@ Route::get("/reactions", [ReactionController::class, "getReactions"]);
 Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
     "auth:sanctum"
 );
+
+Route::get("/certificates", [CertificateController::class, "index"]);
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
