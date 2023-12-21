@@ -18,7 +18,13 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
 
-    protected $fillable = ["name", "password"];
+    protected $protected = [
+        "id",
+        "github_user",
+        "linkedin_user",
+        "discord_user",
+        "discord_data",
+    ];
 
     protected $hidden = ["password", "remember_token"];
 
