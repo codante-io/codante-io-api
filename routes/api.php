@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\BugsnagWebhookController;
+use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\PagarmeController;
 use App\Http\Controllers\PagarmeWebhooks;
+use App\Http\Controllers\UserController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,11 @@ Route::get("/user", function (Request $request) {
 
     return ["message" => "Não autenticado"];
 })->middleware("auth:sanctum");
+
+Route::post("/user/discord", [
+    DiscordController::class,
+    "handleDiscordLoginButton",
+])->middleware("auth:sanctum");
 
 Route::get("/user/subscriptions", function (Request $request) {
     return response()->json(new UserResource($request->user()));
