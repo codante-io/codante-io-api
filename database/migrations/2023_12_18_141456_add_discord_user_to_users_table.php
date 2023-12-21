@@ -20,6 +20,11 @@ return new class extends Migration {
                 ->json("discord_data")
                 ->nullable()
                 ->after("discord_user");
+
+            $table
+                ->json("github_data")
+                ->nullable()
+                ->after("github_user");
         });
     }
 
@@ -31,6 +36,7 @@ return new class extends Migration {
         Schema::table("users", function (Blueprint $table) {
             $table->dropColumn("discord_user");
             $table->dropColumn("discord_data");
+            $table->dropColumn("github_data");
         });
     }
 };

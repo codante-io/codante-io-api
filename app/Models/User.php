@@ -32,6 +32,7 @@ class User extends Authenticatable
         "email_verified_at" => "datetime",
         "settings" => "array",
         "discord_data" => "array",
+        "github_data" => "array",
     ];
 
     public function challenges()
