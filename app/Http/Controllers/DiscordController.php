@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use Http;
 use Illuminate\Http\Request;
-use Laravel\Prompts\Output\ConsoleOutput;
 
 class DiscordController extends Controller
 {
