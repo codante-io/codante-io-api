@@ -39,6 +39,8 @@ class DiscordController extends Controller
 
     protected function addDiscordUserToGuild(Request $request, $discordUserData)
     {
+        $discordGuildId = config("services.discord.guild_id");
+
         $request->validate([
             "access_token" => "required|string|max:255",
         ]);
@@ -47,7 +49,7 @@ class DiscordController extends Controller
             "Content-Type" => "application/json",
             "Authorization" => "Bot " . config("services.discord.bot_token"),
         ])->put(
-            "https://discord.com/api/guilds/1089524234142888048/members/" .
+            "https://discord.com/api/guilds/$discordGuildId/members/" .
                 $discordUserData["id"],
             ["access_token" => $request->access_token]
         );
