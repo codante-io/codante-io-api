@@ -21,12 +21,12 @@ class UserResource extends JsonResource
             "github_id" => $this->github_id,
             "github_user" => $this->github_user,
             "discord_user" => $this->discord_user,
+            "linkedin_user" => $this->linkedin_user,
             "is_pro" => $this->is_pro,
             "is_admin" => $this->is_admin,
             "created_at" => $this->created_at,
             "settings" => $this->settings,
             "avatar" => new UserAvatarResource($this),
-            "linkedin_user" => $this->linkedin_user,
         ];
     }
 }
