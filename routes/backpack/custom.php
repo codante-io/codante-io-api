@@ -32,6 +32,7 @@ Route::group(
             "TechnicalAssessmentCrudController"
         );
         Route::crud("testimonial", "TestimonialCrudController");
+        Route::crud("subscription", "SubscriptionCrudController");
 
         Route::get("test-readmes/{slug}", "CompareReadmeController@test");
         Route::get("compare-readmes/{slug}", "CompareReadmeController@compare");
