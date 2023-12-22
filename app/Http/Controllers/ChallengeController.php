@@ -199,13 +199,17 @@ class ChallengeController extends Controller
 
     public function userJoined(Request $request, $slug)
     {
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
-
-        $challengeUser = $challenge
-            ->users()
+        $challengeUser = ChallengeUser::whereHas("challenge", function (
+            $query
+        ) use ($slug) {
+            $query->where("slug", $slug);
+        })
+            ->with("user")
+            ->with("challenge")
             ->where("user_id", $request->user()->id)
             ->firstOrFail();
-        return $challengeUser;
+
+        return new ChallengeUserResource($challengeUser);
     }
 
     public function updateChallengeUser(Request $request, $slug)
