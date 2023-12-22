@@ -18,7 +18,7 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
 
-    protected $protected = [
+    protected $guarded = [
         "id",
         "github_user",
         "linkedin_user",
