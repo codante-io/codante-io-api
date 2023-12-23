@@ -44,7 +44,7 @@ class CertificateCrudController extends CrudController
     CRUD::column("id");
     CRUD::column("user_id");
     CRUD::column("source_type");
-    CRUD::column("source_id");
+    CRUD::column("status");
   }
 
   /**
@@ -75,24 +75,7 @@ class CertificateCrudController extends CrudController
     CRUD::field("workshop_id")->label("Workshop");
     CRUD::field("challenge_id")->label("Mini Projeto");
 
-    // $this->crud->addField([
-    //   'name' => 'metadata.certificate_time',
-    //   'label' => 'Tempo de Workshop',
-    //   'type' => 'text',
-    //   'default' => null,
-    //   'hint' => 'Tempo total do Workshop, em horas. Exemplo: 2 horas e 30 minutos.',
-    // ]);
-
-    // $this->crud->addField([
-    //   'name' => 'metadata.project_name',
-    //   'label' => 'Nome do Projeto ou Workshop',
-    //   'type' => 'text',
-    //   'default' => null,
-    //   'hint' => 'Preencher para o caso do MP ou Workshop alterar o nome após a emissão do certificado.'
-    // ]);
-
     $this->crud->addField([
-      // Table
       "name" => "metadata",
       "label" => "Valores adicionais",
       "type" => "table",
@@ -103,6 +86,19 @@ class CertificateCrudController extends CrudController
       ],
       "max" => 10, // maximum rows allowed in the table
       "min" => 0, // minimum rows allowed in the table
+    ]);
+
+    $this->crud->addField([
+      "name" => "status",
+      "label" => "Status",
+      "type" => "radio",
+      "options" => [
+        "pending" => "Pending",
+        "published" => "Published",
+      ],
+      "wrapper" => [
+        "class" => "form-group col-md-6",
+      ],
     ]);
   }
 
