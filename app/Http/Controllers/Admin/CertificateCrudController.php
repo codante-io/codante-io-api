@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\CertificateRequest;
-use App\Models\Certificate;
-use App\Notifications\Discord;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -81,10 +79,12 @@ class CertificateCrudController extends CrudController
       "type" => "table",
       "entity_singular" => "metadata", // used on the "Add X" button
       "columns" => [
-        "type" => "'time'",
-        "value" => "Valor (ex: 2 horas e 30 minutos)",
+        "duration" => "Tempo total em minutos (workshops)",
+        "source_name" => "Nome do workshop/mini projeto",
+        "tags" => "Tags (mini projetos)",
+        "conclusion_date" => "Data de conclusão",
       ],
-      "max" => 10, // maximum rows allowed in the table
+      "max" => 1, // maximum rows allowed in the table
       "min" => 0, // minimum rows allowed in the table
     ]);
 

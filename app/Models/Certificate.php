@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\Discord;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,27 @@ class Certificate extends Model
         parent::boot();
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
+        });
+    }
+
+    protected static function booted()
+    {
+        static::updated(function ($certificate) {
+            if ($certificate->source_type === "challenge") {
+                $user = User::find($certificate->user_id);
+                $challenge = Challenge::find($certificate->challenge_id);
+                if ($certificate->status === "published") {
+                    new Discord(
+                        "✅✅✅ Certificado atualizado para {$user->name} - {$challenge->name}. Status atual: {$certificate->status}",
+                        "pedidos-certificados",
+                    );
+                } elseif ($certificate->status === "pending") {
+                    new Discord(
+                        "❌❌❌ Certificado atualizado para {$user->name} - {$challenge->name}. Status atual: {$certificate->status}",
+                        "pedidos-certificados",
+                    );
+                }
+            }
         });
     }
 
@@ -44,4 +66,7 @@ class Certificate extends Model
     {
         return $this->belongsTo(ChallengeUser::class);
     }
+    protected $casts = [
+        'metadata' => 'array',
+    ];
 }
