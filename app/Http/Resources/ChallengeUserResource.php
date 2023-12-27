@@ -22,9 +22,6 @@ class ChallengeUserResource extends JsonResource
             "challenge" => new ChallengeSummaryResource(
                 $this->whenLoaded("challenge")
             ),
-            "user_name" => $this->user->name,
-            "user_id" => $this->user->id,
-            "user_github_user" => $this->user->github_user,
             "submission_url" => $this->submission_url,
             "fork_url" => $this->canViewForkUrl() ? $this->fork_url : null,
             "joined_discord" => $this->joined_discord,
