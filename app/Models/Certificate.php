@@ -7,6 +7,7 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Certificate extends Model
 {
@@ -66,7 +67,13 @@ class Certificate extends Model
     {
         return $this->belongsTo(ChallengeUser::class);
     }
-    protected $casts = [
+
+    protected $casts = [ // usado para o laravel converter json corretamente
         'metadata' => 'array',
     ];
+
+    public function tags(): MorphToMany
+    {
+        return $this->morphToMany(Tag::class, "taggable");
+    }
 }
