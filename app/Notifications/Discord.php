@@ -21,7 +21,14 @@ class Discord extends Notification
     ) {
         $channels = config("discord.channels");
 
-        $webhookUrl = $channels[$channel];
+        // Check if the current environment is 'local'
+        if (config("app.env") === "local") {
+            // Use the test webhook URL
+            $webhookUrl = $channels["teste"];
+        } else {
+            // Use the provided channel
+            $webhookUrl = $channels[$channel];
+        }
 
         try {
             Http::post($webhookUrl, [
