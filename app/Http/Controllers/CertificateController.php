@@ -9,7 +9,6 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Notifications\Discord;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,18 +26,17 @@ class CertificateController extends Controller
             "user_id" => "required|string",
             "source_type" => "required|in:workshop,challenge",
             "source_id" => "required|string",
-            "status" => "optional|string",
         ]);
-
-        $certificateData = [
-            'user_id' => $request->user_id,
-            'source_type' => $request->source_type,
-            'status' => $request->status ?? 'pending',
-        ];
 
         $user = User::find($request->user_id);
         $source_id = $request->source_id;
         $source_type = $request->source_type;
+
+        $certificateData = [
+            'user_id' => $request->user_id,
+            'source_type' => $source_type,
+            'status' => $source_type === "workshop" ? "published" : "pending",
+        ];
 
         if ($source_type === 'challenge') {
             $certificateData['challenge_id'] = $source_id;
