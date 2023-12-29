@@ -8,5 +8,6 @@ return [
         "submissoes" => env("DISCORD_WEBHOOK_SUBMISSOES"),
         "comunicados" => env("DISCORD_WEBHOOK_COMUNICADOS"),
         "bugs" => env("DISCORD_WEBHOOK_BUGS"),
+        "teste" => env("DISCORD_WEBHOOK_TESTE"),
     ],
 ];
