@@ -26,7 +26,12 @@ class User extends Authenticatable
         "discord_data",
     ];
 
-    protected $hidden = ["password", "remember_token"];
+    protected $hidden = [
+        "password",
+        "remember_token",
+        "discord_data",
+        "github_data",
+    ];
 
     protected $casts = [
         "email_verified_at" => "datetime",

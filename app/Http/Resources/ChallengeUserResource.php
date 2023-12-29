@@ -18,11 +18,15 @@ class ChallengeUserResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "user_name" => $this->user->name,
-            "user_id" => $this->user->id,
-            "user_github_user" => $this->user->github_user,
+            "user" => new UserResource($this->whenLoaded("user")),
+            "challenge" => new ChallengeSummaryResource(
+                $this->whenLoaded("challenge")
+            ),
             "submission_url" => $this->submission_url,
             "fork_url" => $this->canViewForkUrl() ? $this->fork_url : null,
+            "joined_discord" => $this->joined_discord,
+            "completed" => $this->completed,
+            "completed_at" => $this->completed_at,
             "is_pro" => $this->user->is_pro,
             "submission_image_url" => $this->submission_image_url,
             "reactions" => Reaction::getReactions(
