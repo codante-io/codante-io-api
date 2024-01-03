@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Mail\EmailOctopusService;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,6 +42,28 @@ class User extends Authenticatable
         "discord_data" => "array",
         "github_data" => "array",
     ];
+
+    protected static function booted()
+    {
+        // Quando vamos deletar um usuário, precisamos:
+        static::deleting(function ($user) {
+            // remove user from all challenges
+            $user->challenges()->detach();
+
+            // remove user from all lessons
+            $user->lessons()->detach();
+
+            // remove user from all subscriptions
+            $user->subscriptions()->delete();
+
+            // remove user from email lists
+            $user->removeFromEmailLists();
+
+            // add deleted to user email (to avoid email conflicts when user resubscribe)
+            $user->email = $user->email . "-deleted";
+            $user->save();
+        });
+    }
 
     public function challenges()
     {
@@ -123,5 +146,11 @@ class User extends Authenticatable
 
         // dispatch the event
         event(new \App\Events\UserStatusUpdated($this));
+    }
+
+    public function removeFromEmailLists()
+    {
+        $emailOctopus = new EmailOctopusService();
+        $emailOctopus->deleteUser($this);
     }
 }
