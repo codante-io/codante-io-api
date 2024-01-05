@@ -32,6 +32,7 @@ Route::group(
             "TechnicalAssessmentCrudController"
         );
         Route::crud("testimonial", "TestimonialCrudController");
+        Route::crud("subscription", "SubscriptionCrudController");
 
         Route::crud("certificate", "CertificateCrudController");
 

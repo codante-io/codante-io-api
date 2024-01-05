@@ -47,4 +47,9 @@ return [
     "email_octopus" => [
         "api_key" => env("EMAILOCTOPUS_API_KEY"),
     ],
+
+    "discord" => [
+        "bot_token" => env("DISCORD_BOT_TOKEN"),
+        "guild_id" => env("DISCORD_GUILD_ID"),
+    ],
 ];

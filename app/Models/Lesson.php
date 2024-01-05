@@ -7,11 +7,13 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lesson extends Model
 {
     use CrudTrait;
     use HasFactory;
+    use SoftDeletes;
 
     protected $guarded = ["id"];
 
@@ -29,7 +31,7 @@ class Lesson extends Model
     protected function vimeoId(): Attribute
     {
         return Attribute::make(
-            get: fn () => substr(
+            get: fn() => substr(
                 $this->video_url,
                 strrpos($this->video_url, "/") + 1
             )

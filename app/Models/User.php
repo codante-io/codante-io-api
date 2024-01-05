@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Services\Mail\EmailOctopusService;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -17,15 +19,51 @@ class User extends Authenticatable
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
+    use SoftDeletes;
 
-    protected $fillable = ["name", "email", "password"];
+    protected $guarded = [
+        "id",
+        "github_user",
+        "linkedin_user",
+        "discord_user",
+        "discord_data",
+    ];
 
-    protected $hidden = ["password", "remember_token"];
+    protected $hidden = [
+        "password",
+        "remember_token",
+        "discord_data",
+        "github_data",
+    ];
 
     protected $casts = [
         "email_verified_at" => "datetime",
         "settings" => "array",
+        "discord_data" => "array",
+        "github_data" => "array",
     ];
+
+    protected static function booted()
+    {
+        // Quando vamos deletar um usuário, precisamos:
+        static::deleting(function ($user) {
+            // remove user from all challenges
+            $user->challenges()->detach();
+
+            // remove user from all lessons
+            $user->lessons()->detach();
+
+            // remove user from all subscriptions
+            $user->subscriptions()->delete();
+
+            // remove user from email lists
+            $user->removeFromEmailLists();
+
+            // add deleted to user email (to avoid email conflicts when user resubscribe)
+            $user->email = $user->email . "-deleted";
+            $user->save();
+        });
+    }
 
     public function challenges()
     {
@@ -108,5 +146,11 @@ class User extends Authenticatable
 
         // dispatch the event
         event(new \App\Events\UserStatusUpdated($this));
+    }
+
+    public function removeFromEmailLists()
+    {
+        $emailOctopus = new EmailOctopusService();
+        $emailOctopus->deleteUser($this);
     }
 }
