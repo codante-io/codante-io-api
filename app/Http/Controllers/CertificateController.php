@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CertificateResource;
 use App\Models\Certificate;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
@@ -16,6 +17,34 @@ class CertificateController extends Controller
 {
     public function index()
     {
+        Auth::shouldUse("sanctum");
+        return CertificateResource::collection(
+            Certificate::query()
+                ->where("user_id", auth()->id())
+                ->get()
+        );
+    }
+
+    public function show($source, $slug)
+    {
+        Auth::shouldUse("sanctum");
+
+        $source_id = $source === "challenge" ? Challenge::where('slug', $slug)->first()->id : Workshop::where('slug', $slug)->first()->id;
+
+        $certificates = Certificate::query()
+            ->where("user_id", auth()->id())
+            ->where("source_type", $source)
+            ->where($source === "challenge" ? "challenge_id" : "workshop_id", $source_id)
+            ->get();
+        return CertificateResource::collection($certificates);
+    }
+
+    public function showById($id)
+    {
+        $certificate = Certificate::query()
+            ->where("id", $id)
+            ->firstOrFail();
+        return new CertificateResource($certificate);
     }
 
     public function createRequestForCertificate(Request $request)
@@ -63,19 +92,19 @@ class CertificateController extends Controller
 
         $certificate = Certificate::create($certificateData);
 
-        if ($source_type === 'challenge') {
-            new Discord(
-                "💻 {$source->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$source->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
-                "pedidos-certificados",
-            );
-        }
+        // if ($source_type === 'challenge') {
+        //     new Discord(
+        //         "💻 {$source->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$source->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
+        //         "pedidos-certificados",
+        //     );
+        // }
 
-        if ($source_type === "workshop") {
-            new Discord(
-                "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
-                "pedidos-certificados",
-            );
-        }
+        // if ($source_type === "workshop") {
+        //     new Discord(
+        //         "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
+        //         "pedidos-certificados",
+        //     );
+        // }
 
         return $certificate;
     }
