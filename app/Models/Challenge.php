@@ -6,6 +6,7 @@ use App\Traits\Reactable;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
@@ -15,6 +16,7 @@ class Challenge extends Model
     use CrudTrait;
     use HasFactory;
     use Reactable;
+    use SoftDeletes;
 
     protected $guarded = ["id"];
 

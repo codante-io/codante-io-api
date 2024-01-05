@@ -56,4 +56,16 @@ class EmailOctopusService
             ]
         );
     }
+
+    public function deleteUser(User $user)
+    {
+        $emailHash = md5(strtolower(trim($user->email)));
+
+        Http::delete(
+            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
+            [
+                "api_key" => $this->api_key,
+            ]
+        );
+    }
 }
