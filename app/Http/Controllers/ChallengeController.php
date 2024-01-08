@@ -425,6 +425,7 @@ class ChallengeController extends Controller
         )
             ->whereNotNull("submission_url")
             ->orderBy("is_solution", "desc")
+            ->orderByRaw("user_id = ? DESC", auth()->id()) // Current user submission is first
             ->orderBy("submitted_at", "desc")
             ->with(
                 "user:id,name,avatar_url,github_user,is_pro,is_admin,linkedin_user"
