@@ -15,15 +15,15 @@ use Illuminate\Support\Facades\Auth;
 
 class CertificateController extends Controller
 {
-    public function index()
-    {
-        Auth::shouldUse("sanctum");
-        return CertificateResource::collection(
-            Certificate::query()
-                ->where("user_id", auth()->id())
-                ->get()
-        );
-    }
+    // public function index()
+    // {
+    //     Auth::shouldUse("sanctum");
+    //     return CertificateResource::collection(
+    //         Certificate::query()
+    //             ->where("user_id", auth()->id())
+    //             ->get()
+    //     );
+    // }
 
     public function show($source, $slug)
     {
@@ -31,12 +31,13 @@ class CertificateController extends Controller
 
         $source_id = $source === "challenge" ? Challenge::where('slug', $slug)->first()->id : Workshop::where('slug', $slug)->first()->id;
 
-        $certificates = Certificate::query()
+        $certificate = Certificate::query()
             ->where("user_id", auth()->id())
             ->where("source_type", $source)
             ->where($source === "challenge" ? "challenge_id" : "workshop_id", $source_id)
-            ->get();
-        return CertificateResource::collection($certificates);
+            ->firstOrFail();
+
+        return new CertificateResource($certificate);
     }
 
     public function showById($id)

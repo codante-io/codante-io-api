@@ -44,10 +44,10 @@ Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
     "auth:sanctum"
 );
 
-Route::get("/certificates", [CertificateController::class, "index"]);
+// Route::get("/certificates", [CertificateController::class, "index"]);
 Route::get("/certificates/{source}/{slug}", [CertificateController::class, "show"]);
-Route::get("/certificate/{id}", [CertificateController::class, "showById"]);
-Route::post("/certificate", [CertificateController::class, "createRequestForCertificate"]);
+Route::get("/certificates/{id}", [CertificateController::class, "showById"]);
+Route::post("/certificates", [CertificateController::class, "createRequestForCertificate"]);
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
