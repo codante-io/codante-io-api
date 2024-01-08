@@ -56,6 +56,7 @@ class Challenge extends Model
                 "fork_url",
                 "joined_discord",
                 "submission_url",
+                "submitted_at",
                 "submission_image_url",
                 "metadata",
             ])
@@ -92,6 +93,55 @@ class Challenge extends Model
         return $this->users()
             ->where("user_id", auth()->id())
             ->exists();
+    }
+
+    public function userStatus(): string|null
+    {
+        if (!auth()->check()) {
+            return null;
+        }
+
+        $challengeUser = $this->users()
+            ->where("user_id", auth()->id())
+            ->first();
+
+        if (
+            $challengeUser &&
+            $challengeUser->pivot &&
+            $challengeUser->pivot->completed
+        ) {
+            return "completed";
+        }
+
+        if (
+            $challengeUser &&
+            $challengeUser->pivot &&
+            $challengeUser->pivot->submitted_at !== null
+        ) {
+            return "submitted";
+        }
+
+        if (
+            $challengeUser &&
+            $challengeUser->pivot &&
+            $challengeUser->pivot->fork_url
+        ) {
+            return "forked";
+        }
+
+        if (
+            $challengeUser &&
+            $challengeUser->pivot &&
+            $challengeUser->pivot->joined_discord
+        ) {
+            return "joined-discord";
+        }
+
+        if ($this->userJoined()) {
+            return "joined";
+        }
+
+        return "not-joined";
     }
 
     public function hasSolution(): bool
