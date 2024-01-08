@@ -6,9 +6,6 @@ use App\Http\Resources\CertificateResource;
 use App\Models\Certificate;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
-use App\Models\Tag;
-use App\Models\User;
-use App\Models\Workshop;
 use App\Notifications\Discord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,16 +22,23 @@ class CertificateController extends Controller
     //     );
     // }
 
-    public function show($source, $slug)
+    public function show($slug)
     {
         Auth::shouldUse("sanctum");
 
-        $source_id = $source === "challenge" ? Challenge::where('slug', $slug)->first()->id : Workshop::where('slug', $slug)->first()->id;
-
-        $certificate = Certificate::query()
+        $challengeUser = ChallengeUser::query()
             ->where("user_id", auth()->id())
-            ->where("source_type", $source)
-            ->where($source === "challenge" ? "challenge_id" : "workshop_id", $source_id)
+            ->where(
+                "challenge_id",
+                Challenge::where("slug", $slug)->first()->id
+            )
+            ->with("challenge")
+            ->firstOrFail();
+
+        $certificate = $challengeUser
+            ->certificate()
+            ->with("user")
+            ->with("certifiable")
             ->firstOrFail();
 
         return new CertificateResource($certificate);
@@ -44,68 +48,76 @@ class CertificateController extends Controller
     {
         $certificate = Certificate::query()
             ->where("id", $id)
+            ->with("user")
+            ->with("certifiable")
             ->firstOrFail();
         return new CertificateResource($certificate);
     }
 
-    public function createRequestForCertificate(Request $request)
+    public function create(Request $request)
     {
         Auth::shouldUse("sanctum");
 
         $request->validate([
-            "user_id" => "required|string",
-            "source_type" => "required|in:workshop,challenge",
-            "source_id" => "required|string",
+            "certifiable_type" => "required|in:ChallengeUser",
+            "certifiable_id" => "required|string",
         ]);
 
-        $user = User::find($request->user_id);
-        $source_id = $request->source_id;
-        $source_type = $request->source_type;
+        $user = Auth::user();
 
-        $certificateData = [
-            'user_id' => $request->user_id,
-            'source_type' => $source_type,
-            'status' => $source_type === "workshop" ? "published" : "pending",
-        ];
+        $exists = Certificate::where([
+            "certifiable_type" => Certificate::validateCertifiable(
+                $request->certifiable_type
+            ),
+            "certifiable_id" => $request->certifiable_id,
+            "user_id" => $user->id,
+        ])->exists();
 
-        if ($source_type === 'challenge') {
-            $certificateData['challenge_id'] = $source_id;
-            $source = Challenge::find($source_id);
-            $challenge_user = ChallengeUser::where('challenge_id', $source->id)->where('user_id', $user->id)->first();
-            $conclusion_date = $challenge_user->submitted_at ?? now()->format('Y-m-d H:i:s');
-        } elseif ($source_type === 'workshop') {
-            $certificateData['workshop_id'] = $source_id;
-            $source = Workshop::find($source_id);
-            $conclusion_date = now();
+        // dd($exists);
+
+        if ($exists) {
+            throw new \Exception("Já existe um certificado.");
         }
 
-        $tag_ids = $source->tags->pluck('id');
-        $tag_names = Tag::whereIn('id', $tag_ids)->pluck('name');
+        $certificate = new Certificate();
+        $certificate->user_id = $user->id;
+        $certificate->certifiable_type = Certificate::validateCertifiable(
+            $request->certifiable_type
+        );
+        $certificate->certifiable_id = $request->certifiable_id;
+        $certificate->status = "pending";
 
-        $certificateData['metadata'] = [
-            [
-                "duration" => $source_type === 'workshop' ? $source->duration_in_minutes : null,
-                "source_name" => $source->name,
-                "conclusion_date" => $conclusion_date,
-                "tags" => $tag_names,
-            ]
-        ];
+        if ($request->certifiable_type === "ChallengeUser") {
+            $challengeUser = ChallengeUser::with("challenge")->findOrFail(
+                $request->certifiable_id
+            );
+            $challenge = $challengeUser->challenge;
+            $certificate->metadata = [
+                "certifiable_source_name" => $challenge->name,
+                "end_date" =>
+                    $challengeUser->submitted_at ??
+                    now()->format("Y-m-d H:i:s"),
+                "start_date" =>
+                    $challengeUser->created_at ?? now()->format("Y-m-d H:i:s"),
+                "tags" => $challenge->tags->pluck("name"),
+            ];
+        }
 
-        $certificate = Certificate::create($certificateData);
+        $certificate->save();
 
-        if ($source_type === "challenge") {
+        if ($request->certifiable_type === "ChallengeUser") {
             new Discord(
-                "💻 {$source->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$source->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
-                "pedidos-certificados",
+                "💻 {$challenge->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$challenge->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
+                "pedidos-certificados"
             );
         }
 
-        if ($source_type === "workshop") {
-            new Discord(
-                "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
-                "pedidos-certificados",
-            );
-        }
+        // if ($source_type === "workshop") {
+        //     new Discord(
+        //         "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
+        //         "pedidos-certificados",
+        //     );
+        // }
 
         return $certificate;
     }

@@ -45,9 +45,9 @@ Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
 );
 
 // Route::get("/certificates", [CertificateController::class, "index"]);
-Route::get("/certificates/{source}/{slug}", [CertificateController::class, "show"]);
+Route::post("/certificates", [CertificateController::class, "create"])->middleware("auth:sanctum");
+Route::get("/challenges/{slug}/certificate", [CertificateController::class, "show"])->middleware("auth:sanctum");
 Route::get("/certificates/{id}", [CertificateController::class, "showById"]);
-Route::post("/certificates", [CertificateController::class, "createRequestForCertificate"]);
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
