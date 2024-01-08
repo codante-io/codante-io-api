@@ -19,6 +19,7 @@ class CertificateResource extends JsonResource
             "metadata" => $this->metadata,
             "source_type" => $this->source_type,
             "status" => $this->status,
+            "username" => $this->user->name,
             $this->source_type === 'workshop' ? "workshop_id" : "challenge_id" => $this->{$this->source_type . "_id"},
         ];
     }

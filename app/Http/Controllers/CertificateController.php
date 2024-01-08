@@ -92,19 +92,19 @@ class CertificateController extends Controller
 
         $certificate = Certificate::create($certificateData);
 
-        // if ($source_type === 'challenge') {
-        //     new Discord(
-        //         "💻 {$source->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$source->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
-        //         "pedidos-certificados",
-        //     );
-        // }
+        if ($source_type === "challenge") {
+            new Discord(
+                "💻 {$source->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$source->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
+                "pedidos-certificados",
+            );
+        }
 
-        // if ($source_type === "workshop") {
-        //     new Discord(
-        //         "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
-        //         "pedidos-certificados",
-        //     );
-        // }
+        if ($source_type === "workshop") {
+            new Discord(
+                "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
+                "pedidos-certificados",
+            );
+        }
 
         return $certificate;
     }
