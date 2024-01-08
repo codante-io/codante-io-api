@@ -53,21 +53,6 @@ class Certificate extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function workshop()
-    {
-        return $this->belongsTo(Workshop::class);
-    }
-
-    public function challenge()
-    {
-        return $this->belongsTo(Challenge::class);
-    }
-
-    public function challenge_user()
-    {
-        return $this->belongsTo(ChallengeUser::class);
-    }
-
     protected $casts = [ // usado para o laravel converter json corretamente
         'metadata' => 'array',
     ];
@@ -75,5 +60,27 @@ class Certificate extends Model
     public function tags(): MorphToMany
     {
         return $this->morphToMany(Tag::class, "taggable");
+    }
+
+    public function certifiable()
+    {
+        return $this->morphTo();
+    }
+
+    public static function validateCertifiable($certifiableType)
+    {
+        $certifiableClass = "App\\Models\\" . $certifiableType;
+
+        // check if certifiable model exists, if not, return error
+        if (!class_exists($certifiableClass)) {
+            return response()->json(
+                [
+                    "message" => "Reactable model does not exist",
+                ],
+                404
+            );
+        }
+
+        return $certifiableClass;
     }
 }

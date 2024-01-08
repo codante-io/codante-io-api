@@ -17,10 +17,12 @@ class CertificateResource extends JsonResource
         return [
             "id" => $this->id,
             "metadata" => $this->metadata,
-            "source_type" => $this->source_type,
+            "certifiable_type" => $this->certifiable_type,
+            "certifiable_id" => $this->certifiable_id,
             "status" => $this->status,
-            "username" => $this->user->name,
-            $this->source_type === 'workshop' ? "workshop_id" : "challenge_id" => $this->{$this->source_type . "_id"},
+            "user" => new UserResource($this->whenLoaded("user")),
+            "certifiable" => $this->whenLoaded("certifiable"),
+            "created_at" => $this->created_at,
         ];
     }
 }
