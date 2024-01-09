@@ -30,7 +30,7 @@ class SendDiscordNotificationChallengeSubmitted
                 [
                     "title" => "Submissão de {$event->user->name}",
                     "description" => "Mini Projeto: {$event->challenge->name}",
-                    "url" => "https://codante.io/mini-projetos/{$event->challenge->slug}/submissoes",
+                    "url" => "https://codante.io/mini-projetos/{$event->challenge->slug}/submissoes/{$event->user->github_user}",
                     "color" => 0x0099ff,
                     "image" => [
                         "url" =>
