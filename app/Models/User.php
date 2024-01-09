@@ -156,6 +156,6 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->is_admin;
+        return $user->is_admin == 1;
     }
 }
