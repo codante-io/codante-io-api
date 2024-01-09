@@ -153,4 +153,9 @@ class User extends Authenticatable
         $emailOctopus = new EmailOctopusService();
         $emailOctopus->deleteUser($this);
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
+    }
 }
