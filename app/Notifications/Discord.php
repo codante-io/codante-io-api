@@ -30,6 +30,12 @@ class Discord extends Notification
             $webhookUrl = $channels[$channel];
         }
 
+        if (!$webhookUrl) {
+            throw new Exception(
+                "No test webhook URL found in config/discord.php"
+            );
+        }
+
         try {
             Http::post($webhookUrl, [
                 "content" => $message,
