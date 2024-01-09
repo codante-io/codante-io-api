@@ -16,6 +16,8 @@ class GithubLoginController extends AuthenticatedSessionController
 {
     public function githubLogin(Request $request)
     {
+        Auth::shouldUse("web");
+
         $token = $request->validate([
             "github_token" => "required",
         ]);

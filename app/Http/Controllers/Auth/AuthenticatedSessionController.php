@@ -17,15 +17,13 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): JsonResponse
     {
         $request->authenticate();
-        $request->session()->regenerate();
 
         $this->deleteUserTokens($request);
         $token = $this->createUserToken($request);
 
-        return response()
-            ->json([
-                'token' => $token,
-            ])->withCookie(cookie('user_token', $token, 60 * 24 * 30));
+        return response()->json([
+            "token" => $token,
+        ]);
     }
 
     /**
@@ -34,14 +32,15 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): Response
     {
         if ($request->user() && $request->user()->tokens) {
-            $request->user()->tokens()->delete();
+            $request
+                ->user()
+                ->tokens()
+                ->delete();
         }
 
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+        // Auth::guard("web")->logout();
+        // $request->session()->invalidate();
+        // $request->session()->regenerateToken();
 
         return response()->noContent();
     }
@@ -49,8 +48,8 @@ class AuthenticatedSessionController extends Controller
     protected function createUserToken($request)
     {
         // Create a new token and get only the token
-        $fullToken = Auth::user()->createToken('api_token')->plainTextToken;
-        $token = explode('|', $fullToken)[1];
+        $fullToken = Auth::user()->createToken("api_token")->plainTextToken;
+        $token = explode("|", $fullToken)[1];
 
         return $token;
     }
@@ -58,7 +57,10 @@ class AuthenticatedSessionController extends Controller
     protected function deleteUserTokens($request)
     {
         if ($request->user() && $request->user()->tokens) {
-            $request->user()->tokens()->delete();
+            $request
+                ->user()
+                ->tokens()
+                ->delete();
         }
     }
 }
