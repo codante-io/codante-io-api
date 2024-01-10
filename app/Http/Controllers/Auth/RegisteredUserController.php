@@ -22,6 +22,8 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): Response
     {
+        Auth::shouldUse("web");
+
         $request->validate([
             "name" => ["required", "string", "max:255"],
             "email" => [
