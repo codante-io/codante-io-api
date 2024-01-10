@@ -15,13 +15,17 @@ class Certificate extends Model
     use HasFactory;
 
     public $incrementing = false; // desativa increment pois o id é uuid
-    protected $keyType = 'string';
+    protected $keyType = "string";
 
     public static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->id = (string) Str::uuid();
+            do {
+                $uuid = (string) Str::random(8);
+            } while (self::where("id", $uuid)->exists());
+
+            $model->id = $uuid;
         });
     }
 
@@ -34,12 +38,12 @@ class Certificate extends Model
                 if ($certificate->status === "published") {
                     new Discord(
                         "✅✅✅ Certificado atualizado para {$user->name} - {$challenge->name}. Status atual: {$certificate->status}",
-                        "pedidos-certificados",
+                        "pedidos-certificados"
                     );
                 } elseif ($certificate->status === "pending") {
                     new Discord(
                         "❌❌❌ Certificado atualizado para {$user->name} - {$challenge->name}. Status atual: {$certificate->status}",
-                        "pedidos-certificados",
+                        "pedidos-certificados"
                     );
                 }
             }
@@ -53,8 +57,9 @@ class Certificate extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected $casts = [ // usado para o laravel converter json corretamente
-        'metadata' => 'array',
+    protected $casts = [
+        // usado para o laravel converter json corretamente
+        "metadata" => "array",
     ];
 
     public function tags(): MorphToMany
