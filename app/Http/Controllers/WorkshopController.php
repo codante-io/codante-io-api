@@ -32,8 +32,6 @@ class WorkshopController extends Controller
 
     public function show($slug)
     {
-        Auth::shouldUse("sanctum");
-
         // if not logged in, we show cached version
         if (!Auth::check()) {
             return $this->showCachedWorkshop($slug);
