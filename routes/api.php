@@ -21,6 +21,7 @@ use App\Http\Controllers\TrackController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkshopController;
 use App\Http\Resources\UserResource;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
