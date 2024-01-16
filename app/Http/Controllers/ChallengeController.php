@@ -36,8 +36,6 @@ class ChallengeController extends Controller
 
     public function index()
     {
-        Auth::shouldUse("sanctum");
-
         $challenges = Challenge::query()
             ->select(
                 "id",
@@ -129,8 +127,6 @@ class ChallengeController extends Controller
 
     public function show($slug)
     {
-        Auth::shouldUse("sanctum");
-
         // if not logged in, we show cached version
         if (!Auth::check()) {
             $challenge = $this->getChallenge($slug);
@@ -241,7 +237,6 @@ class ChallengeController extends Controller
 
     public function getChallengeParticipantsBanner(Request $request, $slug)
     {
-        Auth::shouldUse("sanctum");
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
@@ -416,7 +411,6 @@ class ChallengeController extends Controller
 
     public function getSubmissions(Request $request, $slug)
     {
-        Auth::shouldUse("sanctum");
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
 
         $challengeSubmissions = ChallengeUser::where(
