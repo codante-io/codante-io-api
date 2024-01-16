@@ -3,6 +3,7 @@
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\BugsnagWebhookController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ChallengeController;
 use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\TrackController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkshopController;
 use App\Http\Resources\UserResource;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -89,6 +91,16 @@ Route::get("/reactions", [ReactionController::class, "getReactions"]);
 Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
     "auth:sanctum"
 );
+
+Route::post("/certificates", [
+    CertificateController::class,
+    "create",
+])->middleware("auth:sanctum");
+Route::get("/certificates/{id}", [CertificateController::class, "showById"]);
+Route::get("/challenges/{slug}/certificate", [
+    CertificateController::class,
+    "show",
+])->middleware("auth:sanctum");
 
 Route::get("/challenges", [ChallengeController::class, "index"]);
 Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
