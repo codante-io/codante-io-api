@@ -100,6 +100,7 @@ class CertificateController extends Controller
                 "start_date" =>
                     $challengeUser->created_at ?? now()->format("Y-m-d H:i:s"),
                 "tags" => $challenge->tags->pluck("name"),
+                "certifiable_slug" => $challenge->slug,
             ];
         }
 
