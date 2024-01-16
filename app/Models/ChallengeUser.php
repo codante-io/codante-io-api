@@ -27,6 +27,6 @@ class ChallengeUser extends Model
 
     function Certificate()
     {
-        return $this->morphOne(Certificate::class, 'certifiable');
+        return $this->morphOne(Certificate::class, "certifiable");
     }
 }
