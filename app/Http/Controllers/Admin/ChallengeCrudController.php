@@ -222,8 +222,9 @@ class ChallengeCrudController extends CrudController
         $this->setupCreateOperation();
     }
 
-    protected function notifyDiscordChallengeLaunched(Challenge $challenge)
+    protected function notifyDiscordChallengeLaunched($challengeId)
     {
+        $challenge = Challenge::findOrFail($challengeId);
         new Discord(
             "Fala pessoal (@here)! Acabamos de lançar mais um Mini Projeto no Codante:\n ​ \n**{$challenge->name}!** 🚀\n ​ \nAcesse o link abaixo para acessar o Mini-Projeto e para participar! 👇 \n ​ \n",
             "comunicados",
@@ -241,9 +242,9 @@ class ChallengeCrudController extends CrudController
         );
     }
 
-    protected function notifyDiscordChallengeSolutionLaunched(
-        Challenge $challenge
-    ) {
+    protected function notifyDiscordChallengeSolutionLaunched($challengeId)
+    {
+        $challenge = Challenge::findOrFail($challengeId);
         new Discord(
             "Fala pessoal (@here)! Acabamos de disponibilizar no Codante:\n ​ \nResolução do Mini Projeto: **{$challenge->name}!**\n ​ \nNo link abaixo você encontra tanto a resolução em vídeo como o código da resolução! 👇 \n ​ \n",
             "comunicados",
