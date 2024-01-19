@@ -187,4 +187,52 @@ class UserTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    /** @test */
+    public function it_can_get_user_data(): void
+    {
+        $user = User::factory()->create([
+            "password" => bcrypt("password"),
+        ]);
+
+        $response = $this->postJson("/api/login", [
+            "email" => $user->email,
+            "password" => "password",
+        ]);
+
+        $token = $response->json()["token"];
+
+        $response = $this->getJson("/api/user", [
+            "Authorization" => "Bearer $token",
+        ]);
+        $jsonResponse = $response->json();
+
+        $this->assertEquals($user->email, $jsonResponse["email"]);
+        $this->assertEquals($user->name, $jsonResponse["name"]);
+
+        $response->assertJsonStructure([
+            "id",
+            "name",
+            "email",
+            "github_id",
+            "github_user",
+            "linkedin_user",
+            "discord_user",
+            "is_pro",
+            "is_admin",
+            "settings",
+            "avatar" => ["avatar_url", "name", "badge"],
+            "created_at",
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function it_cannot_get_user_data_without_token(): void
+    {
+        $response = $this->getJson("/api/user");
+
+        $response->assertStatus(401);
+    }
 }
