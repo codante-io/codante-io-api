@@ -33,11 +33,14 @@ class ReactionController extends Controller
             );
 
             event(new ReactionDeleted($reactionId, $reactable));
-            return response()->json([
-                "message" => "Reaction removed successfully",
-                "result" => "destroy",
-                "reaction" => $data["reaction"],
-            ]);
+            return response()->json(
+                [
+                    "message" => "Reaction removed successfully",
+                    "result" => "destroy",
+                    "reaction" => $data["reaction"],
+                ],
+                204
+            );
         }
 
         // create the reaction
@@ -50,11 +53,14 @@ class ReactionController extends Controller
             event(new ReactionCreated($reaction->id, $reactable));
         }
 
-        return response()->json([
-            "message" => "Reaction created successfully",
-            "result" => "create",
-            "reaction" => $data["reaction"],
-        ]);
+        return response()->json(
+            [
+                "message" => "Reaction created successfully",
+                "result" => "create",
+                "reaction" => $data["reaction"],
+            ],
+            201
+        );
     }
 
     public function getReactions(Request $request)

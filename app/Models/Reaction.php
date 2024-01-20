@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Validator;
 
 class Reaction extends Model
 {
@@ -23,25 +24,27 @@ class Reaction extends Model
     {
         $reactableClass = "App\\Models\\" . $reactableType;
 
-        // check if reactable model exists, if not, return error
-        if (!class_exists($reactableClass)) {
-            return response()->json(
-                [
-                    "message" => "Reactable model does not exist",
+        $validator = Validator::make(
+            ["reactable_type" => $reactableClass],
+            [
+                "reactable_type" => [
+                    function ($attribute, $value, $fail) {
+                        if (!class_exists($value)) {
+                            $fail("Reactable model does not exist.");
+                        } elseif (
+                            !in_array(
+                                "App\\Traits\\Reactable",
+                                class_uses($value)
+                            )
+                        ) {
+                            $fail("Model is not reactable.");
+                        }
+                    },
                 ],
-                404
-            );
-        }
+            ]
+        );
 
-        // check if the model is reactable
-        if (!in_array("App\\Traits\\Reactable", class_uses($reactableClass))) {
-            return response()->json(
-                [
-                    "message" => "Model is not reactable",
-                ],
-                404
-            );
-        }
+        $validator->validate();
 
         return $reactableClass;
     }
