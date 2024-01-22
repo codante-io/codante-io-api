@@ -64,6 +64,34 @@ class BlogPostTest extends TestCase
     }
 
     /** @test */
+    public function it_not_shows_blog_post_in_posts_list_if_unlisted()
+    {
+        // add blog post
+        $blogPost = \App\Models\BlogPost::factory()->create([
+            "status" => "unlisted",
+        ]);
+        $slug = $blogPost->slug;
+
+        $response = $this->getJson("/api/blog-posts/");
+        $jsonResponse = $response->json();
+        $this->assertEquals(0, count($jsonResponse["data"]));
+    }
+
+    /** @test */
+    public function it_shows_blog_post_in_posts_list_if_published()
+    {
+        // add blog post
+        $blogPost = \App\Models\BlogPost::factory()->create([
+            "status" => "published",
+        ]);
+        $slug = $blogPost->slug;
+
+        $response = $this->getJson("/api/blog-posts/");
+        $jsonResponse = $response->json();
+        $this->assertEquals(1, count($jsonResponse["data"]));
+    }
+
+    /** @test */
     public function it_has_the_correct_shape()
     {
         // add blog post
