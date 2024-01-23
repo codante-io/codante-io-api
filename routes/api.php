@@ -190,9 +190,4 @@ Route::get("/my-subscription", [
 
 Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
 
-Route::get("/challenges/{slug}/{githubUser}/comments", [
-    CommentController::class,
-    "show",
-]);
-
 require __DIR__ . "/auth.php";

@@ -19,19 +19,10 @@ return new class extends Migration {
             $table->string("commentable_type");
             $table->unsignedBigInteger("commentable_id");
             $table->unsignedBigInteger("replying_to")->nullable();
-            $table->string("comment", 240);
+            $table->text("comment");
             $table->timestamps();
         });
     }
-
-    // Schema::create('reactions', function (Blueprint $table) {
-    //     $table->id();
-    //     $table->string('reactable_type');
-    //     $table->unsignedBigInteger('reactable_id');
-    //     $table->unsignedBigInteger('user_id');
-    //     $table->string('reaction');
-    //     $table->timestamps();
-    // });
 
     /**
      * Reverse the migrations.

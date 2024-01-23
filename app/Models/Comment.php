@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\CommentResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -12,28 +13,26 @@ class Comment extends Model
 
     protected $guarded = ["id"];
 
-    public function user()
+    public function User()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function commentable()
+    public function Commentable()
     {
         return $this->morphTo();
     }
 
-    public function replies()
+    public function Replies()
     {
         return $this->hasMany(Comment::class, "replying_to");
     }
 
-    public function reactions()
+    public static function getComments($commentableClass, $commentableId)
     {
-        return $this->morphMany(
-            Reaction::class,
-            "reactable",
-            "reactable_type",
-            "reactable_id"
-        );
+        $commentable = $commentableClass::findOrFail($commentableId);
+        $comments = $commentable->comments()->get();
+
+        return CommentResource::collection($comments);
     }
 }
