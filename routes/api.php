@@ -4,6 +4,7 @@ use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\BugsnagWebhookController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscordController;
@@ -188,5 +189,10 @@ Route::get("/my-subscription", [
 ]);
 
 Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
+
+Route::get("/challenges/{slug}/{githubUser}/comments", [
+    CommentController::class,
+    "show",
+]);
 
 require __DIR__ . "/auth.php";

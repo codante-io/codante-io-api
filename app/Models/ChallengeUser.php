@@ -24,4 +24,9 @@ class ChallengeUser extends Model
     {
         return $this->belongsTo(Challenge::class);
     }
+
+    function Commentable()
+    {
+        return $this->morphOne(Comment::class, "commentable");
+    }
 }
