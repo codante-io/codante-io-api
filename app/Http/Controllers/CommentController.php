@@ -4,22 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Models\Challenge;
-use App\Models\ChallengeUser;
-use App\Models\User;
+use App\Models\Comment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    public function show($slug, $githubUser)
+    public function create(Request $request)
     {
-        $challengeUser = ChallengeUser::where([
-            "challenge_id" => Challenge::where("slug", $slug)->firstOrFail()
-                ->id,
-            "user_id" => User::where("github_user", $githubUser)->firstOrFail()
-                ->id,
-        ])->firstOrFail();
+        Auth::shouldUse("sanctum");
 
-        $comments = $challengeUser->commentable()->get();
+        $request->validate([
+            "commentable_type" => "required|in:ChallengeUser",
+            "commentable_id" => "required|string",
+            "comment" => "required|string",
+        ]);
 
-        return CommentResource::collection($comments);
+        $user = Auth::user();
+
+        $commentableClass = Comment::validateCommentable(
+            $request->commentable_type
+        );
+
+        $comment = Comment::createComment(
+            $user,
+            $commentableClass,
+            $request->commentable_id,
+            $request->comment
+        );
+        return new CommentResource($comment);
     }
 }

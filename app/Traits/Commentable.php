@@ -17,11 +17,11 @@ trait Commentable
         );
     }
 
-    public function comment(string $comment, User $user)
+    public function create(string $comment, User $user)
     {
-        // return $this->reactions()->create([
-        //     "reaction" => $reaction,
-        //     "user_id" => $user->id,
-        // ]);
+        return $this->comments()->create([
+            "comment" => $comment,
+            "user_id" => $user->id,
+        ]);
     }
 }

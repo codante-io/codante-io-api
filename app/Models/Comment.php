@@ -6,6 +6,7 @@ use App\Http\Resources\CommentResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\Validator;
 
 class Comment extends Model
 {
@@ -30,9 +31,49 @@ class Comment extends Model
 
     public static function getComments($commentableClass, $commentableId)
     {
-        $commentable = $commentableClass::findOrFail($commentableId);
+        $commentable = $commentableClass::findOrFail($commentableId); // find if the commentable exists
         $comments = $commentable->comments()->get();
 
         return CommentResource::collection($comments);
+    }
+
+    public static function validateCommentable($commentableType)
+    {
+        $commentableClass = "App\\Models\\" . $commentableType;
+
+        $validator = Validator::make(
+            ["commentable_type" => $commentableClass],
+            [
+                "commentable_type" => [
+                    function ($attribute, $value, $fail) {
+                        if (!class_exists($value)) {
+                            $fail("Commentable model does not exist.");
+                        } elseif (
+                            !in_array(
+                                "App\\Traits\\Commentable",
+                                class_uses($value)
+                            )
+                        ) {
+                            $fail("Model is not commentable.");
+                        }
+                    },
+                ],
+            ]
+        );
+
+        $validator->validate();
+        return $commentableClass;
+    }
+
+    public static function createComment(
+        User $user,
+        string $commentableClass,
+        string $commentableId,
+        string $comment
+    ) {
+        $commentable = $commentableClass::findOrFail($commentableId);
+        $comment = $commentable->create($comment, $user);
+
+        return new CommentResource($comment);
     }
 }
