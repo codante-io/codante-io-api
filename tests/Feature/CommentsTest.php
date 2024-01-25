@@ -76,163 +76,259 @@ class CommentsTest extends TestCase
         $response->assertStatus(404);
     }
 
-    // /** @test */
-    // public function it_cannot_comment_if_no_commentable_type(): void
-    // {
-    //     $token = $this->signInAndReturnToken();
+    /** @test */
+    public function it_cannot_comment_if_no_commentable_type(): void
+    {
+        $token = $this->signInAndReturnToken();
 
-    //     $response = $this->postJson(
-    //         "/api/comments",
-    //         [
-    //             "commentable_id" => 1,
-    //             "comment" => "Very good!",
-    //         ],
-    //         [
-    //             "Authorization" => "Bearer $token",
-    //         ]
-    //     );
-    //     $response->assertStatus(422);
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => "1",
+                "comment" => "Very good!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(422);
 
-    //     // assert message
-    //     $response->assertJsonValidationErrors("commentable_type");
-    // }
+        // assert message
+        $response->assertJsonValidationErrors("commentable_type");
+    }
 
-    // /** @test */
-    // public function it_cannot_comment_if_no_comment(): void
-    // {
-    //     $token = $this->signInAndReturnToken();
+    /** @test */
+    public function it_cannot_comment_if_invalid_commentable_type(): void
+    {
+        $token = $this->signInAndReturnToken();
 
-    //     $response = $this->postJson(
-    //         "/api/comments",
-    //         [
-    //             "commentable_id" => 1,
-    //             "commentable_type" => "App\Models\BlogPost",
-    //         ],
-    //         [
-    //             "Authorization" => "Bearer $token",
-    //         ]
-    //     );
-    //     $response->assertStatus(422);
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => "1",
+                "commentable_type" => "InvalidModel",
+                "comment" => "Very good!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors("commentable_type");
+        $response->assertJsonFragment([
+            "commentable_type" => [
+                "O campo commentable type selecionado é inválido.",
+            ],
+        ]);
+    }
 
-    //     // assert message
-    //     $response->assertJsonValidationErrors("comment");
-    // }
+    /** @test */
+    public function it_cannot_comment_if_model_is_not_commentable()
+    {
+        $token = $this->signInAndReturnToken();
 
-    // /** @test */
-    // public function it_cannot_comment_if_invalid_commentable_type(): void
-    // {
-    //     $token = $this->signInAndReturnToken();
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => "1",
+                "commentable_type" => "User",
+                "comment" => "Very good!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors("commentable_type");
 
-    //     $response = $this->postJson(
-    //         "/api/comments",
-    //         [
-    //             "commentable_id" => 1,
-    //             "commentable_type" => "InvalidModel",
-    //             "comment" => "Very good!",
-    //         ],
-    //         [
-    //             "Authorization" => "Bearer $token",
-    //         ]
-    //     );
-    //     $response->assertStatus(422);
-    //     $response->assertJsonValidationErrors("commentable_type");
-    //     $response->assertJsonFragment([
-    //         "commentable_type" => ["Commentable model does not exist."],
-    //     ]);
-    // }
+        // message should be Model is not commentable
+        $response->assertJsonFragment([
+            "commentable_type" => [
+                "O campo commentable type selecionado é inválido.",
+            ],
+        ]);
+    }
 
-    // /** @test */
-    // public function it_cannot_comment_if_model_is_not_commentable()
-    // {
-    //     $token = $this->signInAndReturnToken();
+    /** @test */
+    public function it_cannot_comment_if_no_comment(): void
+    {
+        $token = $this->signInAndReturnToken();
 
-    //     $response = $this->postJson(
-    //         "/api/comments",
-    //         [
-    //             "commentable_id" => 1,
-    //             "commentable_type" => "User",
-    //             "comment" => "Very good!",
-    //         ],
-    //         [
-    //             "Authorization" => "Bearer $token",
-    //         ]
-    //     );
-    //     $response->assertStatus(422);
-    //     $response->assertJsonValidationErrors("commentable_type");
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => "1",
+                "commentable_type" => "App\Models\BlogPost",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(422);
 
-    //     // message should be Model is not commentable
-    //     $response->assertJsonFragment([
-    //         "commentable_type" => ["Model is not commentable."],
-    //     ]);
-    // }
+        // assert message
+        $response->assertJsonValidationErrors("comment");
+    }
 
-    // /** @test */
-    // public function it_can_comment(): void
-    // {
-    //     $token = $this->signInAndReturnToken();
+    /** @test */
+    public function it_can_comment(): void
+    {
+        $token = $this->signInAndReturnToken();
 
-    //     $blogPost = \App\Models\BlogPost::factory()->create([
-    //         "status" => "published",
-    //     ]);
+        $challengeUser = \App\Models\ChallengeUser::factory()->create();
 
-    //     $response = $this->postJson(
-    //         "/api/comments",
-    //         [
-    //             "commentable_id" => $blogPost->id,
-    //             "commentable_type" => "BlogPost",
-    //             "comment" => "Very good!",
-    //         ],
-    //         [
-    //             "Authorization" => "Bearer $token",
-    //         ]
-    //     );
-    //     $response->assertStatus(201);
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => $challengeUser->id,
+                "commentable_type" => "ChallengeUser",
+                "comment" => "Very good!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(201);
 
-    //     // assert comment
-    //     $this->assertDatabaseHas("comments", [
-    //         "commentable_id" => $blogPost->id,
-    //         "commentable_type" => "App\Models\BlogPost",
-    //         "comment" => "Very good!",
-    //     ]);
-    // }
+        // assert comment
+        $this->assertDatabaseHas("comments", [
+            "commentable_id" => $challengeUser->id,
+            "commentable_type" => "App\Models\ChallengeUser",
+            "comment" => "Very good!",
+        ]);
+    }
 
-    // /** @test */
-    // public function it_can_uncomment()
-    // {
-    //     $user = \App\Models\User::factory()->create([
-    //         "password" => bcrypt("password"),
-    //     ]);
+    /** @test */
+    public function it_can_not_update_a_comment_if_user_is_not_the_owner_of_the_comment(): void
+    {
+        $token = $this->signInAndReturnToken();
 
-    //     $token = $this->signInAndReturnToken($user);
+        $comment = \App\Models\Comment::factory()->create();
 
-    //     $blogPost = \App\Models\BlogPost::factory()->create([
-    //         "status" => "published",
-    //     ]);
+        $response = $this->putJson(
+            "/api/comments",
+            [
+                "comment_id" => $comment->id,
+                "comment" => "Nice! I like it!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(403);
+    }
 
-    //     $comment = \App\Models\Comment::factory()->create([
-    //         "commentable_id" => $blogPost->id,
-    //         "commentable_type" => "App\Models\BlogPost",
-    //         "comment" => "Very good!",
-    //         "user_id" => $user->id,
-    //     ]);
+    public function it_can_update_a_comment(): void
+    {
+        $auth = $this->signInAndReturnUserAndToken();
+        $user = $auth["user"];
+        $token = $auth["token"];
 
-    //     $comments = \App\Models\Comment::all();
-    //     $this->assertCount(1, $comments);
+        $comment = \App\Models\Comment::factory()->create([
+            "user_id" => $user->id,
+        ]);
 
-    //     $response = $this->postJson(
-    //         "/api/comments",
-    //         [
-    //             "commentable_id" => $blogPost->id,
-    //             "commentable_type" => "BlogPost",
-    //             "comment" => "Very good!",
-    //         ],
-    //         [
-    //             "Authorization" => "Bearer $token",
-    //         ]
-    //     );
-    //     $response->assertStatus(204);
+        $response = $this->putJson(
+            "/api/comments",
+            [
+                "comment_id" => $comment->id,
+                "comment" => "Nice! I like it!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(200);
 
-    //     $comments = \App\Models\Comment::all();
-    //     $this->assertCount(0, $comments);
-    // }
+        // assert comment
+        $this->assertDatabaseHas("comments", [
+            "id" => $comment->id,
+            "comment" => "Nice! I like it!",
+        ]);
+    }
+
+    /** @test */
+    public function it_can_not_delete_a_comment_if_user_is_not_the_owner_of_the_comment(): void
+    {
+        $token = $this->signInAndReturnToken();
+
+        $comment = \App\Models\Comment::factory()->create();
+
+        $response = $this->deleteJson(
+            "/api/comments",
+            [
+                "comment_id" => $comment->id,
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function it_can_delete_a_comment(): void
+    {
+        $auth = $this->signInAndReturnUserAndToken();
+        $user = $auth["user"];
+        $token = $auth["token"];
+
+        $comment = \App\Models\Comment::factory()->create([
+            "user_id" => $user->id,
+        ]);
+
+        $response = $this->deleteJson(
+            "/api/comments",
+            [
+                "comment_id" => $comment->id,
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(200);
+
+        // assert comment
+        $this->assertSoftDeleted("comments", [
+            "id" => $comment->id,
+        ]);
+    }
+
+    /** @test */
+    public function it_can_reply_to_a_comment(): void
+    {
+        $auth = $this->signInAndReturnUserAndToken();
+        $user = $auth["user"];
+        $token = $auth["token"];
+
+        $challengeUser = \App\Models\ChallengeUser::factory()->create();
+
+        $comment = \App\Models\Comment::factory()->create([
+            "user_id" => $user->id,
+            "commentable_id" => $challengeUser->id,
+        ]);
+
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => $challengeUser->id,
+                "commentable_type" => "ChallengeUser",
+                "comment" => "Hey! This is a response.",
+                "replying_to" => $comment->id,
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+        $response->assertStatus(201);
+
+        // assert comment
+        $this->assertDatabaseHas("comments", [
+            "id" => $response->json("id"),
+            "commentable_id" => $comment->id,
+            "commentable_type" => "App\Models\ChallengeUser",
+            "comment" => "Hey! This is a response.",
+            "replying_to" => $comment->id,
+        ]);
+    }
 }

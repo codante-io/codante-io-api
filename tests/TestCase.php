@@ -27,4 +27,22 @@ abstract class TestCase extends BaseTestCase
 
         return $token;
     }
+
+    public function signInAndReturnUserAndToken($user = null)
+    {
+        $user =
+            $user ?:
+            \App\Models\User::factory()->create([
+                "password" => bcrypt("password"),
+            ]);
+
+        $response = $this->postJson("/api/login", [
+            "email" => $user->email,
+            "password" => "password",
+        ]);
+
+        $token = $response->json()["token"];
+
+        return ["user" => $user, "token" => $token];
+    }
 }

@@ -16,9 +16,9 @@ class CommentController extends Controller
 
         $request->validate([
             "commentable_type" => "required|in:ChallengeUser",
-            "commentable_id" => "required|string",
+            "commentable_id" => "required",
             "comment" => "required|string",
-            "replying_to" => "sometimes|nullable|string",
+            "replying_to" => "sometimes|nullable",
         ]);
 
         $user = Auth::user();
@@ -40,7 +40,7 @@ class CommentController extends Controller
             $request->comment,
             $replyingTo
         );
-        return new CommentResource($comment);
+        return response(new CommentResource($comment), 201);
     }
 
     public function update(Request $request)
@@ -48,7 +48,7 @@ class CommentController extends Controller
         Auth::shouldUse("sanctum");
 
         $request->validate([
-            "comment_id" => "required|string",
+            "comment_id" => "required",
             "comment" => "required|string",
         ]);
 
@@ -77,7 +77,7 @@ class CommentController extends Controller
         Auth::shouldUse("sanctum");
 
         $request->validate([
-            "comment_id" => "required|string",
+            "comment_id" => "required",
         ]);
 
         $user = Auth::user();
@@ -93,6 +93,8 @@ class CommentController extends Controller
                 403
             );
         }
+
+        Comment::where("replying_to", $comment->id)->delete();
 
         $comment->delete();
 
