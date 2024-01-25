@@ -71,4 +71,31 @@ class CommentController extends Controller
 
         return new CommentResource($comment);
     }
+
+    public function delete(Request $request)
+    {
+        Auth::shouldUse("sanctum");
+
+        $request->validate([
+            "comment_id" => "required|string",
+        ]);
+
+        $user = Auth::user();
+
+        $comment = Comment::findOrFail($request->comment_id);
+
+        if ($comment->user_id !== $user->id) {
+            return response()->json(
+                [
+                    "message" =>
+                        "Você não tem permissão para deletar esse comentário",
+                ],
+                403
+            );
+        }
+
+        $comment->delete();
+
+        return response()->json(["message" => "Comentário deletado"]);
+    }
 }

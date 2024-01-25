@@ -196,5 +196,8 @@ Route::post("/comments", [CommentController::class, "create"])->middleware(
 Route::put("/comments", [CommentController::class, "update"])->middleware(
     "auth:sanctum"
 );
+Route::delete("/comments", [CommentController::class, "delete"])->middleware(
+    "auth:sanctum"
+);
 
 require __DIR__ . "/auth.php";

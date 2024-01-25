@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Http\Resources\CommentResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Validator;
 
 class Comment extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $guarded = ["id"];
 
@@ -90,4 +92,10 @@ class Comment extends Model
 
         return new CommentResource($comment);
     }
+
+    // public function delete(string $id)
+    // {
+    //     $comment = Comment::findOrFail($id);
+    //     $comment->delete();
+    // }
 }
