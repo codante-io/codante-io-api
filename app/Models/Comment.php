@@ -65,14 +65,43 @@ class Comment extends Model
         return $commentableClass;
     }
 
+    public static function validateReply(string $replyingTo)
+    {
+        $validator = Validator::make(
+            ["replying_to" => $replyingTo],
+            [
+                "replying_to" => [
+                    function ($attribute, $value, $fail) {
+                        // dd($value);
+                        if ($value) {
+                            $replyingToComment = Comment::where(
+                                "id",
+                                $value
+                            )->first();
+                            if (
+                                $replyingToComment &&
+                                $replyingToComment->replying_to !== null
+                            ) {
+                                $fail("Invalid replying_to value.");
+                            }
+                        }
+                    },
+                ],
+            ]
+        );
+
+        $validator->validate();
+    }
+
     public static function createComment(
         User $user,
         string $commentableClass,
         string $commentableId,
-        string $comment
+        string $comment,
+        string $replyingTo = null
     ) {
         $commentable = $commentableClass::findOrFail($commentableId);
-        $comment = $commentable->create($comment, $user);
+        $comment = $commentable->create($comment, $user, $replyingTo);
 
         return new CommentResource($comment);
     }
