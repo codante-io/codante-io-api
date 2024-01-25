@@ -193,8 +193,5 @@ Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
 Route::post("/comments", [CommentController::class, "create"])->middleware(
     "auth:sanctum"
 );
-Route::post("/comments/reply", [CommentController::class, "reply"])->middleware(
-    "auth:sanctum"
-);
 
 require __DIR__ . "/auth.php";
