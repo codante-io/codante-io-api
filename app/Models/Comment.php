@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Http\Resources\CommentResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\Validator;
 
 class Comment extends Model
@@ -67,30 +66,16 @@ class Comment extends Model
 
     public static function validateReply(string $replyingTo)
     {
-        $validator = Validator::make(
-            ["replying_to" => $replyingTo],
-            [
-                "replying_to" => [
-                    function ($attribute, $value, $fail) {
-                        // dd($value);
-                        if ($value) {
-                            $replyingToComment = Comment::where(
-                                "id",
-                                $value
-                            )->first();
-                            if (
-                                $replyingToComment &&
-                                $replyingToComment->replying_to !== null
-                            ) {
-                                $fail("Invalid replying_to value.");
-                            }
-                        }
-                    },
-                ],
-            ]
-        );
-
-        $validator->validate();
+        // if replying a reply, the comment will be replying to the father comment
+        if ($replyingTo) {
+            $comment = Comment::where("id", $replyingTo)->first();
+            if ($comment) {
+                return $comment->replying_to !== null
+                    ? $comment->replying_to
+                    : $replyingTo;
+            }
+        }
+        return $replyingTo;
     }
 
     public static function createComment(

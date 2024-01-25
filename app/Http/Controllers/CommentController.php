@@ -27,9 +27,10 @@ class CommentController extends Controller
             $request->commentable_type
         );
 
-        if ($request->replying_to !== null) {
-            // validate if the reply has 1 level or less of nesting
-            Comment::validateReply($request->replying_to);
+        $replyingTo = $request->replying_to;
+
+        if ($replyingTo !== null) {
+            $replyingTo = Comment::validateReply($request->replying_to);
         }
 
         $comment = Comment::createComment(
@@ -37,30 +38,37 @@ class CommentController extends Controller
             $commentableClass,
             $request->commentable_id,
             $request->comment,
-            $request->replying_to
+            $replyingTo
         );
         return new CommentResource($comment);
     }
 
-    // public function reply(Request $request)
-    // {
-    //     Auth::shouldUse("sanctum");
+    public function update(Request $request)
+    {
+        Auth::shouldUse("sanctum");
 
-    //     $this->validateReply($request);
+        $request->validate([
+            "comment_id" => "required|string",
+            "comment" => "required|string",
+        ]);
 
-    //     $user = Auth::user();
+        $user = Auth::user();
 
-    //     $commentableClass = Comment::validateCommentable(
-    //         $request->commentable_type
-    //     );
+        $comment = Comment::findOrFail($request->comment_id);
 
-    //     $comment = Comment::createComment(
-    //         $user,
-    //         $commentableClass,
-    //         $request->commentable_id,
-    //         $request->comment,
-    //         $request->replying_to
-    //     );
-    //     return new CommentResource($comment);
-    // }
+        if ($comment->user_id !== $user->id) {
+            return response()->json(
+                [
+                    "message" =>
+                        "Você não tem permissão para editar esse comentário",
+                ],
+                403
+            );
+        }
+
+        $comment->comment = $request->comment;
+        $comment->save();
+
+        return new CommentResource($comment);
+    }
 }
