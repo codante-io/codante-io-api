@@ -19,6 +19,8 @@ class CommentResource extends JsonResource
             "user" => new UserResource($this->user),
             "comment" => $this->comment,
             "replying_to" => $this->replying_to,
+            "commentable_type" => $this->commentable_type,
+            "commentable_id" => $this->commentable_id,
         ];
     }
 }
