@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use App\Notifications\Discord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,6 +40,28 @@ class CommentController extends Controller
             $request->comment,
             $replyingTo
         );
+
+        new Discord(
+            "Um novo comentário foi feito por {$user->name} em {$request->commentable_type} {$request->commentable_id} {replying to - $replyingTo}: {$request->comment}",
+            "notificacoes-comentarios"
+        );
+
+        // dd($commentableClass, $replyingTo);
+
+        if (
+            $commentableClass === "App\Models\ChallengeUser" &&
+            $replyingTo === null
+        ) {
+            $challengeUser = $comment->commentable;
+            // dd($challengeUser->user);
+
+            $challengeUser->user->notify(
+                new \App\Notifications\ChallengeUserCommentNotification(
+                    $comment
+                )
+            );
+        }
+
         return response(new CommentResource($comment), 201);
     }
 

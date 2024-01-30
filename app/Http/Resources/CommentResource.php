@@ -21,6 +21,9 @@ class CommentResource extends JsonResource
             "replying_to" => $this->replying_to,
             "commentable_type" => $this->commentable_type,
             "commentable_id" => $this->commentable_id,
+            "created_at_human" => $this->created_at
+                ? $this->created_at->diffForHumans()
+                : null,
         ];
     }
 }
