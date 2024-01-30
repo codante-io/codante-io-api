@@ -62,6 +62,39 @@ class CommentController extends Controller
             );
         }
 
+        if (
+            $commentableClass === "App\Models\ChallengeUser" &&
+            $replyingTo !== null
+        ) {
+            $parentComment = Comment::find($replyingTo);
+            $relatedComments = Comment::where(
+                "replying_to",
+                $replyingTo
+            )->get();
+
+            $users = $relatedComments->map(function ($comment) {
+                return $comment->user;
+            });
+
+            $users->push($parentComment->user);
+
+            // Remove o usuário que está criando o comentário atual da lista
+            $users = $users->reject(function ($user) use ($comment) {
+                return $user->id === $comment->user_id;
+            });
+
+            // Remove usuários duplicados da lista
+            $users = $users->unique("id");
+
+            foreach ($users as $user) {
+                $user->notify(
+                    new \App\Notifications\ChallengeUserReplyCommentNotification(
+                        $comment
+                    )
+                );
+            }
+        }
+
         return response(new CommentResource($comment), 201);
     }
 
