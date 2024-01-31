@@ -12,16 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CertificateController extends Controller
 {
-    // public function index()
-    // {
-    //     Auth::shouldUse("sanctum");
-    //     return CertificateResource::collection(
-    //         Certificate::query()
-    //             ->where("user_id", auth()->id())
-    //             ->get()
-    //     );
-    // }
-
     public function show($slug)
     {
         Auth::shouldUse("sanctum");
