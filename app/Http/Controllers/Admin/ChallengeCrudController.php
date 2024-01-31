@@ -57,12 +57,16 @@ class ChallengeCrudController extends CrudController
     {
         CRUD::setValidation(ChallengeRequest::class);
 
-        CRUD::field("name");
-        CRUD::field("short_description")->label("Resumo");
+        CRUD::field("name")->tab("Principal");
+        CRUD::field("short_description")
+            ->label("Resumo")
+            ->tab("Principal");
+
         CRUD::field("description")
             ->label("Descrição (markdown)")
             ->type("easymde")
-            ->easymdeAttributes(["spellChecker" => false]);
+            ->easymdeAttributes(["spellChecker" => false])
+            ->tab("Readme");
 
         $this->crud->addField([
             "name" => "image_url",
@@ -70,26 +74,27 @@ class ChallengeCrudController extends CrudController
             "type" => "upload",
             "upload" => true,
             "disk" => "s3",
+            "tab" => "Principal",
         ]);
 
         $this->crud->addField([
             "name" => "tracks",
             "type" => "relationship",
+            "tab" => "Trilhas",
         ]);
 
-        // CRUD::field('track_position')->type('number');
+        // CRUD::field('track_position')->type('number')->tab('Principal');
         CRUD::field("slug")
             ->type("slug")
             ->hint("Se não preenchido, será gerado automaticamente")
-            ->target("name");
-        CRUD::field("base_color")->hint(
-            "Cor base do desafio (classe do tailwind). Não se esqueça de fazer o import no arquivo tailwind.config.js"
-        );
+            ->target("name")
+            ->tab("Principal");
 
         $this->crud->addField([
             "name" => "status",
             "label" => "Status",
             "type" => "radio",
+            "tab" => "Principal",
             "options" => [
                 "archived" => "archived",
                 "draft" => "draft",
@@ -101,10 +106,12 @@ class ChallengeCrudController extends CrudController
                 "class" => "form-group col-md-6",
             ],
         ]);
+
         $this->crud->addField([
             "name" => "difficulty",
             "label" => "Dificuldade (nível)",
             "type" => "radio",
+            "tab" => "Principal",
             "options" => [
                 1 => 1,
                 2 => 2,
@@ -119,6 +126,7 @@ class ChallengeCrudController extends CrudController
             "label" => "Duração (em minutos)",
             "name" => "duration_in_minutes",
             "type" => "number",
+            "tab" => "Principal",
             "wrapper" => [
                 "class" => "form-group col-md-6",
             ],
@@ -128,6 +136,7 @@ class ChallengeCrudController extends CrudController
             "label" => "Featured",
             "hint" => 'Por exemplo, "landing"',
             "name" => "featured",
+            "tab" => "Principal",
             "type" => "text",
             "wrapper" => [
                 "class" => "form-group col-md-6",
@@ -140,6 +149,7 @@ class ChallengeCrudController extends CrudController
                 'A data em que o desafio irá entrar na lista de "Weekly Featured". Se não houver horário, pode considerar 00:00:00',
             "name" => "weekly_featured_start_date",
             "type" => "datetime",
+            "tab" => "Principal",
             "wrapper" => [
                 "class" => "form-group col-md-6",
             ],
@@ -151,6 +161,7 @@ class ChallengeCrudController extends CrudController
                 "A data em que o desafio será resolvido (ou sua resolução disponibilizada). Se não houver horário, pode considerar 00:00:00",
             "name" => "solution_publish_date",
             "type" => "datetime",
+            "tab" => "Principal",
             "wrapper" => [
                 "class" => "form-group col-md-6",
             ],
@@ -158,12 +169,14 @@ class ChallengeCrudController extends CrudController
 
         CRUD::field("repository_name")
             ->type("text")
-            ->hint("Nome do repositório no GitHub");
+            ->hint("Nome do repositório no GitHub")
+            ->tab("Principal");
 
         $this->crud->addField([
             // Table
             "name" => "resources",
             "label" => "Recursos",
+            "tab" => "Principal",
             "type" => "table",
             "entity_singular" => "resource", // used on the "Add X" button
             "columns" => [
@@ -180,6 +193,7 @@ class ChallengeCrudController extends CrudController
         $this->crud->addField([
             "name" => "tags",
             "type" => "relationship",
+            "tab" => "Principal",
         ]);
 
         $this->crud->addField([
@@ -187,12 +201,14 @@ class ChallengeCrudController extends CrudController
             "type" => "number",
             "hint" => "Posição do desafio na lista",
             "default" => 1,
+            "tab" => "Principal",
             "attributes" => ["step" => "any"],
         ]);
 
         $this->crud->addField([
             "name" => "notifica",
             "type" => "notify-discord",
+            "tab" => "Ações",
             "data" => [
                 "title" => "Discord: MP Lançado",
                 "notification-url" =>
@@ -203,6 +219,7 @@ class ChallengeCrudController extends CrudController
         $this->crud->addField([
             "name" => "notifica1",
             "type" => "notify-discord",
+            "tab" => "Ações",
             "data" => [
                 "title" => "Discord: MP Resolução Disponível",
                 "notification-url" =>
