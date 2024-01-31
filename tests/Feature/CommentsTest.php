@@ -2,12 +2,33 @@
 
 namespace Tests\Feature;
 
+use App\Events\UserCommented;
+use App\Listeners\CommentCreated;
+use App\Notifications\Discord;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class CommentsTest extends TestCase
 {
     use RefreshDatabase;
+
+    //setup
+    public function setUp(): void
+    {
+        // mock Discord
+        parent::setUp();
+        // Event::fake([UserCommented::class]);
+    }
+
+    //teardown
+    public function tearDown(): void
+    {
+        \Mockery::close();
+        parent::tearDown();
+    }
 
     /** @test */
     public function it_cannot_comment_if_not_logged_in(): void
@@ -300,8 +321,11 @@ class CommentsTest extends TestCase
         $auth = $this->signInAndReturnUserAndToken();
         $user = $auth["user"];
         $token = $auth["token"];
-
         $challengeUser = \App\Models\ChallengeUser::factory()->create();
+
+        Event::fake();
+        Event::assertNothingDispatched();
+        Event::assertListening(UserCommented::class, CommentCreated::class);
 
         $comment = \App\Models\Comment::factory()->create([
             "user_id" => $user->id,
@@ -320,6 +344,7 @@ class CommentsTest extends TestCase
                 "Authorization" => "Bearer $token",
             ]
         );
+
         $response->assertStatus(201);
 
         // assert comment
@@ -330,5 +355,142 @@ class CommentsTest extends TestCase
             "comment" => "Hey! This is a response.",
             "replying_to" => $comment->id,
         ]);
+        Event::assertDispatched(UserCommented::class);
+    }
+
+    /** @test */
+    public function it_dispatches_event_when_comment_is_created(): void
+    {
+        Event::fake([UserCommented::class]);
+        $auth = $this->signInAndReturnUserAndToken();
+        $user = $auth["user"];
+        $token = $auth["token"];
+        $challengeUser = \App\Models\ChallengeUser::factory()->create();
+
+        $response = $this->postJson(
+            "/api/comments",
+            [
+                "commentable_id" => $challengeUser->id,
+                "commentable_type" => "ChallengeUser",
+                "comment" => "Adorei sua submissão!",
+            ],
+            [
+                "Authorization" => "Bearer $token",
+            ]
+        );
+
+        $response->assertStatus(201);
+
+        Event::assertDispatched(UserCommented::class);
+    }
+
+    /** @test */
+    public function it_sends_email_when_comment_event_is_dispatched(): void
+    {
+        $ChallengeUserUser = \App\Models\User::factory()->create([
+            "id" => 2,
+        ]);
+        $CommenterUser = \App\Models\User::factory()->create([
+            "id" => 5,
+        ]);
+        $challengeUser = \App\Models\ChallengeUser::factory()->create([
+            "user_id" => $ChallengeUserUser->id,
+        ]);
+        $comment = \App\Models\Comment::factory()->create([
+            "commentable_type" => "App\Models\ChallengeUser",
+            "commentable_id" => $challengeUser->id,
+            "user_id" => $CommenterUser->id,
+        ]);
+
+        Notification::fake();
+
+        $event = event(
+            new UserCommented($CommenterUser, $comment, $challengeUser)
+        );
+
+        // Event::assertDispatched(UserCommented::class);
+        Notification::assertCount(1);
+
+        // assert notification was sent to challengeUserOwner
+        Notification::assertSentTo(
+            $ChallengeUserUser,
+            \App\Notifications\ChallengeUserCommentNotification::class
+        );
+
+        // assert notification was not sent to CommenterUser
+        Notification::assertNothingSentTo($CommenterUser);
+    }
+
+    /** @test */
+    public function it_sends_emails_to_users_when_there_was_a_reply(): void
+    {
+        $parentCommentUser = \App\Models\User::factory()->create([
+            "id" => 20,
+            "email" => "comentariopai@email.com",
+        ]);
+
+        $CommenterUser1 = \App\Models\User::factory()->create([
+            "id" => 5,
+        ]);
+        $CommenterUser2 = \App\Models\User::factory()->create([
+            "id" => 6,
+        ]);
+        $challengeUserUser = \App\Models\User::factory()->create([
+            "id" => 7,
+        ]);
+        $challengeUser = \App\Models\ChallengeUser::factory()->create([
+            "user_id" => $challengeUserUser->id,
+        ]);
+
+        // Comentário pai é criado
+        $parentComment = \App\Models\Comment::factory()->create([
+            "commentable_type" => "App\Models\ChallengeUser",
+            "comment" => "Gostei do Projeto!",
+            "commentable_id" => $challengeUser->id,
+            "user_id" => $parentCommentUser->id,
+        ]);
+
+        // Primeira resposta é criada
+        $relatedComment = \App\Models\Comment::factory()->create([
+            "commentable_type" => "App\Models\ChallengeUser",
+            "comment" => "Legal",
+            "commentable_id" => $challengeUser->id,
+            "user_id" => $CommenterUser1->id,
+            "replying_to" => $parentComment->id,
+        ]);
+
+        // Segunda resposta é criada
+        $relatedComment2 = \App\Models\Comment::factory()->create([
+            "commentable_type" => "App\Models\ChallengeUser",
+            "comment" => "Massa",
+            "commentable_id" => $challengeUser->id,
+            "user_id" => $CommenterUser2->id,
+            "replying_to" => $parentComment->id,
+        ]);
+
+        Notification::fake();
+
+        // evento é disparado com a segunda resposta
+        $event = event(
+            new UserCommented($CommenterUser2, $relatedComment2, $challengeUser)
+        );
+
+        // Event::assertDispatched(UserCommented::class);
+        Notification::assertCount(2);
+
+        // assert notification was sent to challengeUserOwner
+        Notification::assertSentTo(
+            $parentCommentUser,
+            \App\Notifications\ChallengeUserReplyCommentNotification::class
+        );
+
+        // assert notification was sent to CommenterUser
+        Notification::assertSentTo(
+            $CommenterUser1,
+            \App\Notifications\ChallengeUserReplyCommentNotification::class
+        );
+
+        // assert notification was not sent to CommenterUser2
+        Notification::assertNothingSentTo($CommenterUser2);
     }
 }

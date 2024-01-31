@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Models\ChallengeUser;
+use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -11,20 +13,20 @@ use Illuminate\Support\Str;
 class ChallengeUserReplyCommentNotification extends Notification
 {
     use Queueable;
-    private $comment;
-    private $commentable;
+    private $parentComment;
     private $challenge;
-    private $challengeUser;
+    private $challengeUserUser;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($comment)
-    {
-        $this->comment = $comment;
-        $this->commentable = $comment->commentable;
-        $this->challenge = $this->commentable->challenge;
-        $this->challengeUser = $this->commentable->challengeUser;
+    public function __construct(
+        Comment $parentComment,
+        ChallengeUser $challengeUser
+    ) {
+        $this->parentComment = $parentComment;
+        $this->challenge = $challengeUser->challenge;
+        $this->challengeUserUser = $challengeUser->user;
     }
 
     /**
@@ -44,18 +46,16 @@ class ChallengeUserReplyCommentNotification extends Notification
     {
         $firstName = Str::title(explode(" ", $notifiable->name)[0]);
         $frontUrl = config("app.frontend_url");
+
         return (new MailMessage())
-            ->line(
-                "[Codante] Alguém comentou em uma discussão que você está participando!"
-            )
+            ->from("contato@codante.io", "Contato Codante")
+            ->subject("[Codante] Uma pessoa respondeu seu comentário!")
             ->greeting("Olá $firstName")
-            ->line(
-                "Alguém respondeu um comentário na submissão de {$this->challengeUser->user->name} do Mini Projeto {$this->challenge->name}!"
-            )
+            ->line("Alguém respondeu a um comentário seu no Codante!")
             ->action(
                 "Ver comentário",
                 $frontUrl .
-                    "/mini-projetos/{$this->challenge->slug}/submissoes/{$notifiable->github_user}#comment-{$this->comment->id}"
+                    "/mini-projetos/{$this->challenge->slug}/submissoes/{$this->challengeUserUser->github_user}#comment-{$this->parentComment->id}"
             )
             ->line("Clique no botão acima para ver ou responder o comentário.");
     }

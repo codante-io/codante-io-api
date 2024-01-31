@@ -79,23 +79,4 @@ class Comment extends Model
         }
         return $replyingTo;
     }
-
-    public static function createComment(
-        User $user,
-        string $commentableClass,
-        string $commentableId,
-        string $comment,
-        string $replyingTo = null
-    ) {
-        $commentable = $commentableClass::findOrFail($commentableId);
-        $comment = $commentable->create($comment, $user, $replyingTo);
-
-        return new CommentResource($comment);
-    }
-
-    // public function delete(string $id)
-    // {
-    //     $comment = Comment::findOrFail($id);
-    //     $comment->delete();
-    // }
 }

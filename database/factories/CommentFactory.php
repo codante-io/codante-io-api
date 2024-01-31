@@ -20,7 +20,7 @@ class CommentFactory extends Factory
     {
         return [
             "user_id" => User::factory(),
-            "comment" => fake()->paragraphs(4, true),
+            "comment" => fake()->sentence(),
             "replying_to" => null,
             "commentable_type" => "App\Models\ChallengeUser",
             "commentable_id" => ChallengeUser::factory(),

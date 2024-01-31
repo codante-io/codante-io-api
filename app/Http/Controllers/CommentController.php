@@ -33,67 +33,18 @@ class CommentController extends Controller
             $replyingTo = Comment::validateReply($request->replying_to);
         }
 
-        $comment = Comment::createComment(
-            $user,
-            $commentableClass,
-            $request->commentable_id,
-            $request->comment,
-            $replyingTo
-        );
+        // check if the commentable exists
+        $commentable = $commentableClass::findOrFail($request->commentable_id);
 
-        new Discord(
-            "Um novo comentário foi feito por {$user->name} em {$request->commentable_type} {$request->commentable_id} {replying to - $replyingTo}: {$request->comment}",
-            "notificacoes-comentarios"
-        );
+        $comment = Comment::create([
+            "commentable_type" => $commentableClass,
+            "commentable_id" => $request->commentable_id,
+            "comment" => $request->comment,
+            "user_id" => $user->id,
+            "replying_to" => $replyingTo,
+        ]);
 
-        // dd($commentableClass, $replyingTo);
-
-        if (
-            $commentableClass === "App\Models\ChallengeUser" &&
-            $replyingTo === null
-        ) {
-            $challengeUser = $comment->commentable;
-            // dd($challengeUser->user);
-
-            $challengeUser->user->notify(
-                new \App\Notifications\ChallengeUserCommentNotification(
-                    $comment
-                )
-            );
-        }
-
-        if (
-            $commentableClass === "App\Models\ChallengeUser" &&
-            $replyingTo !== null
-        ) {
-            $parentComment = Comment::find($replyingTo);
-            $relatedComments = Comment::where(
-                "replying_to",
-                $replyingTo
-            )->get();
-
-            $users = $relatedComments->map(function ($comment) {
-                return $comment->user;
-            });
-
-            $users->push($parentComment->user);
-
-            // Remove o usuário que está criando o comentário atual da lista
-            $users = $users->reject(function ($user) use ($comment) {
-                return $user->id === $comment->user_id;
-            });
-
-            // Remove usuários duplicados da lista
-            $users = $users->unique("id");
-
-            foreach ($users as $user) {
-                $user->notify(
-                    new \App\Notifications\ChallengeUserReplyCommentNotification(
-                        $comment
-                    )
-                );
-            }
-        }
+        event(new \App\Events\UserCommented($user, $comment, $commentable));
 
         return response(new CommentResource($comment), 201);
     }

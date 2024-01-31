@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\ChallengeUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -13,16 +14,16 @@ class ChallengeUserCommentNotification extends Notification
     use Queueable;
 
     private $comment;
-    private $commentable;
+    private $challengeUser;
     private $challenge;
     /**
      * Create a new notification instance.
      */
-    public function __construct($comment)
+    public function __construct($comment, ChallengeUser $challengeUser)
     {
         $this->comment = $comment;
-        $this->commentable = $comment->commentable;
-        $this->challenge = $this->commentable->challenge;
+        $this->challengeUser = $challengeUser;
+        $this->challenge = $this->challengeUser->challenge;
     }
 
     /**
@@ -44,6 +45,7 @@ class ChallengeUserCommentNotification extends Notification
         $frontUrl = config("app.frontend_url");
 
         return (new MailMessage())
+            ->from("contato@codante.io", "Contato Codante")
             ->subject("[Codante] Alguém comentou na sua submissão!")
             ->greeting("Olá $firstName")
             ->line(

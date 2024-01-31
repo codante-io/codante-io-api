@@ -17,8 +17,11 @@ trait Commentable
         );
     }
 
-    public function create(string $comment, User $user, $replying_to = null)
-    {
+    public function createComment(
+        string $comment,
+        User $user,
+        $replying_to = null
+    ) {
         return $this->comments()->create([
             "comment" => $comment,
             "user_id" => $user->id,
