@@ -77,7 +77,7 @@ jobs:
         uses: deployphp/action@master
         with:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          ## known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
           dep: deploy -v
 
   # remove-branch:
