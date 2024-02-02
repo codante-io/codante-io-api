@@ -22,7 +22,7 @@ class Discord extends Notification
         $channels = config("discord.channels");
 
         // Check if the current environment is 'local'
-        if (config("app.env") === "local") {
+        if (config("app.env") === "local" || config("app.env") === "testing") {
             // Use the test webhook URL
             $webhookUrl = $channels["teste"];
         } else {

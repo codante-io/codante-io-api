@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Commentable;
 use App\Traits\Reactable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class ChallengeUser extends Model
     use HasFactory;
     use Reactable;
     use SoftDeletes;
+    use Commentable;
 
     protected $table = "challenge_user";
 

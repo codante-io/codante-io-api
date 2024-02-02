@@ -7,8 +7,10 @@ use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
 use App\Events\ReactionCreated;
 use App\Events\ReactionDeleted;
+use App\Events\UserCommented;
 use App\Events\UserStatusUpdated;
 use App\Listeners\AwardPoints;
+use App\Listeners\CommentCreated;
 use App\Listeners\Registered as RegisteredListener;
 use App\Listeners\SendDiscordNotificationChallengeSubmitted;
 use App\Listeners\UserStatusUpdated as UserStatusUpdatedListener;
@@ -38,6 +40,7 @@ class EventServiceProvider extends ServiceProvider
         ReactionCreated::class => [AwardPoints::class],
         ReactionDeleted::class => [AwardPoints::class],
         UserStatusUpdated::class => [UserStatusUpdatedListener::class],
+        UserCommented::class => [CommentCreated::class],
     ];
 
     /**

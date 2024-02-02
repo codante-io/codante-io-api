@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Comment;
 use App\Models\Reaction;
 use Auth;
 use Illuminate\Http\Request;
@@ -38,6 +39,10 @@ class ChallengeUserResource extends JsonResource
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "linkedin_user" => $this->user->linkedin_user,
+            "comments" => Comment::getComments(
+                "App\\Models\\ChallengeUser",
+                $this->id
+            ),
         ];
     }
 

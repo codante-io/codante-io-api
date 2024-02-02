@@ -9,5 +9,8 @@ return [
         "comunicados" => env("DISCORD_WEBHOOK_COMUNICADOS"),
         "bugs" => env("DISCORD_WEBHOOK_BUGS"),
         "teste" => env("DISCORD_WEBHOOK_TESTE"),
+        "notificacoes-comentarios" => env(
+            "DISCORD_WEBHOOK_NOTIFICACOES_COMENTARIOS"
+        ),
     ],
 ];

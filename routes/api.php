@@ -4,6 +4,7 @@ use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\BugsnagWebhookController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ChallengeController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CustomTestController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscordController;
@@ -188,5 +189,15 @@ Route::get("/my-subscription", [
 ]);
 
 Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
+
+Route::post("/comments", [CommentController::class, "create"])->middleware(
+    "auth:sanctum"
+);
+Route::put("/comments", [CommentController::class, "update"])->middleware(
+    "auth:sanctum"
+);
+Route::delete("/comments", [CommentController::class, "delete"])->middleware(
+    "auth:sanctum"
+);
 
 require __DIR__ . "/auth.php";
