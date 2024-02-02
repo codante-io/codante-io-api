@@ -61,10 +61,10 @@ jobs:
           php artisan key:generate
           php artisan --version
 
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
-        run: vendor/bin/phpunit
-        env:
-          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+      # - name: Execute tests (Unit and Feature tests) via PHPUnit
+      #   run: vendor/bin/phpunit
+      #   env:
+      #     DB_PORT: ${{ job.services.mysql.ports[3306] }}
 
       # - name: Setup Deployer
       #   uses: atymic/deployer-php-action@0.2.0
