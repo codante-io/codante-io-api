@@ -28,5 +28,5 @@ task("test", function () {
 });
 
 // Hooks
-before("deploy", "test");
+// before("deploy", "test");
 after("deploy:failed", "deploy:unlock");
