@@ -13,7 +13,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_DATABASE: codante_test_database
+          MYSQL_DATABASE: codante_test
           MYSQL_USER: user
           MYSQL_PASSWORD: password
           MYSQL_ROOT_PASSWORD: secretroot
@@ -78,7 +78,7 @@ jobs:
         with:
           private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           # known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-          dep: deploy production -v
+          dep: deploy -v
 
   # remove-branch:
   #   name: remove deploy branch
