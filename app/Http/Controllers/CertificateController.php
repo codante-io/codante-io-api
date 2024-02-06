@@ -63,8 +63,6 @@ class CertificateController extends Controller
             "user_id" => $user->id,
         ])->exists();
 
-        // dd($exists);
-
         if ($exists) {
             throw new \Exception("Já existe um certificado.");
         }
@@ -98,17 +96,10 @@ class CertificateController extends Controller
 
         if ($request->certifiable_type === "ChallengeUser") {
             new Discord(
-                "💻 {$challenge->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$challenge->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>",
+                "💻 {$challenge->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$challenge->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>\nID: $certificate->id",
                 "pedidos-certificados"
             );
         }
-
-        // if ($source_type === "workshop") {
-        //     new Discord(
-        //         "💻 Workshop: {$source->name}\n👤 Certificado de Workshop gerado para {$user->name}",
-        //         "pedidos-certificados",
-        //     );
-        // }
 
         return $certificate;
     }
