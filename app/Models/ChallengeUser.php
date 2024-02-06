@@ -26,4 +26,9 @@ class ChallengeUser extends Model
     {
         return $this->belongsTo(Challenge::class);
     }
+
+    function Certificate()
+    {
+        return $this->morphOne(Certificate::class, "certifiable");
+    }
 }

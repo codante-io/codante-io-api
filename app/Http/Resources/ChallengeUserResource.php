@@ -39,6 +39,9 @@ class ChallengeUserResource extends JsonResource
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "linkedin_user" => $this->user->linkedin_user,
+            "certificate" => $this->whenLoaded("certificate")
+                ? new CertificateResource($this->certificate)
+                : null,
             "comments" => Comment::getComments(
                 "App\\Models\\ChallengeUser",
                 $this->id
