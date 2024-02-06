@@ -79,7 +79,7 @@ class SubscriptionCrudController extends CrudController
         // CRUD::column("boleto_url");
         // CRUD::column("boleto_barcode");
         CRUD::column("starts_at");
-        // CRUD::column("ends_at");
+        CRUD::column("ends_at");
         CRUD::column("canceled_at");
         CRUD::column("acquisition_type");
         // CRUD::column("created_at");

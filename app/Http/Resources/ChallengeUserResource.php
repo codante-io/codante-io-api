@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Comment;
 use App\Models\Reaction;
 use Auth;
 use Illuminate\Http\Request;
@@ -41,6 +42,10 @@ class ChallengeUserResource extends JsonResource
             "certificate" => $this->whenLoaded("certificate")
                 ? new CertificateResource($this->certificate)
                 : null,
+            "comments" => Comment::getComments(
+                "App\\Models\\ChallengeUser",
+                $this->id
+            ),
         ];
     }
 

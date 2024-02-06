@@ -42,6 +42,12 @@ class UserCrudController extends CrudController
         CRUD::column("id");
         CRUD::column("name");
         CRUD::column("email");
+        CRUD::column("is_pro");
+        CRUD::column("is_admin");
+        CRUD::column("github_user");
+        CRUD::column("avatar_url")
+            ->type("image")
+            ->height("40px");
     }
 
     /**
@@ -57,6 +63,8 @@ class UserCrudController extends CrudController
         CRUD::field("name");
         CRUD::field("email");
         CRUD::field("password");
+        CRUD::field("is_pro");
+        CRUD::field("is_admin");
     }
 
     /**

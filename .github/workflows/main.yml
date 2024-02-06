@@ -1,0 +1,56 @@
+name: Deploy Codante
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: codante_test
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_ROOT_PASSWORD: secretroot
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: 8.3
+          extensions: mbstring, bcmath, zip
+          tools: composer:v2
+
+      - name: Composer install
+        run: composer install --prefer-dist --no-interaction --no-suggest
+
+      # - name: Check code style (Laravel Pint)
+      #   run: ./vendor/bin/pint --test
+
+      - name: Boot Laravel application
+        run: |
+          cp .env.github .env
+          php artisan key:generate
+          php artisan --version
+
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        run: vendor/bin/phpunit
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+
+      - name: Setup Deployer
+        uses: deployphp/action@master
+        with:
+          private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ## known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          dep: deploy -v

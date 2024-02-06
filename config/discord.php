@@ -10,5 +10,8 @@ return [
         "bugs" => env("DISCORD_WEBHOOK_BUGS"),
         "teste" => env("DISCORD_WEBHOOK_TESTE"),
         "pedidos-certificados" => env("DISCORD_WEBHOOK_PEDIDOS_CERTIFICADOS"),
+        "notificacoes-comentarios" => env(
+            "DISCORD_WEBHOOK_NOTIFICACOES_COMENTARIOS"
+        ),
     ],
 ];

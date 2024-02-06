@@ -23,6 +23,10 @@ host("216.238.108.237")
     ->set("remote_user", "robertotcestari")
     ->set("deploy_path", "/var/www/codante-io-api");
 
-// Hooks
+task("test", function () {
+    runLocally("php artisan test");
+});
 
+// Hooks
+// before("deploy", "test");
 after("deploy:failed", "deploy:unlock");

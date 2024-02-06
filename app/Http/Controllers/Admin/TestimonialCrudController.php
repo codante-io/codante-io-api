@@ -112,6 +112,7 @@ class TestimonialCrudController extends CrudController
             "upload" => true,
             "disk" => "s3",
         ]);
+
         CRUD::addField([
             "name" => "company",
             "type" => "text",
@@ -127,6 +128,16 @@ class TestimonialCrudController extends CrudController
             "type" => "text",
             "label" => "Destaque",
             "hint" => 'Por exemplo, "landing"',
+        ]);
+        CRUD::addField([
+            "name" => "social_media_link",
+            "type" => "text",
+            "label" => "Link da rede social",
+        ]);
+        CRUD::addField([
+            "name" => "social_media_nickname",
+            "type" => "text",
+            "label" => "Arroba da rede social",
         ]);
     }
 
