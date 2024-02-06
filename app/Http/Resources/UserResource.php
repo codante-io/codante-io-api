@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\ChallengeUser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,6 +28,10 @@ class UserResource extends JsonResource
             "created_at" => $this->created_at,
             "settings" => $this->settings,
             "avatar" => new UserAvatarResource($this),
+            "challengeUser" => ChallengeUser::where(
+                "user_id",
+                $this->id
+            )->get(),
         ];
     }
 }
