@@ -34,7 +34,10 @@ class ChallengeUserCardResource extends JsonResource
                 "name" => $this->challenge->name,
                 "slug" => $this->challenge->slug,
             ]),
-            "user_github_user" => $this->user->github_user,
+            "user" => $this->whenLoaded("user", [
+                "name" => $this->user->name,
+                "github_user" => $this->user->github_user,
+            ]),
         ];
     }
 }
