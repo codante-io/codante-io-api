@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\VimeoThumbnail;
+use App\Traits\Commentable;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +15,7 @@ class Lesson extends Model
     use CrudTrait;
     use HasFactory;
     use SoftDeletes;
+    use Commentable;
 
     protected $guarded = ["id"];
 
