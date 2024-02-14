@@ -15,7 +15,7 @@ class CommentController extends Controller
         Auth::shouldUse("sanctum");
 
         $request->validate([
-            "commentable_type" => "required|in:ChallengeUser",
+            "commentable_type" => "required|in:ChallengeUser,Lesson",
             "commentable_id" => "required",
             "comment" => "required|string",
             "replying_to" => "sometimes|nullable",

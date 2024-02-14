@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,10 @@ class LessonResource extends JsonResource
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "user_completed" => $this->user_completed ? true : false,
+            "comments" => Comment::getComments(
+                "App\\Models\\Lesson",
+                $this->id
+            ),
         ];
     }
 
