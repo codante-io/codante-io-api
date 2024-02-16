@@ -82,6 +82,42 @@ class Comment extends Model
         return $replyingTo;
     }
 
+    public function getCommentableUrl()
+    {
+        if ($this->commentable_type == "App\Models\ChallengeUser") {
+            $challengeName = $this->commentable->challenge->slug;
+            $githubUser = $this->commentable->user->github_user;
+
+            return "https://codante.io/mini-projetos/" .
+                $challengeName .
+                "/submissoes/" .
+                $githubUser;
+        }
+
+        if ($this->commentable_type == "App\Models\Lesson") {
+            $workshop = $this->commentable->workshop;
+            $lessonSlug = $this->commentable->slug;
+
+            if ($workshop->is_standalone == 0) {
+                $challengeSlug = $workshop->challenge->slug;
+
+                return "https://codante.io/mini-projetos/" .
+                    $challengeSlug .
+                    "/resolucao/" .
+                    $lessonSlug;
+            }
+
+            if ($workshop->is_standalone == 1) {
+                $workshopSlug = $workshop->slug;
+
+                return "https://codante.io/workshops/" .
+                    $workshopSlug .
+                    "/" .
+                    $lessonSlug;
+            }
+        }
+    }
+
     // Funçoes criadas para utilizar no painel admin
     public function getCommentableType()
     {
