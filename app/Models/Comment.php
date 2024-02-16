@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\CommentResource;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,6 +13,7 @@ class Comment extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use CrudTrait;
 
     protected $guarded = ["id"];
 
@@ -78,5 +80,16 @@ class Comment extends Model
             }
         }
         return $replyingTo;
+    }
+
+    // Funçoes criadas para utilizar no painel admin
+    public function getCommentableType()
+    {
+        return class_basename($this->commentable_type);
+    }
+
+    public function getCommentableId()
+    {
+        return $this->commentable_id;
     }
 }
