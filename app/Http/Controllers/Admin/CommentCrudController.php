@@ -45,5 +45,24 @@ class CommentCrudController extends CrudController
         CRUD::column("user_id");
         CRUD::column("comment");
         CRUD::column("commentable_url");
+        CRUD::addColumn([
+            "name" => "responded",
+            "label" => "Respondido pela equipe",
+            "type" => "closure",
+            "function" => function ($entry) {
+                if ($entry->replying_to !== null) {
+                    return "-";
+                }
+
+                $teamUserIds = [395, 397, 1];
+                $hasResponseFromTeam = \App\Models\Comment::where(
+                    "replying_to",
+                    $entry->id
+                )
+                    ->whereIn("user_id", $teamUserIds)
+                    ->exists();
+                return $hasResponseFromTeam ? "Respondido" : "Não respondido";
+            },
+        ]);
     }
 }
