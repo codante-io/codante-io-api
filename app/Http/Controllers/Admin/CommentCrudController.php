@@ -44,7 +44,12 @@ class CommentCrudController extends CrudController
         CRUD::column("id");
         CRUD::column("user_id");
         CRUD::column("comment");
-        CRUD::column("commentable_url");
+        CRUD::addColumn([
+            "name" => "commentable_url", // The name of the column in the database table
+            "label" => "URL", // The label that will be shown in the CRUD panel
+            "type" => "url",
+            "prefix" => config("app.frontend_url"),
+        ]);
         CRUD::addColumn([
             "name" => "responded",
             "label" => "Respondido pela equipe",

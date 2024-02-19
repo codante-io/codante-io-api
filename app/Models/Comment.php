@@ -88,7 +88,7 @@ class Comment extends Model
             $challengeName = $this->commentable->challenge->slug;
             $githubUser = $this->commentable->user->github_user;
 
-            return "https://codante.io/mini-projetos/" .
+            return "/mini-projetos/" .
                 $challengeName .
                 "/submissoes/" .
                 $githubUser;
@@ -101,7 +101,7 @@ class Comment extends Model
             if ($workshop->is_standalone == 0) {
                 $challengeSlug = $workshop->challenge->slug;
 
-                return "https://codante.io/mini-projetos/" .
+                return "/mini-projetos/" .
                     $challengeSlug .
                     "/resolucao/" .
                     $lessonSlug;
@@ -110,10 +110,7 @@ class Comment extends Model
             if ($workshop->is_standalone == 1) {
                 $workshopSlug = $workshop->slug;
 
-                return "https://codante.io/workshops/" .
-                    $workshopSlug .
-                    "/" .
-                    $lessonSlug;
+                return "/workshops/" . $workshopSlug . "/" . $lessonSlug;
             }
         }
     }
@@ -127,5 +124,10 @@ class Comment extends Model
     public function getCommentableId()
     {
         return $this->commentable_id;
+    }
+
+    public function getCommentableUrlAttribute($value)
+    {
+        return config("app.frontend_url") . $value;
     }
 }
