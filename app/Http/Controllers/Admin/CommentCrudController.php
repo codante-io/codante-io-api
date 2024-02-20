@@ -54,11 +54,14 @@ class CommentCrudController extends CrudController
             "label" => "Respondido pela equipe",
             "type" => "closure",
             "function" => function ($entry) {
-                if ($entry->replying_to !== null) {
+                $teamUserIds = [395, 397, 1];
+                if (
+                    $entry->replying_to !== null ||
+                    in_array($entry->user_id, $teamUserIds)
+                ) {
                     return "-";
                 }
 
-                $teamUserIds = [395, 397, 1];
                 $hasResponseFromTeam = \App\Models\Comment::where(
                     "replying_to",
                     $entry->id
