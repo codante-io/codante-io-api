@@ -69,11 +69,13 @@ class CertificateController extends Controller
 
         $certificate = new Certificate();
         $certificate->user_id = $user->id;
-        $certificate->certifiable_type = Certificate::validateCertifiable(
+        $certifiableClass = $certificate->certifiable_type = Certificate::validateCertifiable(
             $request->certifiable_type
         );
         $certificate->certifiable_id = $request->certifiable_id;
         $certificate->status = "pending";
+
+        $certifiable = $certifiableClass::findOrFail($request->certifiable_id);
 
         if ($request->certifiable_type === "ChallengeUser") {
             $challengeUser = ChallengeUser::with("challenge")->findOrFail(
@@ -94,12 +96,20 @@ class CertificateController extends Controller
 
         $certificate->save();
 
-        if ($request->certifiable_type === "ChallengeUser") {
-            new Discord(
-                "💻 {$challenge->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$challenge->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>\nID: $certificate->id",
-                "pedidos-certificados"
-            );
-        }
+        event(
+            new \App\Events\UserRequestedCertificate(
+                $user,
+                $certificate,
+                $certifiable
+            )
+        );
+
+        // if ($request->certifiable_type === "ChallengeUser") {
+        //     new Discord(
+        //         "💻 {$challenge->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$challenge->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>\nID: $certificate->id",
+        //         "pedidos-certificados"
+        //     );
+        // }
 
         return $certificate;
     }
