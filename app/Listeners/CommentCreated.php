@@ -32,7 +32,9 @@ class CommentCreated implements ShouldQueue
 
         // Send Discord notification
         new Discord(
-            "Um novo comentário foi feito por {$event->user->name} em {$event->comment->commentable_type} {$event->comment->commentable_id} {replying to - $replyingTo}: {$event->comment->comment}",
+            "💬 Um novo comentário foi feito por {$event->user->name} em {$event->comment->commentable_type} {$event->comment->commentable_id} {replying to - $replyingTo}: {$event->comment->comment}\n🔗<" .
+                $event->comment->commentable_url .
+                ">",
             "notificacoes-comentarios"
         );
 

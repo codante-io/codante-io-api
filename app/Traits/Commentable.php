@@ -4,9 +4,11 @@ namespace App\Traits;
 
 use App\Models\Comment;
 use App\Models\User;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 
 trait Commentable
 {
+    use CrudTrait;
     public function comments()
     {
         return $this->morphMany(

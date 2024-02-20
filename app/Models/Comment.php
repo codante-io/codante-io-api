@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\CommentResource;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,6 +13,7 @@ class Comment extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use CrudTrait;
 
     protected $guarded = ["id"];
 
@@ -78,5 +80,54 @@ class Comment extends Model
             }
         }
         return $replyingTo;
+    }
+
+    public function getCommentableUrl()
+    {
+        if ($this->commentable_type == "App\Models\ChallengeUser") {
+            $challengeName = $this->commentable->challenge->slug;
+            $githubUser = $this->commentable->user->github_user;
+
+            return "/mini-projetos/" .
+                $challengeName .
+                "/submissoes/" .
+                $githubUser;
+        }
+
+        if ($this->commentable_type == "App\Models\Lesson") {
+            $workshop = $this->commentable->workshop;
+            $lessonSlug = $this->commentable->slug;
+
+            if ($workshop->is_standalone == 0) {
+                $challengeSlug = $workshop->challenge->slug;
+
+                return "/mini-projetos/" .
+                    $challengeSlug .
+                    "/resolucao/" .
+                    $lessonSlug;
+            }
+
+            if ($workshop->is_standalone == 1) {
+                $workshopSlug = $workshop->slug;
+
+                return "/workshops/" . $workshopSlug . "/" . $lessonSlug;
+            }
+        }
+    }
+
+    // Funçoes criadas para utilizar no painel admin
+    public function getCommentableType()
+    {
+        return class_basename($this->commentable_type);
+    }
+
+    public function getCommentableId()
+    {
+        return $this->commentable_id;
+    }
+
+    public function getCommentableUrlAttribute($value)
+    {
+        return config("app.frontend_url") . $value;
     }
 }

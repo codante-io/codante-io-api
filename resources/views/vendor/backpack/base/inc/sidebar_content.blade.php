@@ -22,4 +22,5 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('testimonial') }}"><i class="nav-icon la la-question"></i> Testimonials</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('subscription') }}"><i class="nav-icon la la-money"></i>
                 Subscriptions</a></li>
-<li class="nav-item"><a class="nav-link" href="{{ backpack_url('certificate') }}"><i class="nav-icon la la-certificate"></i> Gerar Certificado</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('certificate') }}"><i class="nav-icon la la-certificate"></i> Certificados</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('comment') }}"><i class="nav-icon la la-weixin"></i> Comentários</a></li>

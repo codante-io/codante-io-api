@@ -44,6 +44,11 @@ class CommentController extends Controller
             "replying_to" => $replyingTo,
         ]);
 
+        $commentableUrl = $comment->getCommentableUrl();
+        $comment->update([
+            "commentable_url" => $commentableUrl,
+        ]);
+
         event(new \App\Events\UserCommented($user, $comment, $commentable));
 
         return response(new CommentResource($comment), 201);
