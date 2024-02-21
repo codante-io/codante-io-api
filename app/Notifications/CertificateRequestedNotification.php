@@ -38,19 +38,18 @@ class CertificateRequestedNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $firstName = Str::title(explode(" ", $notifiable->name)[0]);
-
         $message =
-            $this->certificate->certifiable_type === "ChallengeUser"
-                ? "Recebemos a sua solicitação de certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name} e em breve ele estará disponível!"
+            $this->certificate->certifiable_type === "App\Models\ChallengeUser"
+                ? "Recebemos a sua solicitação de certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name}!"
                 : "Seu certificado com ID {$this->certificate->id} foi solicitado e em breve estará disponível!";
 
         return (new MailMessage())
             ->from("contato@codante.io", "Contato Codante")
-            ->subject("[Codante] Você solicitou um certificado!")
+            ->subject("[Codante] Recebemos sua solicitação de certificado!")
             ->greeting("Olá $firstName")
             ->line($message)
             ->line(
-                "Avisaremos você assim que for publicado. O prazo de publicação é de 3 dias úteis"
+                "Avisaremos você assim que ele estiver disponível. O prazo de publicação é de 3 dias úteis"
             );
     }
 

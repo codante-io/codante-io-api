@@ -27,7 +27,7 @@ class CertificatePublished
         $certifiable_type = $event->certificate->certifiable_type;
 
         if (
-            $certifiable_type === "App\\Models\\ChallengeUser" &&
+            $certifiable_type === "App\Models\ChallengeUser" &&
             $event->certificate->status === "published"
         ) {
             new Discord(
@@ -36,6 +36,7 @@ class CertificatePublished
             );
 
             Notification::send(
+                $certifiable->user,
                 new \App\Notifications\CertificatePublishedNotification(
                     $certificate,
                     $certifiable

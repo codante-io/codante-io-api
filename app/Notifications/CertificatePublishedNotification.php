@@ -45,7 +45,7 @@ class CertificatePublishedNotification extends Notification
         $frontUrl = config("app.frontend_url");
 
         $message =
-            $this->certificate->certifiable_type === "ChallengeUser"
+            $this->certificate->certifiable_type === "App\Models\ChallengeUser"
                 ? "Seu certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name} foi publicado!"
                 : "Seu certificado com ID {$this->certificate->id} foi publicado!";
 
