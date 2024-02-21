@@ -44,18 +44,21 @@ class CertificatePublishedNotification extends Notification
         $firstName = Str::title(explode(" ", $notifiable->name)[0]);
         $frontUrl = config("app.frontend_url");
 
+        $message =
+            $this->certificate->certifiable_type === "ChallengeUser"
+                ? "Seu certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name} foi publicado!"
+                : "Seu certificado com ID {$this->certificate->id} foi publicado!";
+
         return (new MailMessage())
             ->from("contato@codante.io", "Contato Codante")
             ->subject("[Codante] Seu certificado foi publicado!")
             ->greeting("Olá $firstName")
-            ->line(
-                "Seu certificado com ID {$this->certificate->id} foi publicado!"
-            )
+            ->line($message)
             ->action(
                 "Ver certificado",
                 $frontUrl . "/certificados/{$this->certificate->id}"
             )
-            ->line("Clique no botão acima para acessar o seu certificado.");
+            ->line("Clique no botão acima para acessá-lo.");
     }
 
     /**

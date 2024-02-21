@@ -22,27 +22,33 @@ class CertificatePublished
      */
     public function handle(AdminPublishedCertificate $event): void
     {
-        // new Discord("TESTE", "pedidos-certificados");
         $certificate = $event->certificate;
         $certifiable = $event->certifiable;
         $certifiable_type = $event->certificate->certifiable_type;
 
-        if ($certifiable_type === "App\\Models\\ChallengeUser") {
-            $message =
-                $event->certificate->status == "published"
-                    ? "Projeto aprovado ✅"
-                    : "Projeto não aprovado ❌";
+        if (
+            $certifiable_type === "App\\Models\\ChallengeUser" &&
+            $event->certificate->status === "published"
+        ) {
             new Discord(
-                "Certificado ID: {$certificate->id}\nStatus atualizado. $message",
+                "Certificado ID: {$certificate->id}\nStatus atualizado. Projeto aprovado ✅",
+                "pedidos-certificados"
+            );
+
+            // Notification::send(
+            //     new \App\Notifications\CertificatePublishedNotification(
+            //         $certificate,
+            //         $certifiable
+            //     )
+            // );
+        } elseif (
+            $certifiable_type === "App\\Models\\ChallengeUser" &&
+            $event->certificate->status !== "published"
+        ) {
+            new Discord(
+                "Certificado ID: {$certificate->id}\nStatus atualizado para {$event->certificate->status} ❌",
                 "pedidos-certificados"
             );
         }
-
-        // Notification::send(
-        //     new \App\Notifications\CertificatePublishedNotification(
-        //         $certificate,
-        //         $certifiable
-        //     )
-        // );
     }
 }
