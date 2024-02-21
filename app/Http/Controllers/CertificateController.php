@@ -104,13 +104,6 @@ class CertificateController extends Controller
             )
         );
 
-        // if ($request->certifiable_type === "ChallengeUser") {
-        //     new Discord(
-        //         "💻 {$challenge->name}\n👤 {$user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$challenge->slug}/submissoes/{$user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>\nID: $certificate->id",
-        //         "pedidos-certificados"
-        //     );
-        // }
-
         return $certificate;
     }
 }

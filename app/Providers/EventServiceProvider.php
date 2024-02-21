@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\AdminPublishedCertificate;
+use App\Events\CertificatePublishedByAdmin;
 use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
@@ -11,12 +13,13 @@ use App\Events\UserCommented;
 use App\Events\UserRequestedCertificate;
 use App\Events\UserStatusUpdated;
 use App\Listeners\AwardPoints;
+use App\Listeners\CertificateEditedToPublished;
+use App\Listeners\CertificatePublished;
 use App\Listeners\CertificateRequested;
 use App\Listeners\CommentCreated;
 use App\Listeners\Registered as RegisteredListener;
 use App\Listeners\SendDiscordNotificationChallengeSubmitted;
 use App\Listeners\UserStatusUpdated as UserStatusUpdatedListener;
-use App\Models\Certificate;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -45,6 +48,7 @@ class EventServiceProvider extends ServiceProvider
         UserStatusUpdated::class => [UserStatusUpdatedListener::class],
         UserCommented::class => [CommentCreated::class],
         UserRequestedCertificate::class => [CertificateRequested::class],
+        AdminPublishedCertificate::class => [CertificatePublished::class],
     ];
 
     /**
