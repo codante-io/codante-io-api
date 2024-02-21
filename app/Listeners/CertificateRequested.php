@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\UserRequestedCertificate;
 use App\Notifications\Discord;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Notification;
 
 class CertificateRequested implements ShouldQueue
 {
@@ -30,5 +31,11 @@ class CertificateRequested implements ShouldQueue
                 "pedidos-certificados"
             );
         }
+
+        Notification::send(
+            new \App\Notifications\CertificateRequestedNotification(
+                $certificate
+            )
+        );
     }
 }

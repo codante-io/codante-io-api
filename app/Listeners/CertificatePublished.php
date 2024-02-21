@@ -35,12 +35,12 @@ class CertificatePublished
                 "pedidos-certificados"
             );
 
-            // Notification::send(
-            //     new \App\Notifications\CertificatePublishedNotification(
-            //         $certificate,
-            //         $certifiable
-            //     )
-            // );
+            Notification::send(
+                new \App\Notifications\CertificatePublishedNotification(
+                    $certificate,
+                    $certifiable
+                )
+            );
         } elseif (
             $certifiable_type === "App\\Models\\ChallengeUser" &&
             $event->certificate->status !== "published"
