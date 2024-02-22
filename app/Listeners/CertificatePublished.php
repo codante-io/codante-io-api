@@ -14,7 +14,7 @@ class CertificatePublished
      */
     public function __construct()
     {
-        // dd("oi");
+        //
     }
 
     /**
