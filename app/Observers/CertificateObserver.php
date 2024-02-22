@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Certificate;
 use App\Notifications\Discord;
+use Notification;
 
 class CertificateObserver
 {
@@ -20,16 +21,21 @@ class CertificateObserver
      */
     public function updated(Certificate $certificate)
     {
+        $prevStatus = $certificate->getOriginal("status");
         $status = $certificate->status;
-        $message =
-            $status == "published"
-                ? "Projeto aprovado e certificado atualizado ✅"
-                : "Projeto não aprovado ❌";
 
-        new Discord(
-            "Certificado ID: {$certificate->id} atualizado. $message",
-            "pedidos-certificados"
-        );
+        if ($status !== $prevStatus) {
+            $user = $certificate->user;
+            $certifiable = $certificate->certifiable;
+
+            event(
+                new \App\Events\AdminPublishedCertificate(
+                    $user,
+                    $certificate,
+                    $certifiable
+                )
+            );
+        }
     }
 
     /**
