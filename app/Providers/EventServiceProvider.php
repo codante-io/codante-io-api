@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Events\AdminPublishedCertificate;
-use App\Events\CertificatePublishedByAdmin;
 use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
@@ -13,7 +12,6 @@ use App\Events\UserCommented;
 use App\Events\UserRequestedCertificate;
 use App\Events\UserStatusUpdated;
 use App\Listeners\AwardPoints;
-use App\Listeners\CertificateEditedToPublished;
 use App\Listeners\CertificatePublished;
 use App\Listeners\CertificateRequested;
 use App\Listeners\CommentCreated;
