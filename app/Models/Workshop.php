@@ -28,6 +28,13 @@ class Workshop extends Model
         return "workshop";
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, "workshop_user")->withPivot([
+            "status",
+        ]);
+    }
+
     public function lessons()
     {
         return $this->hasMany(Lesson::class);

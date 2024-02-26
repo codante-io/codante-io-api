@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Services\VimeoThumbnail;
 use App\Traits\Commentable;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -51,5 +50,7 @@ class Lesson extends Model
                 "completed_at" => now(),
             ],
         ]);
+
+        $user->workshops()->syncWithoutDetaching([$this->workshop->id]);
     }
 }
