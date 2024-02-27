@@ -43,6 +43,7 @@ class Lesson extends Model
     {
         if (!$setComplete) {
             $this->users()->detach($user->id);
+            event(new \App\Events\UserErasedLesson($user, $this->workshop));
             return;
         }
         $this->users()->syncWithoutDetaching([
@@ -51,6 +52,6 @@ class Lesson extends Model
             ],
         ]);
 
-        $user->workshops()->syncWithoutDetaching([$this->workshop->id]);
+        event(new \App\Events\UserCompletedLesson($user, $this->workshop));
     }
 }

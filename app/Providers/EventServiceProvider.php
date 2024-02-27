@@ -9,15 +9,19 @@ use App\Events\ChallengeJoined;
 use App\Events\ReactionCreated;
 use App\Events\ReactionDeleted;
 use App\Events\UserCommented;
+use App\Events\UserCompletedLesson;
+use App\Events\UserErasedLesson;
 use App\Events\UserRequestedCertificate;
 use App\Events\UserStatusUpdated;
 use App\Listeners\AwardPoints;
 use App\Listeners\CertificatePublished;
 use App\Listeners\CertificateRequested;
 use App\Listeners\CommentCreated;
+use App\Listeners\LessonRemoved;
 use App\Listeners\Registered as RegisteredListener;
 use App\Listeners\SendDiscordNotificationChallengeSubmitted;
 use App\Listeners\UserStatusUpdated as UserStatusUpdatedListener;
+use App\Listeners\WorkshopUserCreated;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -47,6 +51,8 @@ class EventServiceProvider extends ServiceProvider
         UserCommented::class => [CommentCreated::class],
         UserRequestedCertificate::class => [CertificateRequested::class],
         AdminPublishedCertificate::class => [CertificatePublished::class],
+        UserCompletedLesson::class => [WorkshopUserCreated::class],
+        UserErasedLesson::class => [LessonRemoved::class],
     ];
 
     /**

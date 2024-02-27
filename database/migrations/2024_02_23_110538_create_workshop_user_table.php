@@ -21,6 +21,7 @@ return new class extends Migration {
                 ->references("id")
                 ->on("users");
             $table->string("status")->default("in-progress");
+            $table->timestamp("completed_at")->nullable();
             $table->timestamps();
         });
     }

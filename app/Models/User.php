@@ -80,7 +80,7 @@ class User extends Authenticatable
     public function workshops()
     {
         return $this->belongsToMany(Workshop::class, "workshop_user")
-            ->withPivot(["status"])
+            ->withPivot(["status", "completed_at"])
             ->withTimestamps();
     }
 
