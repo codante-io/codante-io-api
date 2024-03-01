@@ -29,27 +29,6 @@ class Certificate extends Model
         });
     }
 
-    protected static function booted()
-    {
-        static::updated(function ($certificate) {
-            if ($certificate->source_type === "challenge") {
-                $user = User::find($certificate->user_id);
-                $challenge = Challenge::find($certificate->challenge_id);
-                if ($certificate->status === "published") {
-                    new Discord(
-                        "✅✅✅ Certificado atualizado para {$user->name} - {$challenge->name}. Status atual: {$certificate->status}",
-                        "pedidos-certificados"
-                    );
-                } elseif ($certificate->status === "pending") {
-                    new Discord(
-                        "❌❌❌ Certificado atualizado para {$user->name} - {$challenge->name}. Status atual: {$certificate->status}",
-                        "pedidos-certificados"
-                    );
-                }
-            }
-        });
-    }
-
     protected $guarded = ["id"];
 
     public function user()

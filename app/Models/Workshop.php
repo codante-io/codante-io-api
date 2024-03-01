@@ -60,6 +60,11 @@ class Workshop extends Model
         return $this->belongsTo(Challenge::class);
     }
 
+    function certificate()
+    {
+        return $this->morphOne(Certificate::class, "certifiable");
+    }
+
     public function scopeVisible($query)
     {
         return $query
