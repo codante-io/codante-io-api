@@ -34,6 +34,8 @@ class WorkshopUserCreated
             ->where("workshop_id", $workshop->id)
             ->count();
 
+        $durationInSeconds = $workshop->lessons()->sum("duration_in_seconds");
+
         if ($completedLessons >= $lessonCount) {
             $workshopUser = WorkshopUser::where("user_id", $user->id)
                 ->where("workshop_id", $workshop->id)
@@ -65,8 +67,7 @@ class WorkshopUserCreated
                                 $workshopUser->completed_at ??
                                 now()->format("Y-m-d H:i:s"),
                             "certifiable_slug" => $workshop->slug,
-                            "duration_in_minutes" =>
-                                $workshop->duration_in_minutes,
+                            "duration_in_seconds" => $durationInSeconds,
                         ],
                     ]
                 );
