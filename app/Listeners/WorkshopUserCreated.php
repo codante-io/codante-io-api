@@ -78,13 +78,13 @@ class WorkshopUserCreated
                         "pedidos-certificados"
                     );
 
-                    // Notification::send(
-                    //     $event->user,
-                    //     new \App\Notifications\CertificatePublishedNotification(
-                    //         $certificate,
-                    //         $workshopUser
-                    //     )
-                    // );
+                    Notification::send(
+                        $event->user,
+                        new \App\Notifications\CertificatePublishedNotification(
+                            $certificate,
+                            $workshopUser
+                        )
+                    );
                 }
             }
         }
