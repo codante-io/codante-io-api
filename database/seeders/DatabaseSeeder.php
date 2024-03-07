@@ -138,5 +138,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user2->save();
+
+        $this->call(WorkshopUserSeeder::class);
     }
 }

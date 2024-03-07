@@ -42,6 +42,11 @@ class CertificateController extends Controller
             ->with("user")
             ->with("certifiable")
             ->firstOrFail();
+
+        if (!$certificate->user->is_pro) {
+            return null;
+        }
+
         return new CertificateResource($certificate);
     }
 
