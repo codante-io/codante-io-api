@@ -25,6 +25,9 @@ class WorkshopUserSeeder extends Seeder
         foreach ($lessonUsers as $lessonUser) {
             $workshopId = $lessonUser->workshop_id;
             $workshop = Workshop::find($workshopId);
+            if (!$workshop->is_standalone) {
+                continue;
+            }
 
             $lessonUserCount = DB::table("lesson_user")
                 ->join("lessons", "lesson_user.lesson_id", "=", "lessons.id")
@@ -49,38 +52,36 @@ class WorkshopUserSeeder extends Seeder
             $completedAt =
                 $status == "completed" ? $latestLessonUser->completed_at : null;
 
-            if ($workshop->is_standalone) {
-                $workshopUser = WorkshopUser::firstOrCreate(
-                    [
-                        "workshop_id" => $workshopId,
-                        "user_id" => $lessonUser->user_id,
-                    ],
-                    ["status" => $status, "completed_at" => $completedAt]
-                );
+            $workshopUser = WorkshopUser::firstOrCreate(
+                [
+                    "workshop_id" => $workshopId,
+                    "user_id" => $lessonUser->user_id,
+                ],
+                ["status" => $status, "completed_at" => $completedAt]
+            );
 
-                if ($status == "completed") {
-                    $durationInSeconds = $workshop
-                        ->lessons()
-                        ->sum("duration_in_seconds");
-                    Certificate::firstOrCreate(
-                        [
-                            "certifiable_type" => "App\Models\WorkshopUser",
-                            "certifiable_id" => $workshopUser->id,
+            if ($status == "completed") {
+                $durationInSeconds = $workshop
+                    ->lessons()
+                    ->sum("duration_in_seconds");
+                Certificate::firstOrCreate(
+                    [
+                        "certifiable_type" => "App\Models\WorkshopUser",
+                        "certifiable_id" => $workshopUser->id,
+                    ],
+                    [
+                        "user_id" => $lessonUser->user_id,
+                        "status" => "published",
+                        "metadata" => [
+                            "certifiable_source_name" => $workshop->name,
+                            "end_date" =>
+                                $workshopUser->completed_at ??
+                                now()->format("Y-m-d H:i:s"),
+                            "certifiable_slug" => $workshop->slug,
+                            "duration_in_seconds" => $durationInSeconds,
                         ],
-                        [
-                            "user_id" => $lessonUser->user_id,
-                            "status" => "published",
-                            "metadata" => [
-                                "certifiable_source_name" => $workshop->name,
-                                "end_date" =>
-                                    $workshopUser->completed_at ??
-                                    now()->format("Y-m-d H:i:s"),
-                                "certifiable_slug" => $workshop->slug,
-                                "duration_in_seconds" => $durationInSeconds,
-                            ],
-                        ]
-                    );
-                }
+                    ]
+                );
             }
         }
     }
