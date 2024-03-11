@@ -28,6 +28,13 @@ class Workshop extends Model
         return "workshop";
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, "workshop_user")->withPivot([
+            "status",
+        ]);
+    }
+
     public function lessons()
     {
         return $this->hasMany(Lesson::class);
@@ -51,6 +58,11 @@ class Workshop extends Model
     public function challenge(): BelongsTo
     {
         return $this->belongsTo(Challenge::class);
+    }
+
+    function certificate()
+    {
+        return $this->morphOne(Certificate::class, "certifiable");
     }
 
     public function scopeVisible($query)

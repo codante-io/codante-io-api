@@ -77,6 +77,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Lesson::class)->withPivot(["completed_at"]);
     }
 
+    public function workshops()
+    {
+        return $this->belongsToMany(Workshop::class, "workshop_user")
+            ->withPivot(["status", "completed_at"])
+            ->withTimestamps();
+    }
+
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);

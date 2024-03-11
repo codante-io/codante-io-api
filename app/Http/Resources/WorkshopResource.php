@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\WorkshopUser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +15,12 @@ class WorkshopResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $workshopUser = $request->user()
+            ? WorkshopUser::where("user_id", $request->user()->id)
+                ->where("workshop_id", $this->id)
+                ->first()
+            : null;
+
         $resource = [
             "id" => $this->id,
             "name" => $this->name,
@@ -42,6 +49,9 @@ class WorkshopResource extends JsonResource
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "published_at" => $this->published_at,
+            "workshop_user" => $workshopUser
+                ? new WorkshopUserResource($workshopUser)
+                : null,
         ];
 
         if ($this->lessons_count) {

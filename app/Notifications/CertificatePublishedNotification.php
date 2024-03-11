@@ -9,7 +9,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
-class CertificatePublishedNotification extends Notification
+class CertificatePublishedNotification extends Notification implements
+    ShouldQueue
 {
     use Queueable;
 
@@ -44,10 +45,17 @@ class CertificatePublishedNotification extends Notification
         $firstName = Str::title(explode(" ", $notifiable->name)[0]);
         $frontUrl = config("app.frontend_url");
 
-        $message =
+        if (
             $this->certificate->certifiable_type === "App\Models\ChallengeUser"
-                ? "Seu certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name} foi publicado!"
-                : "Seu certificado com ID {$this->certificate->id} foi publicado!";
+        ) {
+            $message = "Seu certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name} foi publicado!";
+        } elseif (
+            $this->certificate->certifiable_type === "App\Models\WorkshopUser"
+        ) {
+            $message = "Você finalizou o Workshop {$this->certificate->certifiable->workshop->name} e seu certificado foi publicado!";
+        } else {
+            $message = "Seu certificado com ID {$this->certificate->id} foi publicado!";
+        }
 
         return (new MailMessage())
             ->from("contato@codante.io", "Contato Codante")

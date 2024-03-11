@@ -6,7 +6,8 @@ use App\Http\Resources\CertificateResource;
 use App\Models\Certificate;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
-use App\Notifications\Discord;
+use App\Models\User;
+use App\Models\WorkshopUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,6 +42,11 @@ class CertificateController extends Controller
             ->with("user")
             ->with("certifiable")
             ->firstOrFail();
+
+        if (!$certificate->user->is_pro) {
+            return null;
+        }
+
         return new CertificateResource($certificate);
     }
 
@@ -49,7 +55,7 @@ class CertificateController extends Controller
         Auth::shouldUse("sanctum");
 
         $request->validate([
-            "certifiable_type" => "required|in:ChallengeUser",
+            "certifiable_type" => "required|in:ChallengeUser,WorkshopUser",
             "certifiable_id" => "required|string",
         ]);
 
@@ -73,8 +79,6 @@ class CertificateController extends Controller
             $request->certifiable_type
         );
         $certificate->certifiable_id = $request->certifiable_id;
-        $certificate->status = "pending";
-
         $certifiable = $certifiableClass::findOrFail($request->certifiable_id);
 
         if ($request->certifiable_type === "ChallengeUser") {
@@ -82,6 +86,7 @@ class CertificateController extends Controller
                 $request->certifiable_id
             );
             $challenge = $challengeUser->challenge;
+            $certificate->status = "pending";
             $certificate->metadata = [
                 "certifiable_source_name" => $challenge->name,
                 "end_date" =>

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Services\VimeoThumbnail;
 use App\Traits\Commentable;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -44,6 +43,7 @@ class Lesson extends Model
     {
         if (!$setComplete) {
             $this->users()->detach($user->id);
+            event(new \App\Events\UserErasedLesson($user, $this->workshop));
             return;
         }
         $this->users()->syncWithoutDetaching([
@@ -51,5 +51,7 @@ class Lesson extends Model
                 "completed_at" => now(),
             ],
         ]);
+
+        event(new \App\Events\UserCompletedLesson($user, $this->workshop));
     }
 }
