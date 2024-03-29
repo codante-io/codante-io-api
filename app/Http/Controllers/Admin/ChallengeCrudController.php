@@ -113,9 +113,37 @@ class ChallengeCrudController extends CrudController
             "type" => "radio",
             "tab" => "Principal",
             "options" => [
-                1 => 1,
-                2 => 2,
-                3 => 3,
+                "newbie" => "Iniciante",
+                "intermediate" => "Intermediário",
+                "advanced" => "Avançado",
+            ],
+            "wrapper" => [
+                "class" => "form-group col-md-6",
+            ],
+        ]);
+
+        $this->crud->addField([
+            "name" => "category",
+            "label" => "Categoria",
+            "type" => "radio",
+            "tab" => "Principal",
+            "options" => [
+                "frontend" => "Front-end",
+                "fullstack" => "Fullstack",
+            ],
+            "wrapper" => [
+                "class" => "form-group col-md-6",
+            ],
+        ]);
+
+        $this->crud->addField([
+            "name" => "is_premium",
+            "label" => "É premium?",
+            "type" => "radio",
+            "tab" => "Principal",
+            "options" => [
+                true => "Premium",
+                false => "Gratuito",
             ],
             "wrapper" => [
                 "class" => "form-group col-md-6",
@@ -188,6 +216,16 @@ class ChallengeCrudController extends CrudController
             "min" => 0, // minimum rows allowed in the table
             "hint" =>
                 "O stackblitz-embed vai fazer override do url do github da solução oficial. Use apenas se quiser substituir o link da solução oficial. Coloque o link de embed sem nenhum query parameter.",
+        ]);
+
+        $this->crud->addField([
+            "name" => "main_technology_id",
+            "label" => "Tecnologia Principal",
+            "type" => "select",
+            "tab" => "Principal",
+            "model" => "App\Models\Tag",
+            "entity" => "mainTechnology",
+            "attribute" => "name",
         ]);
 
         $this->crud->addField([

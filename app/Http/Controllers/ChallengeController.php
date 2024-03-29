@@ -45,10 +45,15 @@ class ChallengeController extends Controller
                 "image_url",
                 "status",
                 "difficulty",
+                "estimated_effort",
+                "category",
+                "is_premium",
                 "weekly_featured_start_date",
-                "solution_publish_date"
+                "solution_publish_date",
+                "main_technology_id"
             )
             ->listed()
+            ->with("mainTechnology")
             ->with("workshop:id,challenge_id")
             ->withCount("users")
             ->with([

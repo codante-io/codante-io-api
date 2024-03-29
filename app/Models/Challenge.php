@@ -42,6 +42,11 @@ class Challenge extends Model
         return $this->morphToMany(Tag::class, "taggable");
     }
 
+    public function mainTechnology()
+    {
+        return $this->belongsTo(Tag::class, "main_technology_id");
+    }
+
     public function tracks()
     {
         return $this->morphToMany(Track::class, "trackable");

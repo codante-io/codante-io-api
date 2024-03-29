@@ -23,6 +23,15 @@ class ChallengeCardResource extends JsonResource
             "status" => $this->status,
             "difficulty" => $this->difficulty,
             "has_solution" => $this->whenLoaded("workshop") ? true : false,
+            "estimated_effort" => $this->estimated_effort,
+            "category" => $this->category,
+            "is_premium" => $this->is_premium,
+            "main_technology" => $this->whenLoaded(
+                "mainTechnology",
+                function () {
+                    return new TagResource($this->mainTechnology);
+                }
+            ),
             "tags" => TagResource::collection($this->whenLoaded("tags")),
             "avatars" => UserAvatarResource::collection(
                 //take 5 random users
