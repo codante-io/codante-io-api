@@ -22,6 +22,7 @@ use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class ChallengeController extends Controller
 {
@@ -34,8 +35,10 @@ class ChallengeController extends Controller
         $this->paginator = new ResultPager($this->client);
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $groupedByTechnology = (bool) $request->query("groupedByTechnology");
+
         $challenges = Challenge::query()
             ->select(
                 "id",
@@ -45,10 +48,15 @@ class ChallengeController extends Controller
                 "image_url",
                 "status",
                 "difficulty",
+                "estimated_effort",
+                "category",
+                "is_premium",
                 "weekly_featured_start_date",
-                "solution_publish_date"
+                "solution_publish_date",
+                "main_technology_id"
             )
             ->listed()
+            ->with("mainTechnology")
             ->with("workshop:id,challenge_id")
             ->withCount("users")
             ->with([
@@ -78,7 +86,27 @@ class ChallengeController extends Controller
             ->orderBy("created_at", "desc")
             ->get();
 
-        return ChallengeCardResource::collection($challenges);
+        $normalizedChallenges = ChallengeCardResource::collection($challenges);
+
+        if ($groupedByTechnology) {
+            $groupedChallenges = $normalizedChallenges->groupBy(function (
+                $challenge
+            ) {
+                if ($challenge->isWeeklyFeatured()) {
+                    return "featured";
+                }
+
+                if ($challenge->mainTechnology) {
+                    return $challenge->mainTechnology->name;
+                }
+
+                return "Outras tecnologias";
+            });
+
+            return response()->json(["data" => $groupedChallenges]);
+        }
+
+        return $normalizedChallenges;
     }
 
     public function hasForkedRepo(Request $request, $slug)

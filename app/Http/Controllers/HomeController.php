@@ -60,7 +60,11 @@ class HomeController extends Controller
                             "short_description",
                             "image_url",
                             "status",
-                            "difficulty"
+                            "difficulty",
+                            "estimated_effort",
+                            "main_technology_id",
+                            "category",
+                            "is_premium"
                         )
                         ->where("featured", "landing")
                         ->where(function ($query) {
@@ -70,6 +74,7 @@ class HomeController extends Controller
                         })
                         ->with("workshop:id,challenge_id")
                         ->withCount("users")
+                        ->with("mainTechnology")
                         ->with([
                             "users" => function ($query) {
                                 $query
