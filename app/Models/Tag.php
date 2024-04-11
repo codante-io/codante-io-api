@@ -29,4 +29,9 @@ class Tag extends Model
     {
         return $this->morphedByMany(Track::class, "taggable");
     }
+
+    public function trackSections()
+    {
+        return $this->morphedByMany(TrackSection::class, "taggable");
+    }
 }

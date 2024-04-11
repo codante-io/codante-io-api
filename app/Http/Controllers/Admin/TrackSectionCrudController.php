@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\Admin\TagRequest;
-use App\Models\Tag;
+use App\Http\Requests\TrackSectionRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class TagCrudController
+ * Class TrackSectionCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class TagCrudController extends CrudController
+class TrackSectionCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\InlineCreateOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\FetchOperation;
+
+    protected function fetchTags()
+    {
+        return $this->fetch(\App\Models\Tag::class);
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -28,9 +32,9 @@ class TagCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Tag::class);
-        CRUD::setRoute(config("backpack.base.route_prefix") . "/tag");
-        CRUD::setEntityNameStrings("tag", "tags");
+        CRUD::setModel(\App\Models\TrackSection::class);
+        CRUD::setRoute(config("backpack.base.route_prefix") . "/track-section");
+        CRUD::setEntityNameStrings("track section", "track sections");
     }
 
     /**
@@ -41,10 +45,17 @@ class TagCrudController extends CrudController
      */
     protected function setupListOperation()
     {
+        CRUD::column("track_id");
         CRUD::column("name");
-        CRUD::column("color");
+        CRUD::column("description");
         CRUD::column("created_at");
         CRUD::column("updated_at");
+
+        /**
+         * Columns can be defined using the fluent syntax or array syntax:
+         * - CRUD::column('price')->type('number');
+         * - CRUD::addColumn(['name' => 'price', 'type' => 'number']);
+         */
     }
 
     /**
@@ -55,45 +66,27 @@ class TagCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(TagRequest::class);
-
+        CRUD::field("track_id");
         CRUD::field("name");
-        CRUD::addField([
-            "label" => "Cor",
-            "name" => "color",
-            "type" => "color_picker",
-            "default" => "#5282FF",
-            "color_picker_options" => [
-                "horizontal" => true,
-                "extensions" => [
-                    [
-                        "name" => "swatches",
-                        "options" => [
-                            "colors" => [
-                                "primary" => "#337ab7",
-                                "success" => "#5cb85c",
-                                "info" => "#5bc0de",
-                                "warning" => "#f0ad4e",
-                                "danger" => "#d9534f",
-                            ],
-                            "namesAsValues" => false,
-                        ],
-                    ],
-                ],
-            ],
+        CRUD::field("description");
+        $this->crud->addField([
+            "type" => "relationship",
+            "name" => "tags",
+            "label" => "Tags",
+            "inline_create" => ["entity" => "tag"], // <--- OR THIS
         ]);
 
-        $this->crud->addField([
-            "name" => "image_url",
-            "label" => "Imagem",
-            "type" => "upload",
-            "upload" => true,
-            "disk" => "s3",
-        ]);
+        /**
+         * Fields can be defined using the fluent syntax or array syntax:
+         * - CRUD::field('price')->type('number');
+         * - CRUD::addField(['name' => 'price', 'type' => 'number']));
+         */
     }
 
     /**
      * Define what happens when the Update operation is loaded.
+     *
+     * @see https://backpackforlaravel.com/docs/crud-operation-update
      * @return void
      */
     protected function setupUpdateOperation()

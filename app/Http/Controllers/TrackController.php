@@ -27,6 +27,7 @@ class TrackController extends Controller
             Track::query()
                 ->where("slug", $slug)
                 ->with("tags")
+                ->with("trackSections")
                 ->firstOrFail()
         );
     }

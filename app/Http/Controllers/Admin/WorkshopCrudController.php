@@ -19,6 +19,12 @@ class WorkshopCrudController extends CrudController
     use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\FetchOperation;
+
+    protected function fetchTags()
+    {
+        return $this->fetch(\App\Models\Tag::class);
+    }
 
     /**
      * Configure the CrudPanel object. Apply settings to all operations.
@@ -186,6 +192,7 @@ class WorkshopCrudController extends CrudController
             "name" => "tags",
             "label" => "Tags",
             "type" => "relationship",
+            "inline_create" => ["entity" => "tag"],
         ]);
 
         $this->crud->addField([

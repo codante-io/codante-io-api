@@ -7,6 +7,8 @@
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('instructor') }}"><i class="nav-icon la la-mortar-board"></i> Instructors</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('track') }}"><i class="nav-icon la la-rocket"></i>
                 Tracks</a></li>
+<li class="nav-item"><a class="nav-link" href="{{ backpack_url('track-section') }}"><i class="nav-icon la la-rocket"></i>
+                Track Sections</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('challenge') }}"><i class="nav-icon la la-terminal"></i>
                 Challenges</a></li>
 <li class="nav-item"><a class="nav-link" href="{{ backpack_url('lesson') }}"><i class="nav-icon la la-tv"></i>

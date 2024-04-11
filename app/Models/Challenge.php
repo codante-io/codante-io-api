@@ -37,6 +37,13 @@ class Challenge extends Model
         return $this->hasOne(Workshop::class);
     }
 
+    public function instructor()
+    {
+        return $this->workshop
+            ? $this->workshop->instructor()
+            : $this->morphTo();
+    }
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, "taggable");
