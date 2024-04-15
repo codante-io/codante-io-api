@@ -25,6 +25,7 @@ Route::group(
         Route::crud("tag", "TagCrudController");
         Route::crud("track", "TrackCrudController");
         Route::crud("track-section", "TrackSectionCrudController");
+        Route::crud("track-item", "TrackItemCrudController");
         Route::crud("user", "UserCrudController");
         Route::crud("workshop", "WorkshopCrudController");
         Route::crud("blog-post", "BlogPostCrudController");

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TrackResource;
 use App\Models\Track;
-use Illuminate\Http\Request;
 
 class TrackController extends Controller
 {

@@ -73,7 +73,7 @@ class TrackSectionCrudController extends CrudController
             "type" => "relationship",
             "name" => "tags",
             "label" => "Tags",
-            "inline_create" => ["entity" => "tag"], // <--- OR THIS
+            "inline_create" => ["entity" => "tag"],
         ]);
 
         /**

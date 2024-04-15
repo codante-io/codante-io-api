@@ -72,6 +72,16 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function trackables()
+    {
+        return $this->belongsToMany(
+            Trackable::class,
+            "trackable_user",
+            "user_id",
+            "trackable_id"
+        );
+    }
+
     public function lessons()
     {
         return $this->belongsToMany(Lesson::class)->withPivot(["completed_at"]);

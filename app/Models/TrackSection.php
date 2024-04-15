@@ -12,7 +12,7 @@ class TrackSection extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $fillable = ["tags"];
+    protected $guarded = ["id"];
 
     public function track()
     {
