@@ -22,8 +22,8 @@ class TrackCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(\App\Models\Track::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/track');
-        CRUD::setEntityNameStrings('track', 'tracks');
+        CRUD::setRoute(config("backpack.base.route_prefix") . "/track");
+        CRUD::setEntityNameStrings("track", "tracks");
     }
 
     protected function setupListOperation()
@@ -31,68 +31,68 @@ class TrackCrudController extends CrudController
         // Filtros
         $this->crud->addFilter(
             [
-                'type' => 'dropdown',
-                'name' => 'status',
-                'label' => 'Status'
+                "type" => "dropdown",
+                "name" => "status",
+                "label" => "Status",
             ],
             [
-                'archived' => 'archived',
-                'draft' => 'draft',
-                'published' => 'published',
-                'soon' => 'soon'
+                "archived" => "archived",
+                "draft" => "draft",
+                "published" => "published",
+                "soon" => "soon",
             ],
             function ($value) {
-                $this->crud->addClause('where', 'status', $value);
+                $this->crud->addClause("where", "status", $value);
             }
         );
 
         $this->crud->addFilter(
             [
-                'type' => 'dropdown',
-                'name' => 'difficulty',
-                'label' => 'Dificuldade'
+                "type" => "dropdown",
+                "name" => "difficulty",
+                "label" => "Dificuldade",
             ],
             [
                 1 => 1,
                 2 => 2,
-                3 => 3
+                3 => 3,
             ],
             function ($value) {
-                $this->crud->addClause('where', 'difficulty', $value);
+                $this->crud->addClause("where", "difficulty", $value);
             }
         );
 
-        // Colunas 
+        // Colunas
         CRUD::addColumns([
             [
-                'name' => 'name',
-                'label' => 'Nome',
-                'type' => 'text'
+                "name" => "name",
+                "label" => "Nome",
+                "type" => "text",
             ],
             [
-                'name' => 'status',
-                'label' => 'Status',
-                'type' => 'text'
+                "name" => "status",
+                "label" => "Status",
+                "type" => "text",
             ],
             [
-                'name' => 'short_description',
-                'label' => 'Resumo',
-                'type' => 'text'
+                "name" => "short_description",
+                "label" => "Resumo",
+                "type" => "text",
             ],
             [
-                'name' => 'description',
-                'label' => 'Descrição',
-                'type' => 'text'
+                "name" => "description",
+                "label" => "Descrição",
+                "type" => "text",
             ],
             [
-                'name' => 'difficulty',
-                'label' => 'Dificuldade',
-                'type' => 'text'
+                "name" => "difficulty",
+                "label" => "Dificuldade",
+                "type" => "text",
             ],
             [
-                'name' => 'duration_in_minutes',
-                'label' => 'Duração (min)',
-                'type' => 'text'
+                "name" => "duration_in_minutes",
+                "label" => "Duração (min)",
+                "type" => "text",
             ],
         ]);
     }
@@ -103,83 +103,74 @@ class TrackCrudController extends CrudController
         CRUD::setValidation(TrackRequest::class);
 
         // Fields
-        $this->crud->addField(
-            [
-                'name' => 'name',
-                'label' => 'Nome',
-                'type' => 'text'
-            ],
-        );
-        $this->crud->addField(
-            [
-                'name' => 'short_description',
-                'label' => 'Resumo',
-                'type' => 'text'
-            ],
-        );
-        $this->crud->addField(
-            [
-                'name' => 'description',
-                'label' => 'Descrição Completa',
-                'type' => 'text'
-            ],
-        );
-        $this->crud->addField(
-            [
-                'name' => 'image_url',
-                'label' => 'Imagem',
-                'type' => 'url'
-            ],
-        );
+        $this->crud->addField([
+            "name" => "name",
+            "label" => "Nome",
+            "type" => "text",
+        ]);
+        $this->crud->addField([
+            "name" => "short_description",
+            "label" => "Resumo",
+            "type" => "text",
+        ]);
+        $this->crud->addField([
+            "name" => "description",
+            "label" => "Descrição Completa",
+            "type" => "text",
+        ]);
+        $this->crud->addField([
+            "name" => "image_url",
+            "label" => "Imagem",
+            "type" => "url",
+        ]);
 
-        CRUD::field('slug')->type('slug')->hint('Se não preenchido, será gerado automaticamente')->target('name');
+        CRUD::field("slug")
+            ->type("slug")
+            ->hint("Se não preenchido, será gerado automaticamente")
+            ->target("name");
 
-        $this->crud->addField(
-            [
-                'name'        => 'status',
-                'label'       => 'Status',
-                'type'        => 'radio',
-                'options'     => [
-                    'archived' => 'archived',
-                    'draft' => 'draft',
-                    'published' => 'published',
-                    'soon' => 'soon'
-                ],
+        $this->crud->addField([
+            "name" => "status",
+            "label" => "Status",
+            "type" => "radio",
+            "options" => [
+                "archived" => "archived",
+                "draft" => "draft",
+                "published" => "published",
+                "soon" => "soon",
             ],
-        );
-        $this->crud->addField(
-            [
-                'name'        => 'difficulty',
-                'label'       => 'Dificuldade (nível)',
-                'type'        => 'radio',
-                'options'     => [
-                    1 => 1,
-                    2 => 2,
-                    3 => 3,
-                ],
+        ]);
+        $this->crud->addField([
+            "name" => "difficulty",
+            "label" => "Dificuldade (nível)",
+            "type" => "radio",
+            "options" => [
+                1 => 1,
+                2 => 2,
+                3 => 3,
             ],
-        );
-        $this->crud->addField(
-            [
-                'name' => 'duration_in_minutes',
-                'label' => 'Duração (min)',
-                'type' => 'text'
-            ]
-        );
+        ]);
+        $this->crud->addField([
+            "name" => "duration_in_minutes",
+            "label" => "Duração (min)",
+            "type" => "text",
+        ]);
 
-        $this->crud->addField(
-            [
-                'name' => 'challenges',
-                'type' => 'relationship',
-            ]
-        );
-        $this->crud->addField(
-            [
-                'name' => 'workshops',
-                'type' => 'relationship',
-            ]
-        );
-        CRUD::field('featured')->label('Featured')->hint('Por exemplo, "landing"');
+        $this->crud->addField([
+            "name" => "challenges",
+            "type" => "relationship",
+        ]);
+        $this->crud->addField([
+            "name" => "workshops",
+            "type" => "relationship",
+        ]);
+        $this->crud->addField([
+            "name" => "items",
+            "type" => "relationship",
+        ]);
+        CRUD::field("featured")
+            ->label("Featured")
+            ->hint('Por exemplo, "landing"');
     }
 
     protected function setupUpdateOperation()

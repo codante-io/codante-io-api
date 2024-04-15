@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TrackResource;
 use App\Models\Track;
-use Illuminate\Http\Request;
 
 class TrackController extends Controller
 {
@@ -27,6 +26,7 @@ class TrackController extends Controller
             Track::query()
                 ->where("slug", $slug)
                 ->with("tags")
+                ->with("trackSections")
                 ->firstOrFail()
         );
     }

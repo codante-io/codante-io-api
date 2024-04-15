@@ -18,7 +18,9 @@ use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TechnicalAssessmentController;
+use App\Http\Controllers\TrackableController;
 use App\Http\Controllers\TrackController;
+use App\Http\Controllers\TrackItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkshopController;
 use App\Http\Resources\UserResource;
@@ -147,6 +149,14 @@ Route::put("/challenges/{slug}", [
 
 Route::get("/tracks", [TrackController::class, "index"]);
 Route::get("/tracks/{slug}", [TrackController::class, "show"]);
+
+Route::get("/track-items", [TrackItemController::class, "index"]);
+Route::get("/track-items/{slug}", [TrackItemController::class, "show"]);
+
+Route::post("/trackables/{trackableId}/complete", [
+    TrackableController::class,
+    "markAsCompleted",
+])->middleware("auth:sanctum");
 
 Route::get("/home", [HomeController::class, "index"]);
 
