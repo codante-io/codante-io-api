@@ -2,32 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TrackResource;
-use App\Models\Track;
+use App\Http\Resources\TrackItemResource;
+use App\Models\TrackItem;
 
-class TrackController extends Controller
+class TrackItemController extends Controller
 {
     public function index()
     {
-        return TrackResource::collection(
-            Track::query()
+        return TrackItemResource::collection(
+            TrackItem::query()
                 ->where("status", "published")
                 ->orWhere("status", "soon")
-                ->with("workshops")
-                ->with("challenges")
                 ->with("tags")
-                ->orderBy("position", "asc")
                 ->get()
         );
     }
 
     public function show($slug)
     {
-        return new TrackResource(
-            Track::query()
+        return new TrackItemResource(
+            TrackItem::query()
                 ->where("slug", $slug)
                 ->with("tags")
-                ->with("trackSections")
                 ->firstOrFail()
         );
     }
