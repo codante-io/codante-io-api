@@ -14,17 +14,6 @@ class TrackableController extends Controller
 
         $user = Auth::user();
 
-        if (!$user->is_pro) {
-            return response()->json(
-                [
-                    "ok" => false,
-                    "message" =>
-                        "Você precisa ser um membro PRO para marcar como concluído.",
-                ],
-                403
-            );
-        }
-
         $trackableExists = Trackable::query()->find($trackableId);
 
         if (!$trackableExists) {

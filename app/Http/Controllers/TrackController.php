@@ -16,6 +16,7 @@ class TrackController extends Controller
                 ->with("workshops")
                 ->with("challenges")
                 ->with("tags")
+                ->orderBy("position", "asc")
                 ->get()
         );
     }
