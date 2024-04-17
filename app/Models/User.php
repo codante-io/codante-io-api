@@ -65,6 +65,11 @@ class User extends Authenticatable
         });
     }
 
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
     public function challenges()
     {
         return $this->belongsToMany(Challenge::class)
@@ -85,6 +90,16 @@ class User extends Authenticatable
     public function lessons()
     {
         return $this->belongsToMany(Lesson::class)->withPivot(["completed_at"]);
+    }
+
+    public function challengeUsers()
+    {
+        return $this->hasMany(ChallengeUser::class);
+    }
+
+    public function workshopUsers()
+    {
+        return $this->hasMany(WorkshopUser::class);
     }
 
     public function workshops()

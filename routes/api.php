@@ -176,6 +176,10 @@ Route::post("/dashboard/update-settings", [
     DashboardController::class,
     "updateSettings",
 ]);
+Route::get("/dashboard/show-data", [
+    DashboardController::class,
+    "getDashboardData",
+]);
 
 Route::post("/lessons/{lesson}/completed", [
     LessonController::class,
