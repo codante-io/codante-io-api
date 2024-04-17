@@ -24,6 +24,7 @@ class Track extends Model
     {
         $workshops = $this->workshops()
             ->with("lessons")
+            ->with("tags")
             ->with("instructor")
             ->get();
 
