@@ -416,6 +416,8 @@ class ChallengeController extends Controller
         $rand = Str::random(10);
         $imagePath = "/challenges/$slug/$challengeUser->github_id-$rand.png";
 
+        ## REMINDER: pra rodar corretamente no servidor, é necessário copiar a instalação
+        ## do puppeteer para a pasta /var/www/.cache/puppeteer. Ela fica em ~/.cache/puppeteer
         $screenshot = Browsershot::url($urlToCapture);
         // $screenshot->setNodeBinary(
         //     "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
