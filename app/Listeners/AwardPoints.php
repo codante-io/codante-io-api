@@ -27,7 +27,7 @@ class AwardPoints
             UserActionPoints::awardPoints(
                 $event->user->id,
                 "challenge_completed",
-                10 * $event->challenge->difficulty,
+                10,
                 $event->challenge->id,
                 "App\Models\ChallengeUser"
             );
