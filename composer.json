@@ -16,6 +16,7 @@
         "bugsnag/bugsnag-laravel": "^2.0",
         "graham-campbell/github": "^12.2",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image": "^3.5",
         "laravel/framework": "^10.0",
         "laravel/pulse": "^1.0@beta",
         "laravel/sanctum": "^3.2",
