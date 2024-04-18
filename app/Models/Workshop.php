@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManagerStatic as Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 
 class Workshop extends Model
 {
@@ -122,20 +124,24 @@ class Workshop extends Model
         // if a base64 was sent, store it in the db
         if (Str::startsWith($value, "data:image")) {
             // 0. Make the image
-            $image = Image::make($value)
-                ->encode("jpg", 90)
-                ->resize(1280, 720, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+            $manager = new ImageManager(Driver::class);
+            $image = $manager->read($value);
+            $image = $image
+                ->resize(1280, 720)
+                ->encode(new WebpEncoder(quality: 65));
+
+            // $encoded->resize(1280, 720, function ($constraint) {
+            //     $constraint->aspectRatio();
+            //     $constraint->upsize();
+            // });
 
             // 1. Generate a filename.
-            $filename = md5($value . time()) . ".jpg";
+            $filename = md5($value . time()) . ".webp";
 
             // 2. Store the image on disk.
             \Storage::disk($disk)->put(
                 $destination_path . "/" . $filename,
-                $image->stream()
+                $image->toFilePointer()
             );
 
             // 3. Delete the previous image, if there was one.
