@@ -43,21 +43,17 @@ class CommentCreated implements ShouldQueue
             $commentableClass === "App\Models\ChallengeUser" &&
             $replyingTo === null
         ) {
-            $challengeUser = $commentable;
             Notification::send(
-                $challengeUser->user,
+                $commentable->user,
                 new \App\Notifications\ChallengeUserCommentNotification(
                     $comment,
-                    $challengeUser
+                    $commentable
                 )
             );
         }
 
         // Send Email notification to the author of the parent comment and all other users who commented on the same parent comment. Only if the comment is a reply.
-        if (
-            $commentableClass === "App\Models\ChallengeUser" &&
-            $replyingTo !== null
-        ) {
+        if ($replyingTo) {
             $parentComment = Comment::findOrFail($replyingTo);
             $relatedComments = Comment::where(
                 "replying_to",
@@ -79,7 +75,6 @@ class CommentCreated implements ShouldQueue
             });
 
             $users = User::whereIn("id", $uniqueUserIDs)->get();
-            $challengeUser = $commentable;
 
             foreach ($users as $user) {
                 // Send Email notification to the author of the parent comment and all other users who commented on the same parent comment.
@@ -87,7 +82,8 @@ class CommentCreated implements ShouldQueue
                     $user,
                     new \App\Notifications\ChallengeUserReplyCommentNotification(
                         $parentComment,
-                        $challengeUser
+                        $commentable,
+                        $comment
                     )
                 );
             }

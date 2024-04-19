@@ -14,19 +14,17 @@ class ChallengeUserReplyCommentNotification extends Notification
 {
     use Queueable;
     private $parentComment;
-    private $challenge;
-    private $challengeUserUser;
+    private $commentable;
+    private $comment;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(
-        Comment $parentComment,
-        ChallengeUser $challengeUser
-    ) {
+    public function __construct(Comment $parentComment, $commentable, $comment)
+    {
         $this->parentComment = $parentComment;
-        $this->challenge = $challengeUser->challenge;
-        $this->challengeUserUser = $challengeUser->user;
+        $this->commentable = $commentable;
+        $this->comment = $comment;
     }
 
     /**
@@ -54,8 +52,7 @@ class ChallengeUserReplyCommentNotification extends Notification
             ->line("Alguém respondeu a um comentário seu no Codante!")
             ->action(
                 "Ver comentário",
-                $frontUrl .
-                    "/mini-projetos/{$this->challenge->slug}/submissoes/{$this->challengeUserUser->github_user}#comment-{$this->parentComment->id}"
+                $frontUrl . $this->comment->commentable_url
             )
             ->line("Clique no botão acima para ver ou responder o comentário.");
     }
