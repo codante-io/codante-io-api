@@ -25,8 +25,6 @@ class ChallengeUserReplyCommentNotification extends Notification
         $this->parentComment = $parentComment;
         $this->commentable = $commentable;
         $this->comment = $comment;
-        // $this->challenge = $challengeUser->challenge;
-        // $this->challengeUserUser = $challengeUser->user;
     }
 
     /**
