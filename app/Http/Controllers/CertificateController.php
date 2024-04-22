@@ -41,9 +41,9 @@ class CertificateController extends Controller
             ->where("id", $id)
             ->with("user")
             ->with("certifiable")
-            ->firstOrFail();
+            ->first();
 
-        if (!$certificate->user->is_pro) {
+        if (!$certificate || !$certificate->user->is_pro) {
             return null;
         }
 
