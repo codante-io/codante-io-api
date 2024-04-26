@@ -71,27 +71,49 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        $challengeUsers = $user->challengeUsers->map(function ($challengeUser) {
-            return [
-                "id" => $challengeUser->id,
-                "challenge_id" => $challengeUser->challenge_id,
-                "completed" => $challengeUser->completed,
-                "challenge_name" => $challengeUser->challenge->name,
-                "challenge_image" => $challengeUser->challenge->image_url,
-                "challenge_slug" => $challengeUser->challenge->slug,
-            ];
-        });
+        $challengeUsers = $user->challengeUsers
+            ->sortByDesc("updated_at")
+            ->map(function ($challengeUser) {
+                return [
+                    "id" => $challengeUser->id,
+                    "challenge_id" => $challengeUser->challenge_id,
+                    "completed" => $challengeUser->completed,
+                    "challenge_name" => $challengeUser->challenge->name,
+                    "challenge_image" => $challengeUser->challenge->image_url,
+                    "challenge_slug" => $challengeUser->challenge->slug,
+                ];
+            })
+            ->values();
 
-        $workshopUsers = $user->workshopUsers->map(function ($workshopUser) {
-            return [
-                "id" => $workshopUser->id,
-                "status" => $workshopUser->status,
-                "workshop_id" => $workshopUser->workshop_id,
-                "workshop_name" => $workshopUser->workshop->name,
-                "workshop_image" => $workshopUser->workshop->image_url,
-                "workshop_slug" => $workshopUser->workshop->slug,
-            ];
-        });
+        $workshopUsers = $user->workshopUsers
+            ->load([
+                "workshop",
+                "workshop.lessons" => function ($query) use ($user) {
+                    $query->whereHas("users", function ($query) use ($user) {
+                        $query->where("users.id", $user->id);
+                    });
+                },
+            ])
+            ->sortByDesc(function ($workshopUser) use ($user) {
+                return $workshopUser->workshop->lessons
+                    ->flatMap(function ($lesson) use ($user) {
+                        return $lesson->users
+                            ->where("id", $user->id)
+                            ->pluck("pivot.completed_at");
+                    })
+                    ->max();
+            })
+            ->map(function ($workshopUser) {
+                return [
+                    "id" => $workshopUser->id,
+                    "status" => $workshopUser->status,
+                    "workshop_id" => $workshopUser->workshop_id,
+                    "workshop_name" => $workshopUser->workshop->name,
+                    "workshop_image" => $workshopUser->workshop->image_url,
+                    "workshop_slug" => $workshopUser->workshop->slug,
+                ];
+            })
+            ->values();
 
         $certificates = $user->certificates->map(function ($certificate) {
             $certifiable = $certificate->certifiable;
