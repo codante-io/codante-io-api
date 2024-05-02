@@ -420,7 +420,6 @@ class ChallengeController extends Controller
         $slug,
         $githubId
     ) {
-        // dd($submissionUrl);
         $imagePath = "/challenges/$slug/$githubId";
         $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
