@@ -329,24 +329,16 @@ class ChallengeController extends Controller
             );
         }
 
-        // Capture the screenshot
-        $urlToCapture = $validated["submission_url"];
-        $imagePath = "/challenges/$slug/$challengeUser->github_id.png";
-
-        $screenshot = Browsershot::url($urlToCapture);
-        // $screenshot->setNodeBinary(
-        //     "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
-        // );
-        $screenshot->windowSize(1280, 720);
-        $screenshot->setDelay(2000);
-        $screenshot->setScreenshotType("png");
-        $screenshot->optimize();
-        $storageRes = Storage::put($imagePath, $screenshot->screenshot());
+        $s3Location = $this->captureScreenshotAndReturnS3Location(
+            $validated["submission_url"],
+            $slug,
+            $challengeUser->github_id
+        );
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = Storage::url($imagePath);
+        $challengeUser->pivot->submission_image_url = $s3Location;
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
 
