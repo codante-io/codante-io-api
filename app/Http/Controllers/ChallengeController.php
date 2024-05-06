@@ -329,11 +329,25 @@ class ChallengeController extends Controller
             );
         }
 
-        $s3Location = $this->captureScreenshotAndReturnS3Location(
-            $validated["submission_url"],
-            $slug,
-            $challengeUser->github_id
-        );
+        $imagePath = "challenges/$slug/$challengeUser->github_id";
+        // $apiUrl = "https://screenshot-service.codante.io/screenshot";
+        $apiUrl = "http://localhost:3011/screenshot";
+
+        $response = Http::withHeaders([
+            "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
+            "Accept" => "application/json",
+        ])->post($apiUrl, [
+            "url" => $validated["submission_url"],
+            "bucketName" => env("AWS_BUCKET"),
+            "imagePath" => $imagePath,
+        ]);
+
+        if ($response->failed()) {
+            abort(500, "API request failed");
+        }
+
+        $data = $response->json();
+        $s3Location = $data["s3Location"];
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
@@ -401,35 +415,18 @@ class ChallengeController extends Controller
             );
         }
 
-        $s3Location = $this->captureScreenshotAndReturnS3Location(
-            $validated["submission_url"],
-            $slug,
-            $challengeUser->github_id
-        );
-
-        // Saves in DB
-        $challengeUser->pivot->submission_url = $validated["submission_url"];
-        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = $s3Location;
-        $challengeUser->pivot->submitted_at = now();
-        $challengeUser->pivot->save();
-    }
-
-    public function captureScreenshotAndReturnS3Location(
-        $submissionUrl,
-        $slug,
-        $githubId
-    ) {
-        $imagePath = "/challenges/$slug/$githubId";
-        $apiUrl = "https://screenshot-service.codante.io/screenshot";
+        $imagePath = "challenges/$slug/$challengeUser->github_id";
+        // $apiUrl = "https://screenshot-service.codante.io/screenshot";
+        $apiUrl = "http://localhost:3011/screenshot";
 
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
             "Accept" => "application/json",
-        ])->post($apiUrl, [
-            "url" => $submissionUrl,
+        ])->put($apiUrl, [
+            "url" => $validated["submission_url"],
             "bucketName" => env("AWS_BUCKET"),
             "imagePath" => $imagePath,
+            "imagePathToReplace" => $challengeUser->pivot->submission_image_url,
         ]);
 
         if ($response->failed()) {
@@ -439,7 +436,12 @@ class ChallengeController extends Controller
         $data = $response->json();
         $s3Location = $data["s3Location"];
 
-        return $s3Location;
+        // Saves in DB
+        $challengeUser->pivot->submission_url = $validated["submission_url"];
+        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
+        $challengeUser->pivot->submission_image_url = $s3Location;
+        $challengeUser->pivot->submitted_at = now();
+        $challengeUser->pivot->save();
     }
 
     public function getSubmissions(Request $request, $slug)
