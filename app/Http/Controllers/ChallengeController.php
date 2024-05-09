@@ -330,8 +330,7 @@ class ChallengeController extends Controller
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        // $apiUrl = "https://screenshot-service.codante.io/screenshot";
-        $apiUrl = "http://localhost:3011/screenshot";
+        $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
@@ -416,8 +415,7 @@ class ChallengeController extends Controller
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        // $apiUrl = "https://screenshot-service.codante.io/screenshot";
-        $apiUrl = "http://localhost:3011/screenshot";
+        $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
@@ -430,7 +428,8 @@ class ChallengeController extends Controller
         ]);
 
         if ($response->failed()) {
-            abort(500, "API request failed");
+            $error = $response->json();
+            abort(500, "API request failed: " . $error["message"]);
         }
 
         $data = $response->json();
