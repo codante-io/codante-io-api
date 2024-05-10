@@ -52,4 +52,9 @@ return [
         "bot_token" => env("DISCORD_BOT_TOKEN"),
         "guild_id" => env("DISCORD_GUILD_ID"),
     ],
+
+    "screenshot" => [
+        "token" => env("SCREENSHOT_TOKEN"),
+        "bucket" => env("AWS_BUCKET"),
+    ],
 ];
