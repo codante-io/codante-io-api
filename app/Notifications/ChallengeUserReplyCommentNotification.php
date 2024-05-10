@@ -50,10 +50,7 @@ class ChallengeUserReplyCommentNotification extends Notification
             ->subject("[Codante] Uma pessoa respondeu seu comentário!")
             ->greeting("Olá $firstName")
             ->line("Alguém respondeu a um comentário seu no Codante!")
-            ->action(
-                "Ver comentário",
-                $frontUrl . $this->comment->commentable_url
-            )
+            ->action("Ver comentário", $this->comment->commentable_url)
             ->line("Clique no botão acima para ver ou responder o comentário.");
     }
 
