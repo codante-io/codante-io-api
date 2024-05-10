@@ -21,6 +21,7 @@ use Github\ResultPager;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use phpDocumentor\Reflection\Types\Boolean;
 
@@ -328,24 +329,29 @@ class ChallengeController extends Controller
             );
         }
 
-        // Capture the screenshot
-        $urlToCapture = $validated["submission_url"];
-        $imagePath = "/challenges/$slug/$challengeUser->github_id.png";
+        $imagePath = "challenges/$slug/$challengeUser->github_id";
+        $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
-        $screenshot = Browsershot::url($urlToCapture);
-        // $screenshot->setNodeBinary(
-        //     "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
-        // );
-        $screenshot->windowSize(1280, 720);
-        $screenshot->setDelay(2000);
-        $screenshot->setScreenshotType("png");
-        $screenshot->optimize();
-        $storageRes = Storage::put($imagePath, $screenshot->screenshot());
+        $response = Http::withHeaders([
+            "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
+            "Accept" => "application/json",
+        ])->post($apiUrl, [
+            "url" => $validated["submission_url"],
+            "bucketName" => env("AWS_BUCKET"),
+            "imagePath" => $imagePath,
+        ]);
+
+        if ($response->failed()) {
+            abort(500, "API request failed");
+        }
+
+        $data = $response->json();
+        $s3Location = $data["s3Location"];
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = Storage::url($imagePath);
+        $challengeUser->pivot->submission_image_url = $s3Location;
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
 
@@ -363,6 +369,12 @@ class ChallengeController extends Controller
             "metadata.twitter_username" => "nullable",
             "metadata.rinha_largest_filename" => "nullable",
         ]);
+
+        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challengeUser = $challenge
+            ->users()
+            ->where("user_id", $request->user()->id)
+            ->firstOrFail();
 
         // Check if the user has joined the challenge
         $challenge = Challenge::where("slug", $slug)->firstOrFail();
@@ -390,15 +402,6 @@ class ChallengeController extends Controller
             );
         }
 
-        $currentChallengeImageUrl =
-            $challengeUser->pivot["submission_image_url"];
-        $baseStorageUrl = Storage::url("");
-        $currentImagePath = Str::after(
-            $currentChallengeImageUrl,
-            $baseStorageUrl
-        );
-
-        // Check if the URL is valid
         $response = \Illuminate\Support\Facades\Http::get(
             $validated["submission_url"]
         );
@@ -411,31 +414,32 @@ class ChallengeController extends Controller
             );
         }
 
-        // Capture the screenshot
-        $urlToCapture = $validated["submission_url"];
-        $rand = Str::random(10);
-        $imagePath = "/challenges/$slug/$challengeUser->github_id-$rand.png";
+        $imagePath = "challenges/$slug/$challengeUser->github_id";
+        $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
-        ## REMINDER: pra rodar corretamente no servidor, é necessário copiar a instalação
-        ## do puppeteer para a pasta /var/www/.cache/puppeteer. Ela fica em ~/.cache/puppeteer
-        $screenshot = Browsershot::url($urlToCapture);
-        // $screenshot->setNodeBinary(
-        //     "/home/icaro/.nvm/versions/node/v18.4.0/bin/node"
-        // );
-        $screenshot->windowSize(1280, 720);
-        $screenshot->setDelay(2000);
-        $screenshot->setScreenshotType("png");
-        $screenshot->optimize();
+        $response = Http::withHeaders([
+            "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
+            "Accept" => "application/json",
+        ])->put($apiUrl, [
+            "url" => $validated["submission_url"],
+            "bucketName" => env("AWS_BUCKET"),
+            "imagePath" => $imagePath,
+            "imagePathToReplace" => $challengeUser->pivot->submission_image_url,
+        ]);
 
-        $storageRes = Storage::put($imagePath, $screenshot->screenshot());
+        if ($response->failed()) {
+            $error = $response->json();
+            abort(500, "API request failed: " . $error["message"]);
+        }
 
-        Storage::delete($currentImagePath);
+        $data = $response->json();
+        $s3Location = $data["s3Location"];
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated["submission_url"];
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
-        $challengeUser->pivot->submission_image_url = Storage::url($imagePath);
-        $challengeUser->pivot->updated_at = now();
+        $challengeUser->pivot->submission_image_url = $s3Location;
+        $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
     }
 
