@@ -333,11 +333,11 @@ class ChallengeController extends Controller
         $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
         $response = Http::withHeaders([
-            "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
+            "Authorization" => "Bearer " . config("services.screenshot.token"),
             "Accept" => "application/json",
         ])->post($apiUrl, [
             "url" => $validated["submission_url"],
-            "bucketName" => env("AWS_BUCKET"),
+            "bucketName" => config("services.screenshot.bucket"),
             "imagePath" => $imagePath,
         ]);
 
@@ -418,11 +418,11 @@ class ChallengeController extends Controller
         $apiUrl = "https://screenshot-service.codante.io/screenshot";
 
         $response = Http::withHeaders([
-            "Authorization" => "Bearer " . env("SCREENSHOT_TOKEN"),
+            "Authorization" => "Bearer " . config("services.screenshot.token"),
             "Accept" => "application/json",
         ])->put($apiUrl, [
             "url" => $validated["submission_url"],
-            "bucketName" => env("AWS_BUCKET"),
+            "bucketName" => config("services.screenshot.bucket"),
             "imagePath" => $imagePath,
             "imagePathToReplace" => $challengeUser->pivot->submission_image_url,
         ]);
