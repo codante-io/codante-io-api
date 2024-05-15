@@ -98,6 +98,7 @@ class HomeController extends Controller
                 "featured_testimonials" => TestimonialResource::collection(
                     Testimonial::query()
                         ->where("featured", "landing")
+                        ->orderBy("position", "asc")
                         ->get()
                 ),
                 "featured_submissions" => ChallengeUserCardResource::collection(

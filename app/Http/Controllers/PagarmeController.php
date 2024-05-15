@@ -22,6 +22,13 @@ class PagarmeController extends Controller
         $user = Auth::user();
         $plan = Plan::find(1);
 
+        $planDetails = json_decode($plan->details);
+
+        $promoPrice =
+            $plan->price_in_cents +
+            $planDetails->content_count * 100 +
+            $planDetails->user_raised_count * 10 * 100;
+
         $endpoint = "https://api.pagar.me/core/v5/orders";
         // to get pagarme checkout link we need to create an order:
 
@@ -37,7 +44,7 @@ class PagarmeController extends Controller
             "items" => [
                 [
                     "id" => "1",
-                    "amount" => $plan->price_in_cents,
+                    "amount" => $promoPrice,
                     "description" => "Codante Vitalício - PRO",
                     "quantity" => 1,
                     "code" => $plan->id,
