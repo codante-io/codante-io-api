@@ -22,6 +22,7 @@ class PlanResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "price_in_cents" => $this->price_in_cents,
+            "details" => $this->details,
             "slug" => $this->slug,
         ];
     }
