@@ -6,6 +6,8 @@ use App\Events\AdminPublishedCertificate;
 use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
+use App\Events\PurchaseCompleted;
+use App\Events\PurchaseStarted;
 use App\Events\ReactionCreated;
 use App\Events\ReactionDeleted;
 use App\Events\UserCommented;
@@ -20,12 +22,12 @@ use App\Listeners\CommentCreated;
 use App\Listeners\LessonRemoved;
 use App\Listeners\Registered as RegisteredListener;
 use App\Listeners\SendDiscordNotificationChallengeSubmitted;
+use App\Listeners\SendEventToMetaPixel;
 use App\Listeners\UserStatusUpdated as UserStatusUpdatedListener;
 use App\Listeners\WorkshopUserCreated;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -53,6 +55,8 @@ class EventServiceProvider extends ServiceProvider
         AdminPublishedCertificate::class => [CertificatePublished::class],
         UserCompletedLesson::class => [WorkshopUserCreated::class],
         UserErasedLesson::class => [LessonRemoved::class],
+        PurchaseCompleted::class => [SendEventToMetaPixel::class],
+        PurchaseStarted::class => [SendEventToMetaPixel::class],
     ];
 
     /**
