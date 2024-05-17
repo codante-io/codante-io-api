@@ -74,51 +74,51 @@ class PagarmeController extends Controller
                             "installments" => [
                                 [
                                     "number" => 1,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 2,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 3,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 4,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 5,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 6,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 7,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 8,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 9,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 10,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 11,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                                 [
                                     "number" => 12,
-                                    "total" => $plan->price_in_cents,
+                                    "total" => $promoPrice,
                                 ],
                             ],
 

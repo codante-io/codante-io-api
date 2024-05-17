@@ -14,6 +14,7 @@
         "backpack/pro": "^1.6",
         "barryvdh/laravel-debugbar": "^3.8",
         "bugsnag/bugsnag-laravel": "^2.0",
+        "combindma/laravel-facebook-pixel": "^5.0",
         "graham-campbell/github": "^12.2",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.5",

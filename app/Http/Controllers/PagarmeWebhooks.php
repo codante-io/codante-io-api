@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PurchaseCompleted;
+use App\Events\PurchaseStarted;
 use App\Mail\PaymentConfirmed;
 use App\Mail\SubscriptionCanceled;
 use App\Mail\UserSubscribedToPlan;
@@ -54,6 +56,10 @@ class PagarmeWebhooks
             $this->handleOrderClosed($request, $subscription, $user);
         }
 
+        if ($eventType === "order.created") {
+            event(new PurchaseStarted($user, $subscription));
+        }
+
         $newStatus = Str::of($request->post("data")["status"])->lower();
 
         switch ($newStatus) {
@@ -95,6 +101,8 @@ class PagarmeWebhooks
         Mail::to($user->email)->send(
             new PaymentConfirmed($user, $subscription)
         );
+
+        event(new PurchaseCompleted($user, $subscription));
 
         new Discord("Pagarme: O novo status é Pago", "notificacoes-compras");
     }
