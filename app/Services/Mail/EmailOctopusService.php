@@ -9,6 +9,7 @@ class EmailOctopusService
 {
     private $api_key;
     private $listId = "4a67da48-0ed2-11ee-988e-5101d064b06e"; // Codante.io
+    private $leadsListId = "bfc2319e-1872-11ef-8cff-bbbcfb46d456"; // Leads
 
     public function __construct()
     {
@@ -65,6 +66,17 @@ class EmailOctopusService
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
             [
                 "api_key" => $this->api_key,
+            ]
+        );
+    }
+
+    public function addLead($email)
+    {
+        Http::post(
+            "https://emailoctopus.com/api/1.6/lists/$this->leadsListId/contacts",
+            [
+                "api_key" => $this->api_key,
+                "email_address" => $email,
             ]
         );
     }
