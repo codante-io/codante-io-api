@@ -16,9 +16,16 @@ class EmailOctopusService
         $this->api_key = config("services.email_octopus.api_key");
     }
 
-    public function addUser(User $user)
+    public function addUser(User|string $userOrEmail, $isLead = false)
     {
-        $nameParts = explode(" ", trim($user->name));
+        if (is_string($userOrEmail)) {
+            if ($isLead) {
+                $this->addLead($userOrEmail);
+            }
+            return;
+        }
+
+        $nameParts = explode(" ", trim($userOrEmail->name));
         $firstName = $nameParts[0];
         $lastName = end($nameParts);
 
@@ -26,7 +33,7 @@ class EmailOctopusService
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
             [
                 "api_key" => $this->api_key,
-                "email_address" => $user->email,
+                "email_address" => $userOrEmail->email,
                 "fields" => [
                     "FirstName" => $firstName,
                     "LastName" => $lastName,
@@ -72,11 +79,14 @@ class EmailOctopusService
 
     public function addLead($email)
     {
-        Http::post(
-            "https://emailoctopus.com/api/1.6/lists/$this->leadsListId/contacts",
+        $res = Http::post(
+            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
             [
                 "api_key" => $this->api_key,
                 "email_address" => $email,
+                "fields" => [
+                    "is_registered_user" => false,
+                ],
             ]
         );
     }

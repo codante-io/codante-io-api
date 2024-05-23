@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Leads;
+use App\Models\User;
 use App\Services\Mail\EmailOctopusService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -37,6 +38,6 @@ class LeadsController extends Controller
         $lead->save();
 
         $emailOctopus = new EmailOctopusService();
-        $emailOctopus->addLead($lead->email);
+        $emailOctopus->addUser($lead->email, true);
     }
 }
