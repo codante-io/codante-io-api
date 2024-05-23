@@ -9,7 +9,6 @@ class EmailOctopusService
 {
     private $api_key;
     private $listId = "4a67da48-0ed2-11ee-988e-5101d064b06e"; // Codante.io
-    private $leadsListId = "bfc2319e-1872-11ef-8cff-bbbcfb46d456"; // Leads
 
     public function __construct()
     {
@@ -37,20 +36,27 @@ class EmailOctopusService
                 "fields" => [
                     "FirstName" => $firstName,
                     "LastName" => $lastName,
+                    "is_pro" => false,
                 ],
             ]
         );
     }
 
-    public function updateUser(User $user)
+    public function updateUser(User|string $userOrEmail, $isLead = false)
     {
+        if (is_string($userOrEmail)) {
+            if ($isLead) {
+                $this->updateLeadToUser($userOrEmail);
+            }
+            return;
+        }
         // https://emailoctopus.com/api-documentation/lists/update-contact
-        $isPro = $user->is_pro;
-        $nameParts = explode(" ", trim($user->name));
+        $isPro = $userOrEmail->is_pro;
+        $nameParts = explode(" ", trim($userOrEmail->name));
         $firstName = $nameParts[0];
         $lastName = end($nameParts);
 
-        $emailHash = md5(strtolower(trim($user->email)));
+        $emailHash = md5(strtolower(trim($userOrEmail->email)));
 
         Http::put(
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
@@ -86,6 +92,21 @@ class EmailOctopusService
                 "email_address" => $email,
                 "fields" => [
                     "is_registered_user" => false,
+                ],
+            ]
+        );
+    }
+
+    public function updateLeadToUser($email)
+    {
+        $emailHash = md5(strtolower(trim($email)));
+        Http::put(
+            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
+            [
+                "api_key" => $this->api_key,
+                "fields" => [
+                    "is_registered_user" => true,
+                    "is_pro" => false,
                 ],
             ]
         );
