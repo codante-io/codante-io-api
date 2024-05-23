@@ -15,32 +15,42 @@ class LeadsController extends Controller
         try {
             $request->validate(
                 [
-                    "email" => "required|email",
+                    "email" => "required|email|unique:leads|unique:users",
                     "tags" => "array",
                 ],
                 [
                     "email.required" => "O campo email é obrigatório.",
                     "email.email" =>
                         "O campo email deve ser um endereço de email válido.",
+                    "email.unique" =>
+                        "Esse e-mail já foi cadastrado anteriormente.",
                 ]
             );
+            $lead = new Leads();
+            $lead->email = $request->email;
+            $lead->save();
+
+            $tags = $request->tags ?? [];
+
+            $emailOctopus = new EmailOctopusService();
+            $emailOctopus->createLead($lead->email, $tags);
         } catch (ValidationException $e) {
             $errors = $e->errors();
-            $status =
-                array_key_exists("email", $errors) &&
-                in_array("O campo email é obrigatório.", $errors["email"])
-                    ? 400
-                    : 422;
+            $errorMsg = $errors["email"][0];
+
+            switch ($errorMsg) {
+                case "O campo email deve ser um endereço de email válido.":
+                    $status = 422;
+                    break;
+                case "Esse e-mail já foi cadastrado anteriormente.":
+                    $status = 409;
+                    break;
+                default:
+                    $status = 400;
+                    break;
+            }
+
             return response()->json(["error" => $errors], $status);
         }
-
-        $lead = new Leads();
-        $lead->email = $request->email;
-        $lead->save();
-
-        $tags = $request->tags ?? [];
-
-        $emailOctopus = new EmailOctopusService();
-        $emailOctopus->createLead($lead->email, $tags);
     }
 }
