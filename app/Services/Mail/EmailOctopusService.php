@@ -15,60 +15,89 @@ class EmailOctopusService
         $this->api_key = config("services.email_octopus.api_key");
     }
 
-    public function addUser(User|string $userOrEmail, $isLead = false)
+    public function registerEmailOctopusContact($email, $fields, $tags = [])
     {
-        if (is_string($userOrEmail)) {
-            if ($isLead) {
-                $this->addLead($userOrEmail);
-            }
-            return;
-        }
-
-        $nameParts = explode(" ", trim($userOrEmail->name));
-        $firstName = $nameParts[0];
-        $lastName = end($nameParts);
-
         Http::post(
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
             [
                 "api_key" => $this->api_key,
-                "email_address" => $userOrEmail->email,
-                "fields" => [
-                    "FirstName" => $firstName,
-                    "LastName" => $lastName,
-                    "is_pro" => false,
-                ],
+                "email_address" => $email,
+                "fields" => $fields,
+                "tags" => $tags,
             ]
         );
     }
 
-    public function updateUser(User|string $userOrEmail, $isLead = false)
+    public function updateEmailOctopusContact($email, $fields, $tags = [])
     {
-        if (is_string($userOrEmail)) {
-            if ($isLead) {
-                $this->updateLeadToUser($userOrEmail);
-            }
-            return;
-        }
-        // https://emailoctopus.com/api-documentation/lists/update-contact
-        $isPro = $userOrEmail->is_pro;
-        $nameParts = explode(" ", trim($userOrEmail->name));
-        $firstName = $nameParts[0];
-        $lastName = end($nameParts);
-
-        $emailHash = md5(strtolower(trim($userOrEmail->email)));
-
+        $emailHash = md5(strtolower(trim($email)));
         Http::put(
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
             [
                 "api_key" => $this->api_key,
-                "fields" => [
-                    "FirstName" => $firstName,
-                    "LastName" => $lastName,
-                    "is_pro" => $isPro,
-                ],
+                "fields" => $fields,
+                "tags" => $tags,
             ]
         );
+    }
+
+    public function updateLeadAfterSignUp(User $user, $tags = [])
+    {
+        $nameParts = explode(" ", trim($user->name));
+        $firstName = $nameParts[0];
+        $lastName = end($nameParts);
+
+        $this->updateEmailOctopusContact(
+            $user->email,
+            [
+                "FirstName" => $firstName,
+                "LastName" => $lastName,
+                "is_pro" => false,
+                "is_registered_user" => true,
+            ],
+            $tags
+        );
+    }
+
+    public function createLead($email, $tags = [])
+    {
+        $this->registerEmailOctopusContact(
+            $email,
+            [
+                "is_registered_user" => false,
+                "is_pro" => false,
+            ],
+            $tags
+        );
+    }
+
+    public function addUser(User $user)
+    {
+        $nameParts = explode(" ", trim($user->name));
+        $firstName = $nameParts[0];
+        $lastName = end($nameParts);
+
+        $this->registerEmailOctopusContact($user->email, [
+            "FirstName" => $firstName,
+            "LastName" => $lastName,
+            "is_pro" => false,
+            "is_registered_user" => true,
+        ]);
+    }
+
+    public function updateUser(User $user)
+    {
+        // https://emailoctopus.com/api-documentation/lists/update-contact
+        $isPro = $user->is_pro;
+        $nameParts = explode(" ", trim($user->name));
+        $firstName = $nameParts[0];
+        $lastName = end($nameParts);
+
+        $this->updateEmailOctopusContact($user->email, [
+            "FirstName" => $firstName,
+            "LastName" => $lastName,
+            "is_pro" => $isPro,
+        ]);
     }
 
     public function deleteUser(User $user)
@@ -79,35 +108,6 @@ class EmailOctopusService
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
             [
                 "api_key" => $this->api_key,
-            ]
-        );
-    }
-
-    public function addLead($email)
-    {
-        $res = Http::post(
-            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
-            [
-                "api_key" => $this->api_key,
-                "email_address" => $email,
-                "fields" => [
-                    "is_registered_user" => false,
-                ],
-            ]
-        );
-    }
-
-    public function updateLeadToUser($email)
-    {
-        $emailHash = md5(strtolower(trim($email)));
-        Http::put(
-            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
-            [
-                "api_key" => $this->api_key,
-                "fields" => [
-                    "is_registered_user" => true,
-                    "is_pro" => false,
-                ],
             ]
         );
     }

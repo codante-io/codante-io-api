@@ -16,6 +16,7 @@ class LeadsController extends Controller
             $request->validate(
                 [
                     "email" => "required|email",
+                    "tags" => "array",
                 ],
                 [
                     "email.required" => "O campo email é obrigatório.",
@@ -37,7 +38,9 @@ class LeadsController extends Controller
         $lead->email = $request->email;
         $lead->save();
 
+        $tags = $request->tags ?? [];
+
         $emailOctopus = new EmailOctopusService();
-        $emailOctopus->addUser($lead->email, true);
+        $emailOctopus->createLead($lead->email, $tags);
     }
 }

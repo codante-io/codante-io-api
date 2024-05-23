@@ -48,8 +48,9 @@ class Registered implements ShouldQueue
         $lead = Leads::where("email", $user->email)->first();
 
         if ($lead) {
-            (new EmailOctopusService())->updateUser($user->email, true);
+            (new EmailOctopusService())->updateLeadAfterSignUp($user);
+        } else {
+            (new EmailOctopusService())->addUser($user);
         }
-        (new \App\Services\Mail\EmailOctopusService())->addUser($user);
     }
 }
