@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscordController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\PagarmeController;
 use App\Http\Controllers\PagarmeWebhooks;
@@ -225,5 +226,7 @@ Route::put("/comments", [CommentController::class, "update"])->middleware(
 Route::delete("/comments", [CommentController::class, "delete"])->middleware(
     "auth:sanctum"
 );
+
+Route::post("/leads", [LeadsController::class, "create"]);
 
 require __DIR__ . "/auth.php";

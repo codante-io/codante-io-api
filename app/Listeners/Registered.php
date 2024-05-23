@@ -2,8 +2,10 @@
 
 namespace App\Listeners;
 
+use App\Models\Leads;
 use Illuminate\Auth\Events\Registered as RegisteredEvent;
 use App\Notifications\Discord;
+use App\Services\Mail\EmailOctopusService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +45,12 @@ class Registered implements ShouldQueue
 
     private function addToEmailList($user): void
     {
-        (new \App\Services\Mail\EmailOctopusService())->addUser($user);
+        $lead = Leads::where("email", $user->email)->first();
+
+        if ($lead) {
+            (new EmailOctopusService())->updateLeadAfterSignUp($user);
+        } else {
+            (new EmailOctopusService())->addUser($user);
+        }
     }
 }
