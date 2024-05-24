@@ -6,6 +6,7 @@ use App\Events\AdminPublishedCertificate;
 use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
+use App\Events\LeadRegistered;
 use App\Events\PurchaseCompleted;
 use App\Events\PurchaseStarted;
 use App\Events\ReactionCreated;
@@ -19,6 +20,7 @@ use App\Listeners\AwardPoints;
 use App\Listeners\CertificatePublished;
 use App\Listeners\CertificateRequested;
 use App\Listeners\CommentCreated;
+use App\Listeners\EmailOctopus;
 use App\Listeners\LessonRemoved;
 use App\Listeners\Registered as RegisteredListener;
 use App\Listeners\SendDiscordNotificationChallengeSubmitted;
@@ -38,14 +40,16 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         Registered::class => [
+            SendEventToMetaPixel::class,
             SendEmailVerificationNotification::class,
             RegisteredListener::class,
         ],
+        LeadRegistered::class => [SendEventToMetaPixel::class],
         ChallengeCompleted::class => [
             AwardPoints::class,
             SendDiscordNotificationChallengeSubmitted::class,
         ],
-        ChallengeJoined::class => [AwardPoints::class],
+        ChallengeJoined::class => [AwardPoints::class, EmailOctopus::class],
         ChallengeForked::class => [AwardPoints::class],
         ReactionCreated::class => [AwardPoints::class],
         ReactionDeleted::class => [AwardPoints::class],

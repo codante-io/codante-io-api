@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LeadRegistered;
 use App\Models\Leads;
-use App\Models\User;
 use App\Services\Mail\EmailOctopusService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class LeadsController extends Controller
@@ -34,6 +35,8 @@ class LeadsController extends Controller
 
             $emailOctopus = new EmailOctopusService();
             $emailOctopus->createLead($lead->email, $tags);
+
+            event(new LeadRegistered($lead->email));
         } catch (ValidationException $e) {
             $errors = $e->errors();
             $errorMsg = $errors["email"][0];
