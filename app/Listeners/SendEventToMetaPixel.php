@@ -2,10 +2,14 @@
 
 namespace App\Listeners;
 
+use App\Events\LeadRegistered;
 use App\Events\PurchaseCompleted;
+use App\Events\PurchaseStarted;
 use Combindma\FacebookPixel\Facades\MetaPixel;
 use FacebookAds\Object\ServerSide\Content;
 use FacebookAds\Object\ServerSide\CustomData;
+use Illuminate\Auth\Events\Registered;
+use Log;
 
 class SendEventToMetaPixel
 {
@@ -21,6 +25,43 @@ class SendEventToMetaPixel
      * Handle the event.
      */
     public function handle($event): void
+    {
+        if (
+            $event instanceof PurchaseCompleted ||
+            $event instanceof PurchaseStarted
+        ) {
+            $this->sendPurchaseEvent($event);
+        } elseif ($event instanceof LeadRegistered) {
+            $this->sendRegisteredLeadEvent($event);
+        } elseif ($event instanceof Registered) {
+            $this->sendRegisteredUserEvent($event);
+        }
+    }
+
+    private function sendRegisteredLeadEvent($event)
+    {
+        $userData = MetaPixel::userData()->setEmail($event->email);
+        $eventId = uniqid("prefix_");
+        $customData = new CustomData();
+
+        MetaPixel::send("Lead", $eventId, $customData, $userData);
+    }
+
+    private function sendRegisteredUserEvent($event)
+    {
+        $userData = MetaPixel::userData()->setEmail($event->user->email);
+        $eventId = uniqid("prefix_");
+        $customData = new CustomData();
+
+        MetaPixel::send(
+            "CompleteRegistration",
+            $eventId,
+            $customData,
+            $userData
+        );
+    }
+
+    private function sendPurchaseEvent($event)
     {
         $userData = MetaPixel::userData()->setEmail($event->user->email);
 

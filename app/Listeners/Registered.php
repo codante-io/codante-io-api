@@ -8,7 +8,6 @@ use App\Notifications\Discord;
 use App\Services\Mail\EmailOctopusService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Auth;
 
 class Registered implements ShouldQueue
 {
