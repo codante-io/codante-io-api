@@ -35,7 +35,7 @@ class EmailOctopus
                 $emailOctopus->updateEmailOctopusContact(
                     $event->user->email,
                     [],
-                    ["first_challenge" => true]
+                    ["first-challenge" => true]
                 );
             }
         }
