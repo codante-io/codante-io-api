@@ -17,6 +17,11 @@ Route::post("/login", [AuthenticatedSessionController::class, "store"])
     ->middleware("guest.api")
     ->name("login");
 
+Route::post("/impersonate", [
+    AuthenticatedSessionController::class,
+    "impersonate",
+])->middleware("auth:sanctum");
+
 Route::post("github-login", [GithubLoginController::class, "githubLogin"])
     ->middleware("guest.api")
     ->name("github.login");
