@@ -40,12 +40,6 @@ class SendEventToMetaPixel
 
     private function sendRegisteredLeadEvent($event)
     {
-        $fbc = $_COOKIE["_fbc"];
-        Log::info("fbc cookie value: " . $fbc);
-
-        $fbp = $_COOKIE["_fbp"];
-        Log::info("fbp cookie value: " . $fbp);
-
         $userData = MetaPixel::userData()->setEmail($event->email);
         $eventId = uniqid("prefix_");
         $customData = new CustomData();
