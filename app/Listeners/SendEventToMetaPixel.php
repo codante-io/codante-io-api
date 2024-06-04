@@ -40,6 +40,12 @@ class SendEventToMetaPixel
 
     private function sendRegisteredLeadEvent($event)
     {
+        $fbc = $_COOKIE["_fbc"];
+        Log::info("fbc cookie value: " . $fbc);
+
+        $fbp = $_COOKIE["_fbp"];
+        Log::info("fbp cookie value: " . $fbp);
+
         $userData = MetaPixel::userData()->setEmail($event->email);
         $eventId = uniqid("prefix_");
         $customData = new CustomData();
@@ -67,13 +73,13 @@ class SendEventToMetaPixel
 
         $content = (new Content())
             ->setProductId($event->subscription->id)
-            ->setItemPrice($event->subscription->price_paid_in_cents)
+            ->setItemPrice($event->subscription->price_paid_in_cents / 100)
             ->setQuantity(1);
 
         $customData = (new CustomData())
             ->setContents([$content])
             ->setCurrency("brl")
-            ->setValue($event->subscription->price_paid_in_cents);
+            ->setValue($event->subscription->price_paid_in_cents / 100);
 
         $eventId = uniqid("prefix_");
 
