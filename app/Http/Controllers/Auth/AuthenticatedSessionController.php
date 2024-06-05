@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -52,6 +53,32 @@ class AuthenticatedSessionController extends Controller
         $token = explode("|", $fullToken)[1];
 
         return $token;
+    }
+
+    protected function impersonate(Request $request)
+    {
+        $user = Auth::user();
+
+        $userId = $request->input("user_id");
+
+        if ($user->is_admin) {
+            $userId = $request->input("user_id");
+            $userToTokenize = User::find($userId);
+
+            if ($userToTokenize) {
+                $fullToken = $userToTokenize->createToken("api_token")
+                    ->plainTextToken;
+                $token = explode("|", $fullToken)[1];
+                return response()->json(["token" => $token]);
+            } else {
+                return response()->json(
+                    ["error" => "Usuário não encontrado"],
+                    404
+                );
+            }
+        } else {
+            return response()->json(["error" => "Permissão negada"], 403);
+        }
     }
 
     protected function deleteUserTokens($request)
