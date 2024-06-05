@@ -59,7 +59,6 @@ class AuthenticatedSessionController extends Controller
     {
         $user = Auth::user();
 
-        // dd($user);
         $userId = $request->input("user_id");
 
         if ($user->is_admin) {
