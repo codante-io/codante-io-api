@@ -35,6 +35,7 @@ Route::group(
         );
         Route::crud("testimonial", "TestimonialCrudController");
         Route::crud("subscription", "SubscriptionCrudController");
+        Route::crud("challenge-user", "ChallengeUserCrudController");
 
         Route::crud("certificate", "CertificateCrudController");
         Route::crud("comment", "CommentCrudController");
