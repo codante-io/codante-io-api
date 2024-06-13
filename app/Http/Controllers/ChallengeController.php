@@ -440,7 +440,9 @@ class ChallengeController extends Controller
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
         $challengeUser->pivot->submission_image_url = $s3Location;
         $challengeUser->pivot->submitted_at = now();
-        $challengeUser->pivot->listed = true;
+        if ($challengeUser->pivot->listed == false) {
+            $challengeUser->pivot->listed = true;
+        }
         $challengeUser->pivot->save();
     }
 

@@ -36,14 +36,33 @@ class ChallengeUserCrudController extends CrudController
     /**
      * Define what happens when the List operation is loaded.
      *
+     * @see https://backpackforlaravel.com/docs/crud-operation-list-entries
+     * @return void
+     */
+
+    /**
+     * Define what happens when the List operation is loaded.
+     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
     protected function setupListOperation()
     {
         CRUD::column("id");
-        CRUD::column("challenge_id");
-        CRUD::column("user_id");
+        CRUD::column("challenge_id")->searchLogic(function (
+            $query,
+            $column,
+            $searchTerm
+        ) {
+            $query->orWhere("challenge_id", $searchTerm);
+        });
+        CRUD::column("user_id")
+            ->label("User Name")
+            ->searchLogic(function ($query, $column, $searchTerm) {
+                $query->orWhereHas("user", function ($query) use ($searchTerm) {
+                    $query->where("name", "like", "%" . $searchTerm . "%");
+                });
+            });
         CRUD::column("listed");
     }
 
@@ -56,6 +75,15 @@ class ChallengeUserCrudController extends CrudController
     protected function setupUpdateOperation()
     {
         // CRUD::setValidation(ChallengeUserRequest::class);
+        CRUD::field("id")
+            ->type("number")
+            ->attributes(["readonly" => "readonly"]);
+        CRUD::field("challenge_id")
+            ->type("number")
+            ->attributes(["readonly" => "readonly"]);
+        CRUD::field("user_id")
+            ->type("number")
+            ->attributes(["readonly" => "readonly"]);
         CRUD::field("listed")->type("boolean");
     }
 }
