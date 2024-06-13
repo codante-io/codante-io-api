@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\ChallengeUserRequest;
+use App\Models\ChallengeUser;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Notification;
 
 /**
  * Class ChallengeUserCrudController
@@ -74,16 +76,43 @@ class ChallengeUserCrudController extends CrudController
      */
     protected function setupUpdateOperation()
     {
-        // CRUD::setValidation(ChallengeUserRequest::class);
+        CRUD::setValidation(ChallengeUserRequest::class);
         CRUD::field("id")
             ->type("number")
-            ->attributes(["readonly" => "readonly"]);
+            ->attributes(["readonly" => "readonly"])
+            ->tab("Principal");
         CRUD::field("challenge_id")
             ->type("number")
-            ->attributes(["readonly" => "readonly"]);
+            ->attributes(["readonly" => "readonly"])
+            ->tab("Principal");
         CRUD::field("user_id")
             ->type("number")
-            ->attributes(["readonly" => "readonly"]);
-        CRUD::field("listed")->type("boolean");
+            ->attributes(["readonly" => "readonly"])
+            ->tab("Principal");
+        CRUD::field("listed")
+            ->type("boolean")
+            ->tab("Principal");
+
+        $this->crud->addField([
+            "name" => "notifica",
+            "type" => "notify-discord",
+            "tab" => "Ações",
+            "data" => [
+                "title" => "Email: Notifica usuário",
+                "notification-url" =>
+                    "/admin/submission-unlisted/email-launched/",
+            ],
+        ]);
+    }
+
+    protected function notifySubmissionUnlistedEmail($challengeUserId)
+    {
+        $challengeUser = ChallengeUser::find($challengeUserId);
+        Notification::send(
+            $challengeUser->user,
+            new \App\Notifications\UnlistedChallengeUserNotification(
+                $challengeUser
+            )
+        );
     }
 }
