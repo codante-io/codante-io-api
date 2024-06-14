@@ -38,13 +38,6 @@ class ChallengeUserCrudController extends CrudController
     /**
      * Define what happens when the List operation is loaded.
      *
-     * @see https://backpackforlaravel.com/docs/crud-operation-list-entries
-     * @return void
-     */
-
-    /**
-     * Define what happens when the List operation is loaded.
-     *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
      * @return void
      */
