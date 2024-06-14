@@ -98,7 +98,8 @@ class ChallengeUserCrudController extends CrudController
             "type" => "notify-discord",
             "tab" => "Ações",
             "data" => [
-                "title" => "Email: Notifica usuário",
+                "title" =>
+                    "Email: Notifica usuário sobre submissão com problema",
                 "notification-url" =>
                     "/admin/submission-unlisted/email-launched/",
             ],
