@@ -46,6 +46,7 @@ class ChallengeUserResource extends JsonResource
                 "App\\Models\\ChallengeUser",
                 $this->id
             ),
+            "listed" => $this->listed,
         ];
     }
 

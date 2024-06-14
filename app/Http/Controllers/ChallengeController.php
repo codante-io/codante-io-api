@@ -387,12 +387,12 @@ class ChallengeController extends Controller
             abort(400, "Não existe nenhuma submissão para ser atualizada.");
         }
 
-        if (
-            $validated["submission_url"] ===
-            $challengeUser->pivot["submission_url"]
-        ) {
-            abort(400, "Adicione um link diferente do atual.");
-        }
+        // if (
+        //     $validated["submission_url"] ===
+        //     $challengeUser->pivot["submission_url"]
+        // ) {
+        //     abort(400, "Adicione um link diferente do atual.");
+        // }
 
         // Check if the URL is not from a github repository
         if (Str::contains($validated["submission_url"], "github.com")) {
@@ -440,6 +440,9 @@ class ChallengeController extends Controller
         $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
         $challengeUser->pivot->submission_image_url = $s3Location;
         $challengeUser->pivot->submitted_at = now();
+        if ($challengeUser->pivot->listed == false) {
+            $challengeUser->pivot->listed = true;
+        }
         $challengeUser->pivot->save();
     }
 

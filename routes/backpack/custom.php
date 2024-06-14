@@ -35,6 +35,7 @@ Route::group(
         );
         Route::crud("testimonial", "TestimonialCrudController");
         Route::crud("subscription", "SubscriptionCrudController");
+        Route::crud("challenge-user", "ChallengeUserCrudController");
 
         Route::crud("certificate", "CertificateCrudController");
         Route::crud("comment", "CommentCrudController");
@@ -49,6 +50,10 @@ Route::group(
         Route::get(
             "challenge-notification/discord-launched-solution/{challenge}",
             "ChallengeCrudController@notifyDiscordChallengeSolutionLaunched"
+        );
+        Route::get(
+            "submission-unlisted/email-launched/{challengeUser}",
+            "ChallengeUserCrudController@notifySubmissionUnlistedEmail"
         );
     }
 ); // this should be the absolute last line of this file
