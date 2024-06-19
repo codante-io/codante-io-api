@@ -13,6 +13,7 @@ use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
 use App\Models\User;
+use App\Services\ChallengeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Browsershot\Browsershot;
@@ -40,71 +41,35 @@ class ChallengeController extends Controller
     {
         $groupedByTechnology = (bool) $request->query("groupedByTechnology");
 
-        $challenges = Challenge::query()
-            ->select(
-                "id",
-                "name",
-                "slug",
-                "short_description",
-                "image_url",
-                "status",
-                "difficulty",
-                "estimated_effort",
-                "category",
-                "is_premium",
-                "weekly_featured_start_date",
-                "solution_publish_date",
-                "main_technology_id"
-            )
-            ->listed()
-            ->with("mainTechnology")
-            ->with("workshop:id,challenge_id")
-            ->withCount("users")
-            ->with([
-                "users" => function ($query) {
-                    $query
-                        ->select(
-                            "users.id",
-                            "users.avatar_url",
-                            "users.is_pro",
-                            "users.is_admin"
-                        )
-                        ->when(Auth::check(), function ($query) {
-                            $query->orderByRaw("users.id = ? DESC", [
-                                auth()->id(),
-                            ]);
-                        })
-                        ->inRandomOrder()
-                        ->limit(5);
-                },
-            ])
-            ->with("tags")
-            ->orderByRaw(
-                "-EXISTS (SELECT 1 FROM workshops WHERE workshops.challenge_id = challenges.id)"
-            )
-            ->orderBy("status", "asc")
-            ->orderBy("position", "asc")
-            ->orderBy("created_at", "desc")
-            ->get();
+        $technology = $request->query("technology");
+
+        $query = ChallengeService::queryChallenges();
+
+        $technologies = ChallengeService::getAllTechnologies($query);
+
+        if ($technology) {
+            $query->whereHas("mainTechnology", function ($query) use (
+                $technology
+            ) {
+                $query->where("name", $technology);
+            });
+        }
+
+        $challenges = $query->get();
 
         $normalizedChallenges = ChallengeCardResource::collection($challenges);
 
         if ($groupedByTechnology) {
-            $groupedChallenges = $normalizedChallenges->groupBy(function (
-                $challenge
-            ) {
-                if ($challenge->isWeeklyFeatured()) {
-                    return "featured";
-                }
+            $groupedChallenges = ChallengeService::groupByTechnology(
+                $normalizedChallenges
+            );
 
-                if ($challenge->mainTechnology) {
-                    return $challenge->mainTechnology->name;
-                }
-
-                return "Outras tecnologias";
-            });
-
-            return response()->json(["data" => $groupedChallenges]);
+            return response()->json([
+                "data" => [
+                    "technologies" => array_values($groupedChallenges),
+                    "filters" => ["technologies" => $technologies],
+                ],
+            ]);
         }
 
         return $normalizedChallenges;
