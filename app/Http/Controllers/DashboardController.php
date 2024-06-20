@@ -81,6 +81,8 @@ class DashboardController extends Controller
                     "challenge_name" => $challengeUser->challenge->name,
                     "challenge_image" => $challengeUser->challenge->image_url,
                     "challenge_slug" => $challengeUser->challenge->slug,
+                    "listed" => $challengeUser->listed,
+                    "submission_url" => $challengeUser->submission_url,
                 ];
             })
             ->values();
