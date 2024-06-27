@@ -15,6 +15,7 @@ class BlogPostController extends Controller
                 ->where("type", "blog")
                 ->with("tags")
                 ->with("reactions")
+                ->orderBy("created_at", "desc")
                 ->get()
         );
     }
