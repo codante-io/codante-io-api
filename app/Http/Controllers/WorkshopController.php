@@ -80,6 +80,12 @@ class WorkshopController extends Controller
             unset($lesson->users);
         });
 
+        $workshop->next_lesson = new LessonResource(
+            $workshop->lessons->first(function ($lesson) {
+                return !$lesson->user_completed;
+            })
+        );
+
         return new WorkshopResource($workshop);
     }
 }
