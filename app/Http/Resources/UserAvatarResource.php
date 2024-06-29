@@ -18,6 +18,7 @@ class UserAvatarResource extends JsonResource
             "avatar_url" => $this->avatar_url,
             "name" => $this->whenNotNull($this->name),
             "badge" => $this->getBadgeName(),
+            "github_user" => $this->whenNotNull($this->github_user),
         ];
     }
 
@@ -35,6 +36,7 @@ class UserAvatarResource extends JsonResource
         if ($this->is_pro) {
             return "pro";
         }
+
         return null;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,6 +23,7 @@ class ChallengeUserCardResource extends JsonResource
                     ->select(
                         "avatar_url",
                         "name",
+                        "github_user",
                         "is_pro",
                         "is_admin",
                         "settings"
