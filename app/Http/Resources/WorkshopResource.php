@@ -33,6 +33,7 @@ class WorkshopResource extends JsonResource
             "duration_in_minutes" => $this->duration_in_minutes,
             "status" => $this->status,
             "is_standalone" => $this->is_standalone,
+            "is_premium" => $this->is_premium,
             "lesson_sections" => $this->whenLoaded(
                 "lessons",
                 $this->getLessonSectionsArray()
