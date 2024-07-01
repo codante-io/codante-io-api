@@ -73,6 +73,7 @@ class WorkshopController extends Controller
             ])
             ->with("instructor")
             ->with("tags")
+            ->with("challenge")
             ->visible()
             ->firstOrFail();
 

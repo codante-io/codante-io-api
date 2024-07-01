@@ -41,6 +41,7 @@ class WorkshopResource extends JsonResource
             "lessons" => LessonResource::collection(
                 $this->whenLoaded("lessons")
             ),
+            "challenge" => $this->challenge,
             "next_lesson" => $this->next_lesson,
             "instructor" => new InstructorResource(
                 $this->whenLoaded("instructor")
