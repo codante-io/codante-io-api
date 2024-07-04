@@ -17,13 +17,14 @@ class WorkshopController extends Controller
     {
         return WorkshopResource::collection(
             Workshop::query()
-                ->where("is_standalone", true)
+                // ->where("is_standalone", true)
                 ->with("lessons")
                 ->with("instructor")
                 ->with("tags")
                 ->orderByRaw(
                     "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
                 )
+                ->orderBy("is_standalone", "desc")
                 ->orderBy("published_at", "desc")
                 ->listed()
                 ->get()
@@ -72,6 +73,7 @@ class WorkshopController extends Controller
             ])
             ->with("instructor")
             ->with("tags")
+            ->with("challenge")
             ->visible()
             ->firstOrFail();
 
