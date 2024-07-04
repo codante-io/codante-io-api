@@ -58,9 +58,7 @@ class ChallengeUserResource extends JsonResource
         if (!Auth::check()) {
             return false;
         }
-        if (!Auth::user()->is_pro) {
-            return false;
-        }
+
         return true;
     }
 }
