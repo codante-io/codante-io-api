@@ -28,6 +28,7 @@ class ChallengeResource extends JsonResource
             "short_description" => $this->short_description,
             "description" => $this->description,
             "has_solution" => $this->hasSolution(),
+            "is_premium" => $this->is_premium,
             "resources" => $this->resources,
             "enrolled_users_count" => $this->users_count,
             "current_user_is_enrolled" => $this->userJoined(),
