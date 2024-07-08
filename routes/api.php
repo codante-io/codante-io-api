@@ -66,6 +66,11 @@ Route::get("/workshops/{slug}", function ($slug) {
     return \App\Models\Workshop::where("slug", $slug)->firstOrFail();
 });
 
+Route::post("/workshops/{slug}/user-entered", [
+    WorkshopController::class,
+    "userEnteredWorkshop",
+]);
+
 //BugsnagWebhook
 Route::post("bugsnag/notification", [
     BugsnagWebhookController::class,

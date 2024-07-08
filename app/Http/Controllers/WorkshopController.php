@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Admin\WorkshopRequest;
+use App\Events\UserEnteredWorkshop;
+use App\Events\UsersFirstWorkshop;
 use App\Http\Resources\LessonResource;
 use App\Http\Resources\WorkshopResource;
-use App\Models\Tag;
+use App\Models\User;
 use App\Models\Workshop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -89,5 +90,28 @@ class WorkshopController extends Controller
         );
 
         return new WorkshopResource($workshop);
+    }
+
+    public function userEnteredWorkshop(Request $request, $slug)
+    {
+        if (!Auth::check()) {
+            return response()->json(["message" => "Unauthorized"], 401);
+        }
+
+        $workshop = Workshop::where("slug", $slug)->firstOrFail();
+        $user = User::find($request->user()->id);
+
+        $isFirstWorkshop = $user->workshops()->count() === 0;
+
+        $user->workshops()->syncWithoutDetaching($workshop->id);
+
+        if ($isFirstWorkshop) {
+            event(new UsersFirstWorkshop($user, $workshop));
+            return response()->json([
+                "message" => "User entered first workshop",
+            ]);
+        }
+
+        return response()->json(["message" => "User entered workshop"]);
     }
 }
