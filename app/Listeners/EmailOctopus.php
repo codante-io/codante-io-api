@@ -3,7 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\ChallengeJoined;
+use App\Events\UserEnteredWorkshop;
+use App\Events\UsersFirstWorkshop;
+use App\Events\WorkshopUserCreated;
 use App\Models\ChallengeUser;
+use App\Models\Workshop;
 use App\Services\Mail\EmailOctopusService;
 
 class EmailOctopus
@@ -38,6 +42,12 @@ class EmailOctopus
                     ["first-challenge" => true]
                 );
             }
+        }
+        if ($event instanceof UsersFirstWorkshop) {
+            $emailOctopus = new EmailOctopusService();
+            $emailOctopus->updateEmailOctopusContact($event->user->email, [
+                "first_workshop" => $event->workshop->name,
+            ]);
         }
     }
 }

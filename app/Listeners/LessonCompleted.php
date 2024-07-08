@@ -8,7 +8,7 @@ use App\Models\WorkshopUser;
 use App\Notifications\Discord;
 use Notification;
 
-class WorkshopUserCreated
+class LessonCompleted
 {
     /**
      * Create the event listener.
@@ -26,10 +26,6 @@ class WorkshopUserCreated
         $workshop = $event->workshop;
         $user = $event->user;
 
-        if (!$workshop->is_standalone) {
-            return;
-        }
-
         $user->workshops()->syncWithoutDetaching([$workshop->id]);
 
         $lessonCount = $workshop->lessons()->count();
@@ -40,7 +36,7 @@ class WorkshopUserCreated
 
         $durationInSeconds = $workshop->lessons()->sum("duration_in_seconds");
 
-        if ($completedLessons >= $lessonCount) {
+        if ($completedLessons >= $lessonCount && $workshop->is_standalone) {
             $workshopUser = WorkshopUser::where("user_id", $user->id)
                 ->where("workshop_id", $workshop->id)
                 ->first();
