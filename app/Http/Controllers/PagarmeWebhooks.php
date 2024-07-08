@@ -84,12 +84,11 @@ class PagarmeWebhooks
 
     public function handlePaid($request, Subscription $subscription, User $user)
     {
+        new Discord("chamando handlePaid", "notificacoes-compras");
         // se status anterior é ativo, não faz nada.
         if ($subscription->status === "active") {
             return;
         }
-
-        new Discord("chamando handlePaid", "notificacoes-compras");
 
         // Muda status para ativo
         $subscription->changeStatus("active");
@@ -143,7 +142,16 @@ class PagarmeWebhooks
     // Essa função serve para completarmos dados de pagamento (por exemplo, meio de pagamento e dados do boleto.)
     protected function handleOrderClosed($request, $subscription, $user)
     {
+        // save mobile phone if it's not saved
+
+        $this->savePhoneNumber($request, $user);
+        $this->sendPhoneNumberDiscordNotification($user);
+
         new Discord("chamando handleOrderClosed", "notificacoes-compras");
+        new Discord(
+            "🎉 Nova assinatura: " . $user->name,
+            "notificacoes-compras"
+        );
 
         $paymentMethod = $request->post("data")["charges"][0]["payment_method"];
         $boletoBarcode = null;
@@ -182,6 +190,27 @@ class PagarmeWebhooks
         // Nesse momento vamos agradecer por se inscrever.
         Mail::to($user->email)->send(
             new UserSubscribedToPlan($user, $subscription)
+        );
+    }
+
+    private function savePhoneNumber($request, $user)
+    {
+        $user->mobile_phone =
+            $request->post("data")["customer"]["phones"]["mobile_phone"][
+                "area_code"
+            ] .
+            $request->post("data")["customer"]["phones"]["mobile_phone"][
+                "number"
+            ];
+        $user->save();
+    }
+
+    private function sendPhoneNumberDiscordNotification($user)
+    {
+        new Discord("Telefone: " . $user->mobile_phone, "notificacoes-compras");
+        new Discord(
+            "Whatsapp Click to Chat: https://wa.me/" . $user->mobile_phone,
+            "notificacoes-compras"
         );
     }
 }
