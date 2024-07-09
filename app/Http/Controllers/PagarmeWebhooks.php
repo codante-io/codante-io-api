@@ -132,6 +132,15 @@ class PagarmeWebhooks
     ) {
         new Discord("chamando handlePending", "notificacoes-compras");
 
+        $this->savePhoneNumber($request, $user);
+
+        // manda no discord dados do usuário
+        new Discord(
+            "Usuário: " . $user->name . " - Email: " . $user->email,
+            "notificacoes-compras"
+        );
+
+        $this->sendPhoneNumberDiscordNotification($user);
         // Muda status para chargedback
         $subscription->changeStatus("pending");
 
@@ -195,6 +204,16 @@ class PagarmeWebhooks
 
     private function savePhoneNumber($request, $user)
     {
+        if ($user->mobile_phone) {
+            return;
+        }
+
+        if (
+            !isset($request->post("data")["customer"]["phones"]["mobile_phone"])
+        ) {
+            return;
+        }
+
         $user->mobile_phone =
             $request->post("data")["customer"]["phones"]["mobile_phone"][
                 "area_code"
@@ -207,9 +226,19 @@ class PagarmeWebhooks
 
     private function sendPhoneNumberDiscordNotification($user)
     {
-        new Discord("Telefone: " . $user->mobile_phone, "notificacoes-compras");
+        if (!$user->mobile_phone) {
+            new Discord("📵 Usuário não tem telefone", "notificacoes-compras");
+            return;
+        }
+
         new Discord(
-            "Whatsapp Click to Chat: https://wa.me/" . $user->mobile_phone,
+            "☎️ Telefone: " . $user->mobile_phone,
+            "notificacoes-compras"
+        );
+        new Discord(
+            "☎️ Whatsapp Click to Chat: <https://wa.me/" .
+                $user->mobile_phone .
+                ">",
             "notificacoes-compras"
         );
     }
