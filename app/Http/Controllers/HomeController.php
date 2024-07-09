@@ -7,6 +7,7 @@ use App\Http\Resources\ChallengeUserCardResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Resources\TestimonialResource;
 use App\Http\Resources\UserAvatarResource;
+use App\Http\Resources\WorkshopCardResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
@@ -38,17 +39,16 @@ class HomeController extends Controller
                 )
                     ->select("id", "name", "slug")
                     ->first(),
-                "featured_workshops" => WorkshopResource::collection(
+                "featured_workshops" => WorkshopCardResource::collection(
                     Workshop::query()
-                        ->where("featured", "landing")
-                        ->where(function ($query) {
-                            $query
-                                ->where("status", "published")
-                                ->orWhere("status", "soon");
-                        })
-                        ->with("lessons")
+                        ->withCount("lessons")
+                        ->withSum("lessons", "duration_in_seconds")
                         ->with("instructor")
-                        ->with("tags")
+                        ->where("featured", "landing")
+                        ->orderByRaw(
+                            "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
+                        )
+                        ->orderBy("published_at", "desc")
                         ->get()
                 ),
                 "featured_challenges" => ChallengeCardResource::collection(
