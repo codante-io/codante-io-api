@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\UserEnteredWorkshop;
 use App\Events\UsersFirstWorkshop;
 use App\Http\Resources\LessonResource;
+use App\Http\Resources\WorkshopCardResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\User;
 use App\Models\Workshop;
@@ -16,12 +17,11 @@ class WorkshopController extends Controller
 {
     public function index()
     {
-        return WorkshopResource::collection(
+        return WorkshopCardResource::collection(
             Workshop::query()
-                // ->where("is_standalone", true)
-                ->with("lessons")
+                ->withCount("lessons")
+                ->withSum("lessons", "duration_in_seconds")
                 ->with("instructor")
-                ->with("tags")
                 ->orderByRaw(
                     "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
                 )

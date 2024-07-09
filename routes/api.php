@@ -58,10 +58,6 @@ Route::get("/user/subscriptions", function (Request $request) {
     return response()->json(new UserResource($request->user()));
 })->middleware("auth:sanctum");
 
-Route::get("/workshops", function () {
-    return \App\Models\Workshop::all();
-});
-
 Route::get("/workshops/{slug}", function ($slug) {
     return \App\Models\Workshop::where("slug", $slug)->firstOrFail();
 });
