@@ -8,15 +8,17 @@ use App\Http\Resources\PlanResource;
 use App\Http\Resources\TestimonialResource;
 use App\Http\Resources\UserAvatarResource;
 use App\Http\Resources\WorkshopCardResource;
-use App\Http\Resources\WorkshopResource;
+use App\Models\BlogPost;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
 use App\Models\Plan;
+use App\Models\TechnicalAssessment;
 use App\Models\Track;
 use App\Models\User;
 use App\Models\Workshop;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
+use Response;
 
 class HomeController extends Controller
 {
@@ -130,5 +132,178 @@ class HomeController extends Controller
                 "plan_info" => new PlanResource(Plan::find(1)),
             ];
         });
+    }
+
+    public function sitemap()
+    {
+        $itemsArray = Cache::remember("sitemap", 60 * 60, function () {
+            return $this->getSitemapItems();
+        });
+
+        return Response::json($itemsArray)->header(
+            "Cache-Control",
+            "public, max-age=3600"
+        );
+    }
+
+    protected function getSitemapItems()
+    {
+        $workshops = Workshop::listed()
+            ->select("id", "slug", "updated_at", "challenge_id")
+            ->withCount("lessons")
+            ->with([
+                "lessons" => function ($query) {
+                    $query->select("workshop_id", "slug", "updated_at");
+                },
+            ])
+            ->get();
+
+        $challenges = Challenge::where("status", "published")
+            ->select("id", "slug", "updated_at")
+            ->get();
+
+        $blogPosts = BlogPost::where("status", "published")
+            ->where("type", "blog")
+            ->select("slug", "updated_at")
+            ->get();
+
+        $technicalAssessments = TechnicalAssessment::where(
+            "status",
+            "published"
+        )
+            ->select("id", "slug", "updated_at")
+            ->get();
+
+        $workshopArray = $workshops->map(function ($workshop) {
+            return [
+                "url" =>
+                    config("app.frontend_url") .
+                    "/" .
+                    "workshops" .
+                    "/" .
+                    $workshop->slug,
+                "lastmod" => $workshop->updated_at->format("Y-m-d"),
+            ];
+        });
+
+        $challengeArray = $challenges->map(function ($challenge) {
+            return [
+                "url" =>
+                    config("app.frontend_url") .
+                    "/mini-projetos/" .
+                    $challenge->slug,
+                "lastmod" => $challenge->updated_at->format("Y-m-d"),
+            ];
+        });
+
+        $blogPostArray = $blogPosts->map(function ($blogPost) {
+            return [
+                "url" =>
+                    config("app.frontend_url") . "/blog/" . $blogPost->slug,
+                "lastmod" => $blogPost->updated_at->format("Y-m-d"),
+            ];
+        });
+
+        $submissionArray = [];
+        // get all submissions from challenges
+        foreach ($challenges as $challenge) {
+            $submissions = ChallengeUser::where("challenge_id", $challenge->id)
+                ->where("completed", "1")
+                ->where("is_solution", "0")
+                ->with([
+                    "user" => function ($query) {
+                        $query->select("id", "github_user", "updated_at");
+                    },
+                ])
+                ->select("user_id", "id", "updated_at")
+                ->get();
+
+            $submissionArray = array_merge(
+                $submissionArray,
+                $submissions
+                    ->map(function ($submission) use ($challenge) {
+                        return [
+                            "url" =>
+                                config("app.frontend_url") .
+                                "/mini-projetos/" .
+                                $challenge->slug .
+                                "/submissoes/" .
+                                $submission->user->github_user,
+                        ];
+                    })
+                    ->toArray()
+            );
+        }
+
+        $workshopLessonsArray = [];
+        $challengesWithTutorialArray = [];
+
+        foreach ($workshops as $workshop) {
+            // Lessons from workshop
+            $workshopLessonsArray = array_merge(
+                $workshopLessonsArray,
+                $workshop->lessons
+                    ->map(function ($lesson) use ($workshop) {
+                        return [
+                            "url" =>
+                                config("app.frontend_url") .
+                                "/workshops" .
+                                "/" .
+                                $workshop->slug .
+                                "/" .
+                                $lesson->slug,
+                            "lastmod" => $lesson->updated_at->format("Y-m-d"),
+                        ];
+                    })
+                    ->toArray()
+            );
+
+            // workshop that belongs to challenge, we will have the /tutorial and /codigo pages
+            if ($workshop->challenge_id) {
+                $challenge = $challenges
+                    ->where("id", $workshop->challenge_id)
+                    ->first();
+
+                if ($workshop->lessons_count > 0) {
+                    $challengesWithTutorialArray[] = [
+                        "url" =>
+                            config("app.frontend_url") .
+                            "/mini-projetos/" .
+                            $challenge->slug .
+                            "/tutorial",
+                    ];
+
+                    $challengesWithTutorialArray[] = [
+                        "url" =>
+                            config("app.frontend_url") .
+                            "/mini-projetos/" .
+                            $challenge->slug .
+                            "/codigo",
+                    ];
+                }
+            }
+        }
+
+        $technicalAssessmentsArray = $technicalAssessments->map(function (
+            $technicalAssessment
+        ) {
+            return [
+                "url" =>
+                    config("app.frontend_url") .
+                    "/testes-tecnicos/" .
+                    $technicalAssessment->slug,
+                "lastmod" => $technicalAssessment->updated_at->format("Y-m-d"),
+            ];
+        });
+
+        return array_merge(
+            $workshopArray->toArray(),
+            $challengeArray->toArray(),
+            $blogPostArray->toArray(),
+            $technicalAssessmentsArray->toArray(),
+            $submissionArray,
+            $workshopLessonsArray,
+            $challengesWithTutorialArray // /codigo e /tutorial dos MPs que possuem aula.
+        );
     }
 }

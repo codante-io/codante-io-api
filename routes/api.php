@@ -230,4 +230,6 @@ Route::delete("/comments", [CommentController::class, "delete"])->middleware(
 
 Route::post("/leads", [LeadsController::class, "create"]);
 
+Route::get("/sitemap", [HomeController::class, "sitemap"]);
+
 require __DIR__ . "/auth.php";
