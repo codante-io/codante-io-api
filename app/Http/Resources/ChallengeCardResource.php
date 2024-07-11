@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,6 @@ class ChallengeCardResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "slug" => $this->slug,
-            "short_description" => $this->short_description,
             "image_url" => $this->image_url,
             "status" => $this->status,
             "difficulty" => $this->difficulty,
@@ -38,7 +38,9 @@ class ChallengeCardResource extends JsonResource
                 $this->whenLoaded("users") ? $this->users->take(5) : []
             ),
             "enrolled_users_count" => $this->users_count,
-            "current_user_is_enrolled" => $this->userJoined(),
+            "current_user_is_enrolled" => $this->users->contains(
+                $this->current_user_id
+            ),
             "weekly_featured_start_date" => $this->weekly_featured_start_date,
             "solution_publish_date" => $this->solution_publish_date,
             "is_weekly_featured" => $this->isWeeklyFeatured(),

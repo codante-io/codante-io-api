@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
+use App\Http\Resources\TagResource;
 use App\Models\Challenge;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class ChallengeService
 {
-    public static function queryChallenges()
+    public static function queryChallenges(User|null $currentUser)
     {
         return Challenge::query()
             ->select(
@@ -27,10 +29,10 @@ class ChallengeService
             )
             ->listed()
             ->with("mainTechnology")
-            ->with("workshop:id,challenge_id")
             ->withCount("users")
+            // This will be used to check if the current user is enrolled in the challenge as well get 5
             ->with([
-                "users" => function ($query) {
+                "users" => function ($query) use ($currentUser) {
                     $query
                         ->select(
                             "users.id",
@@ -38,16 +40,18 @@ class ChallengeService
                             "users.is_pro",
                             "users.is_admin"
                         )
-                        ->when(Auth::check(), function ($query) {
+                        ->when($currentUser, function ($query) use (
+                            $currentUser
+                        ) {
                             $query->orderByRaw("users.id = ? DESC", [
-                                auth()->id(),
+                                $currentUser->id,
                             ]);
                         })
                         ->inRandomOrder()
                         ->limit(5);
                 },
             ])
-            ->with("tags")
+            ->with("tags:id,name")
             ->orderByRaw(
                 "-EXISTS (SELECT 1 FROM workshops WHERE workshops.challenge_id = challenges.id)"
             )
@@ -85,7 +89,6 @@ class ChallengeService
     public static function getAllTechnologies($challenges)
     {
         return $challenges
-            ->get()
             ->map(function ($challenge) {
                 return $challenge->mainTechnology;
             })
