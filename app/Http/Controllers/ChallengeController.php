@@ -16,15 +16,13 @@ use App\Models\User;
 use App\Services\ChallengeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Spatie\Browsershot\Browsershot;
-use Illuminate\Support\Facades\Storage;
 use Github\ResultPager;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class ChallengeController extends Controller
 {
@@ -39,23 +37,42 @@ class ChallengeController extends Controller
 
     public function index(Request $request)
     {
+        $user = $request->user();
+
         $groupedByTechnology = (bool) $request->query("groupedByTechnology");
 
         $technology = $request->query("technology");
 
-        $query = ChallengeService::queryChallenges();
+        $query = ChallengeService::queryChallenges($user);
 
-        $technologies = ChallengeService::getAllTechnologies($query);
-
-        if ($technology) {
-            $query->whereHas("mainTechnology", function ($query) use (
-                $technology
-            ) {
-                $query->where("name", $technology);
+        // se há user logado, não vamos pegar a versão cacheada e vamos adicionar o
+        // current_user_id em cada challenge (para evitar muitas chamadas ao banco de dados)
+        if ($user) {
+            $challenges = $query->get();
+            $challenges->each(function ($challenge) use ($user) {
+                $challenge->current_user_id = $user->id;
             });
+        } else {
+            $challenges = Cache::remember(
+                "challenges-logged-out",
+                60 * 60,
+                function () use ($query) {
+                    return $query->get();
+                }
+            );
         }
 
-        $challenges = $query->get();
+        $technologies = ChallengeService::getAllTechnologies($challenges);
+
+        // Filter by technology
+        if ($technology) {
+            $challenges = $challenges->filter(function ($challenge) use (
+                $technology
+            ) {
+                return $challenge->mainTechnology &&
+                    $challenge->mainTechnology->name == $technology;
+            });
+        }
 
         $normalizedChallenges = ChallengeCardResource::collection($challenges);
 
@@ -72,7 +89,7 @@ class ChallengeController extends Controller
             ]);
         }
 
-        return $normalizedChallenges;
+        return response()->json($normalizedChallenges);
     }
 
     public function hasForkedRepo(Request $request, $slug)
