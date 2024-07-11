@@ -312,7 +312,7 @@ class ChallengeController extends Controller
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        $apiUrl = "https://screenshot-service.codante.io/screenshot";
+        $apiUrl = "https://screenshot-service.codante.io/screenshot/process";
 
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . config("services.screenshot.token"),
@@ -397,7 +397,7 @@ class ChallengeController extends Controller
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        $apiUrl = "https://screenshot-service.codante.io/screenshot";
+        $apiUrl = "https://screenshot-service.codante.io/screenshot/update";
 
         $response = Http::withHeaders([
             "Authorization" => "Bearer " . config("services.screenshot.token"),
@@ -406,7 +406,7 @@ class ChallengeController extends Controller
             "url" => $validated["submission_url"],
             "bucketName" => config("services.screenshot.bucket"),
             "imagePath" => $imagePath,
-            "imagePathToReplace" => $challengeUser->pivot->submission_image_url,
+            "imageURLToDelete" => $challengeUser->pivot->submission_image_url,
         ]);
 
         if ($response->failed()) {
