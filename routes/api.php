@@ -232,4 +232,6 @@ Route::post("/leads", [LeadsController::class, "create"]);
 
 Route::get("/sitemap", [HomeController::class, "sitemap"]);
 
+Route::post("/get-unused-slug", [LessonController::class, "getUnusedSlug"]);
+
 require __DIR__ . "/auth.php";
