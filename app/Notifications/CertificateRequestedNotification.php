@@ -44,7 +44,7 @@ class CertificateRequestedNotification extends Notification
                 : "Seu certificado com ID {$this->certificate->id} foi solicitado e em breve estará disponível!";
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Contato Codante")
+            ->from("contato@codante.io", "Codante")
             ->subject("[Codante] Recebemos sua solicitação de certificado!")
             ->greeting("Olá $firstName")
             ->line($message)

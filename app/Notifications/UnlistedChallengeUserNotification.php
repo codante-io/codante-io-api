@@ -48,7 +48,7 @@ class UnlistedChallengeUserNotification extends Notification
         $frontUrl = config("app.frontend_url");
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Contato Codante")
+            ->from("contato@codante.io", "Codante")
             ->subject("[Codante] Encontramos um problema na sua submissão!")
             ->greeting("Olá $firstName")
             ->line(
