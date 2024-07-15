@@ -14,6 +14,7 @@ use App\Events\ReactionDeleted;
 use App\Events\UserCommented;
 use App\Events\UserCompletedLesson;
 use App\Events\UserErasedLesson;
+use App\Events\UserJoinedWorkshop;
 use App\Events\UserRequestedCertificate;
 use App\Events\UsersFirstWorkshop;
 use App\Events\UserStatusUpdated;
@@ -28,6 +29,7 @@ use App\Listeners\SendDiscordNotificationChallengeSubmitted;
 use App\Listeners\SendEventToMetaPixel;
 use App\Listeners\UserStatusUpdated as UserStatusUpdatedListener;
 use App\Listeners\LessonCompleted;
+use App\Listeners\UserJoinedWorkshop as ListenersUserJoinedWorkshop;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -63,6 +65,7 @@ class EventServiceProvider extends ServiceProvider
         PurchaseCompleted::class => [SendEventToMetaPixel::class],
         PurchaseStarted::class => [SendEventToMetaPixel::class],
         UsersFirstWorkshop::class => [EmailOctopus::class],
+        UserJoinedWorkshop::class => [ListenersUserJoinedWorkshop::class],
     ];
 
     /**
