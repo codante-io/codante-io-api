@@ -58,7 +58,7 @@ class CertificatePublishedNotification extends Notification implements
         }
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Contato Codante")
+            ->from("contato@codante.io", "Codante")
             ->subject("[Codante] Seu certificado foi publicado!")
             ->greeting("Olá $firstName")
             ->line($message)

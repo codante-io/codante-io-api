@@ -45,7 +45,7 @@ class ChallengeUserCommentNotification extends Notification
         $frontUrl = config("app.frontend_url");
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Contato Codante")
+            ->from("contato@codante.io", "Codante")
             ->subject("[Codante] Alguém comentou na sua submissão!")
             ->greeting("Olá $firstName")
             ->line(
