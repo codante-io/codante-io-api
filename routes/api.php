@@ -64,7 +64,7 @@ Route::get("/workshops/{slug}", function ($slug) {
 
 Route::post("/workshops/{slug}/user-entered", [
     WorkshopController::class,
-    "userEnteredWorkshop",
+    "userEnteredWorkshopLesson",
 ]);
 
 //BugsnagWebhook
