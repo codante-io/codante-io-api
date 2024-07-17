@@ -37,6 +37,8 @@ class WorkshopCardResource extends JsonResource
                     "status" => $this->pivot->status,
                     "completed_at" => $this->pivot->completed_at,
                     "started_at" => $this->pivot->created_at,
+                    "percentage_completed" =>
+                        $this->pivot->percentage_completed,
                 ];
             }),
         ];
