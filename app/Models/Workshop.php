@@ -76,6 +76,20 @@ class Workshop extends Model
             ->where("status", "!=", "archived");
     }
 
+    /**
+     * Scope a query to include card information - lesson count, duration and instructor.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeCardQuery($query)
+    {
+        return $query
+            ->with("instructor")
+            ->withCount("lessons")
+            ->withSum("lessons", "duration_in_seconds");
+    }
+
     public function scopeListed($query)
     {
         return $query

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WorkshopCardResource;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -89,36 +90,6 @@ class DashboardController extends Controller
             })
             ->values();
 
-        $workshopUsers = $user->workshopUsers
-            ->load([
-                "workshop",
-                "workshop.lessons" => function ($query) use ($user) {
-                    $query->whereHas("users", function ($query) use ($user) {
-                        $query->where("users.id", $user->id);
-                    });
-                },
-            ])
-            ->sortByDesc(function ($workshopUser) use ($user) {
-                return $workshopUser->workshop->lessons
-                    ->flatMap(function ($lesson) use ($user) {
-                        return $lesson->users
-                            ->where("id", $user->id)
-                            ->pluck("pivot.completed_at");
-                    })
-                    ->max();
-            })
-            ->map(function ($workshopUser) {
-                return [
-                    "id" => $workshopUser->id,
-                    "status" => $workshopUser->status,
-                    "workshop_id" => $workshopUser->workshop_id,
-                    "workshop_name" => $workshopUser->workshop->name,
-                    "workshop_image" => $workshopUser->workshop->image_url,
-                    "workshop_slug" => $workshopUser->workshop->slug,
-                ];
-            })
-            ->values();
-
         $certificates = $user->certificates->map(function ($certificate) {
             $certifiable = $certificate->certifiable;
             $certifiableName =
@@ -137,8 +108,20 @@ class DashboardController extends Controller
 
         return response()->json([
             "challenge_users" => $challengeUsers,
-            "workshop_users" => $workshopUsers,
             "certificates" => $certificates,
         ]);
+    }
+
+    public function getWorkshops(Request $request)
+    {
+        $user = $request->user();
+
+        $workshops = $user
+            ->workshops()
+            ->cardQuery()
+            ->get();
+        $workshopCard = WorkshopCardResource::collection($workshops);
+
+        return response()->json($workshopCard);
     }
 }

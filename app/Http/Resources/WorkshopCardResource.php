@@ -32,9 +32,15 @@ class WorkshopCardResource extends JsonResource
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "published_at" => $this->published_at,
+            "pivot" => $this->whenPivotLoaded("workshop_user", function () {
+                return [
+                    "status" => $this->pivot->status,
+                    "completed_at" => $this->pivot->completed_at,
+                    "started_at" => $this->pivot->created_at,
+                ];
+            }),
         ];
 
         return $resource;
-        // return parent::toArray($request);
     }
 }
