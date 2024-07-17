@@ -19,9 +19,7 @@ class WorkshopController extends Controller
     {
         return WorkshopCardResource::collection(
             Workshop::query()
-                ->withCount("lessons")
-                ->withSum("lessons", "duration_in_seconds")
-                ->with("instructor")
+                ->cardQuery()
                 ->orderByRaw(
                     "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
                 )

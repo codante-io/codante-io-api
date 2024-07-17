@@ -178,9 +178,15 @@ Route::post("/dashboard/update-settings", [
     DashboardController::class,
     "updateSettings",
 ]);
+
 Route::get("/dashboard/show-data", [
     DashboardController::class,
     "getDashboardData",
+])->middleware("auth:sanctum");
+
+Route::get("/dashboard/workshops", [
+    DashboardController::class,
+    "getWorkshops",
 ]);
 
 Route::post("/lessons/{lesson}/completed", [

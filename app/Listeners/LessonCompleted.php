@@ -36,7 +36,7 @@ class LessonCompleted
 
         $durationInSeconds = $workshop->lessons()->sum("duration_in_seconds");
 
-        if ($completedLessons >= $lessonCount && $workshop->is_standalone) {
+        if ($completedLessons >= $lessonCount) {
             $workshopUser = WorkshopUser::where("user_id", $user->id)
                 ->where("workshop_id", $workshop->id)
                 ->first();
