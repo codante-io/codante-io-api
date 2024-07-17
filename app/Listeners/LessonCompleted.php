@@ -26,13 +26,26 @@ class LessonCompleted
         $workshop = $event->workshop;
         $user = $event->user;
 
-        $user->workshops()->syncWithoutDetaching([$workshop->id]);
-
         $lessonCount = $workshop->lessons()->count();
         $completedLessons = $user
             ->lessons()
             ->where("workshop_id", $workshop->id)
             ->count();
+
+        $user->workshops()->syncWithoutDetaching([
+            $workshop->id => [
+                "status" =>
+                    $completedLessons >= $lessonCount
+                        ? "completed"
+                        : "in-progress",
+                "completed_at" =>
+                    $completedLessons >= $lessonCount ? now() : null,
+                "percentage_completed" =>
+                    $completedLessons >= $lessonCount
+                        ? 100
+                        : ($completedLessons / $lessonCount) * 100,
+            ],
+        ]);
 
         $durationInSeconds = $workshop->lessons()->sum("duration_in_seconds");
 
@@ -40,17 +53,6 @@ class LessonCompleted
             $workshopUser = WorkshopUser::where("user_id", $user->id)
                 ->where("workshop_id", $workshop->id)
                 ->first();
-
-            if ($workshopUser->completed_at !== null) {
-                $workshopUser->update([
-                    "status" => "completed",
-                ]);
-            } else {
-                $workshopUser->update([
-                    "status" => "completed",
-                    "completed_at" => now(),
-                ]);
-            }
 
             $certificate = Certificate::firstOrCreate(
                 [
