@@ -64,6 +64,11 @@ class Workshop extends Model
         return $this->belongsTo(Challenge::class);
     }
 
+    public function mainTechnology()
+    {
+        return $this->belongsTo(Tag::class, "main_technology_id");
+    }
+
     function certificate()
     {
         return $this->morphOne(Certificate::class, "certifiable");
