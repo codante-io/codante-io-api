@@ -14,6 +14,7 @@ return new class extends Migration {
             $table
                 ->string("slug")
                 ->unique()
+                ->nullable()
                 ->after("name");
         });
     }
