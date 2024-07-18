@@ -9,16 +9,20 @@ use App\Http\Resources\LessonResource;
 use App\Http\Resources\WorkshopCardResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Workshop;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class WorkshopController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Workshop::query();
+        $query = $this->workshopQueryWithFilters($request, $query);
+
         return WorkshopCardResource::collection(
-            Workshop::query()
+            $query
                 ->cardQuery()
                 ->orderByRaw(
                     "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
@@ -118,5 +122,40 @@ class WorkshopController extends Controller
         }
 
         return response()->json(["message" => "User entered workshop"]);
+    }
+
+    protected function workshopQueryWithFilters(
+        Request $request,
+        Builder $query
+    ) {
+        $query->with("tags:id,name")->with("mainTechnology:id,name");
+
+        // Filtro de Tecnologia (tags)
+        if ($request->has("tecnologia")) {
+            $tecnologias = explode(",", $request->input("tecnologia"));
+            $query->whereHas("mainTechnology", function ($subquery) use (
+                $tecnologias
+            ) {
+                $subquery->whereIn("slug", $tecnologias);
+            });
+        }
+
+        // Filtro de Tipo
+        if ($request->has("tipo")) {
+            $isStandalone = $request->input("tipo") === "workshop" ? 1 : 0;
+            $query->where("is_standalone", $isStandalone);
+        }
+
+        // Busca por Texto
+        if ($request->has("busca")) {
+            $busca = $request->input("busca");
+            $query->where(function ($subquery) use ($busca) {
+                $subquery
+                    ->where("name", "like", "%$busca%")
+                    ->orWhere("short_description", "like", "%$busca%");
+            });
+        }
+
+        return $query;
     }
 }
