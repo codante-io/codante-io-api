@@ -9,7 +9,6 @@ use Combindma\FacebookPixel\Facades\MetaPixel;
 use FacebookAds\Object\ServerSide\Content;
 use FacebookAds\Object\ServerSide\CustomData;
 use Illuminate\Auth\Events\Registered;
-use Log;
 
 class SendEventToMetaPixel
 {
@@ -40,7 +39,13 @@ class SendEventToMetaPixel
 
     private function sendRegisteredLeadEvent($event)
     {
-        $userData = MetaPixel::userData()->setEmail($event->email);
+        $fbp = request()->cookie("_fbp");
+        $fbc = request()->cookie("_fbc");
+
+        $userData = MetaPixel::userData()
+            ->setEmail($event->email)
+            ->setFbp($fbp, "_fbp")
+            ->setFbc($fbc, "_fbc");
         $eventId = uniqid("prefix_");
         $customData = new CustomData();
 
@@ -49,7 +54,13 @@ class SendEventToMetaPixel
 
     private function sendRegisteredUserEvent($event)
     {
-        $userData = MetaPixel::userData()->setEmail($event->user->email);
+        $fbp = request()->cookie("_fbp");
+        $fbc = request()->cookie("_fbc");
+
+        $userData = MetaPixel::userData()
+            ->setEmail($event->email)
+            ->setFbp($fbp, "_fbp")
+            ->setFbc($fbc, "_fbc");
         $eventId = uniqid("prefix_");
         $customData = new CustomData();
 
@@ -63,7 +74,13 @@ class SendEventToMetaPixel
 
     private function sendPurchaseEvent($event)
     {
-        $userData = MetaPixel::userData()->setEmail($event->user->email);
+        $fbp = request()->cookie("_fbp");
+        $fbc = request()->cookie("_fbc");
+
+        $userData = MetaPixel::userData()
+            ->setEmail($event->email)
+            ->setFbp($fbp, "_fbp")
+            ->setFbc($fbc, "_fbc");
 
         $content = (new Content())
             ->setProductId($event->subscription->id)
