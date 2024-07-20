@@ -58,7 +58,7 @@ class SendEventToMetaPixel
         $fbc = request()->cookie("_fbc");
 
         $userData = MetaPixel::userData()
-            ->setEmail($event->email)
+            ->setEmail($event->user->email)
             ->setFbp($fbp, "_fbp")
             ->setFbc($fbc, "_fbc");
         $eventId = uniqid("prefix_");
@@ -78,7 +78,7 @@ class SendEventToMetaPixel
         $fbc = request()->cookie("_fbc");
 
         $userData = MetaPixel::userData()
-            ->setEmail($event->email)
+            ->setEmail($event->user->email)
             ->setFbp($fbp, "_fbp")
             ->setFbc($fbc, "_fbc");
 
