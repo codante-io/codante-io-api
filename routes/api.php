@@ -86,7 +86,9 @@ Route::get("/pagarme/get-subscription-by-order-id/{pagarmeOrderID}", [
     "getSubscriptionByPagarmeOrderId",
 ])->middleware("auth:sanctum");
 
-Route::get("/workshops", [WorkshopController::class, "index"]);
+Route::get("/workshops", [WorkshopController::class, "index"])->middleware(
+    "cache.headers:public;max_age=7200;etag"
+);
 Route::get("/workshops/{slug}", [WorkshopController::class, "show"]);
 
 Route::get("/instructors", [InstructorController::class, "index"]);
