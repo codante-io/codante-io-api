@@ -20,18 +20,25 @@ class WorkshopController extends Controller
     {
         $query = Workshop::query();
         $query = $this->workshopQueryWithFilters($request, $query);
+        $filterName = $request->input("tecnologia");
 
-        return WorkshopCardResource::collection(
-            $query
-                ->cardQuery()
-                ->orderByRaw(
-                    "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
-                )
-                ->orderBy("is_standalone", "desc")
-                ->orderBy("published_at", "desc")
-                ->listed()
-                ->get()
+        $workshops = Cache::remember(
+            "workshops-tech-$filterName",
+            7200,
+            function () use ($query) {
+                return $query
+                    ->cardQuery()
+                    ->orderByRaw(
+                        "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
+                    )
+                    ->orderBy("is_standalone", "desc")
+                    ->orderBy("published_at", "desc")
+                    ->listed()
+                    ->get();
+            }
         );
+
+        return WorkshopCardResource::collection($workshops);
     }
 
     public function show($slug)
