@@ -13,24 +13,26 @@ use App\Mail\UserJoinedChallenge;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
 use App\Models\User;
-use App\Services\ChallengeService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use App\Services\ChallengeRepository;
 use Github\ResultPager;
 use GrahamCampbell\GitHub\Facades\GitHub;
 use GrahamCampbell\GitHub\GitHubManager;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ChallengeController extends Controller
 {
     protected $client;
+
     protected $paginator;
 
     public function __construct(GitHubManager $manager)
     {
+        // TODO - tirar do constructor
         $this->client = $manager->connection();
         $this->paginator = new ResultPager($this->client);
     }
@@ -38,15 +40,21 @@ class ChallengeController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        $challengeRepository = new ChallengeRepository();
+        $query = $challengeRepository->challengeCardsQuery($user);
+        $techFilter = $request->input('tecnologia');
 
-        $groupedByTechnology = (bool) $request->query("groupedByTechnology");
+        // Filtro de Tecnologia (tags)
+        if ($techFilter) {
+            $query->whereHas('mainTechnology', function ($subquery) use (
+                $techFilter
+            ) {
+                $subquery->where('slug', $techFilter);
+            });
+        }
 
-        $technology = $request->query("technology");
-
-        $query = ChallengeService::queryChallenges($user);
-
-        // se há user logado, não vamos pegar a versão cacheada e vamos adicionar o
-        // current_user_id em cada challenge (para evitar muitas chamadas ao banco de dados)
+        // se há user logado, não vamos pegar cachear e vamos adicionar o
+        // current_user_id (para evitar muitas chamadas ao banco de dados)
         if ($user) {
             $challenges = $query->get();
             $challenges->each(function ($challenge) use ($user) {
@@ -54,125 +62,105 @@ class ChallengeController extends Controller
             });
         } else {
             $challenges = Cache::remember(
-                "challenges-logged-out",
-                60 * 60,
+                "challenges-tech-$techFilter",
+                1800,
                 function () use ($query) {
                     return $query->get();
                 }
             );
         }
 
-        $technologies = ChallengeService::getAllTechnologies($challenges);
+        $featuredChallenge = $challengeRepository->getFeaturedChallenge($user);
 
-        // Filter by technology
-        if ($technology) {
-            $challenges = $challenges->filter(function ($challenge) use (
-                $technology
-            ) {
-                return $challenge->mainTechnology &&
-                    $challenge->mainTechnology->name == $technology;
-            });
-        }
-
-        $normalizedChallenges = ChallengeCardResource::collection($challenges);
-
-        if ($groupedByTechnology) {
-            $groupedChallenges = ChallengeService::groupByTechnology(
-                $normalizedChallenges
-            );
-
-            return response()->json([
-                "data" => [
-                    "technologies" => array_values($groupedChallenges),
-                    "filters" => ["technologies" => $technologies],
-                ],
-            ]);
-        }
-
-        return response()->json($normalizedChallenges);
+        return [
+            'data' => [
+                'challenges' => ChallengeCardResource::collection($challenges),
+                'featuredChallenge' => $featuredChallenge ? new ChallengeCardResource($featuredChallenge) : null,
+            ],
+        ];
     }
 
     public function hasForkedRepo(Request $request, $slug)
     {
         $user = $request->user();
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
         $challengeUser = $challenge
             ->users()
-            ->where("user_id", $user->id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
         if ($challengeUser->pivot->fork_url) {
-            return response()->json(["data" => true]);
+            return response()->json(['data' => true]);
         }
 
         try {
             $repositoryApi = $this->client->repo()->forks();
-            # get all forks paginated
-            $forks = $this->paginator->fetchAll($repositoryApi, "all", [
-                "codante-io",
+            // get all forks paginated
+            $forks = $this->paginator->fetchAll($repositoryApi, 'all', [
+                'codante-io',
                 $challenge->repository_name,
             ]);
 
-            #verify if the user has forked the repo
+            //verify if the user has forked the repo
             $userFork = collect($forks)
                 ->filter(function ($fork) use ($user) {
-                    return $fork["owner"]["login"] == $user->github_user;
+                    return $fork['owner']['login'] == $user->github_user;
                 })
                 ->first();
 
             if ($userFork) {
-                # update challengeUser record with the fork url
-                $challengeUser->pivot->fork_url = $userFork["html_url"];
+                // update challengeUser record with the fork url
+                $challengeUser->pivot->fork_url = $userFork['html_url'];
                 $challengeUser->pivot->save();
 
                 event(new ChallengeForked($challengeUser, $challenge, $user));
 
-                return response()->json(["data" => true]);
+                return response()->json(['data' => true]);
             }
 
-            return response()->json(["data" => false]);
+            return response()->json(['data' => false]);
         } catch (\Exception $e) {
-            return response()->json(["data" => false]);
+            return response()->json(['data' => false]);
         }
     }
 
     public function show($slug)
     {
         // if not logged in, we show cached version
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             $challenge = $this->getChallenge($slug);
         } else {
             $challenge = $this->getChallengeWithCompletedLessons($slug);
         }
         // $challenge->current_user_is_enrolled = $challenge->userJoined();
 
-        $cacheKey = "challenge_" . $challenge->slug;
+        $cacheKey = 'challenge_'.$challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
         $repoInfo = cache()->remember($cacheKey, $cacheTime, function () use (
             $challenge
         ) {
             try {
                 $repoInfo = GitHub::repo()->show(
-                    "codante-io",
+                    'codante-io',
                     $challenge->repository_name
                 );
             } catch (\Exception $e) {
                 $repoInfo = [
-                    "stargazers_count" => 0,
-                    "forks_count" => 0,
+                    'stargazers_count' => 0,
+                    'forks_count' => 0,
                 ];
             }
 
             return [
-                "stargazers_count" => $repoInfo["stargazers_count"],
-                "forks_count" => $repoInfo["forks_count"],
+                'stargazers_count' => $repoInfo['stargazers_count'],
+                'forks_count' => $repoInfo['forks_count'],
             ];
         });
 
-        # add stars and forks to the challenges
+        // add stars and forks to the challenges
         if ($repoInfo) {
-            $challenge->stars = $repoInfo["stargazers_count"];
-            $challenge->forks = $repoInfo["forks_count"];
+            $challenge->stars = $repoInfo['stargazers_count'];
+            $challenge->forks = $repoInfo['forks_count'];
         }
 
         return new ChallengeResource($challenge);
@@ -180,16 +168,16 @@ class ChallengeController extends Controller
 
     public function join(Request $request, $slug)
     {
-        if (!$request->user()) {
-            return response()->json(["error" => "You are not logged in"], 403);
+        if (! $request->user()) {
+            return response()->json(['error' => 'You are not logged in'], 403);
         }
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
         $challenge->users()->syncWithoutDetaching($request->user()->id);
 
         // Get challenge user to send to event
         $challengeUser = $challenge
             ->users()
-            ->where("user_id", $request->user()->id)
+            ->where('user_id', $request->user()->id)
             ->first();
 
         event(
@@ -201,19 +189,19 @@ class ChallengeController extends Controller
             new UserJoinedChallenge($request->user(), $challenge)
         );
 
-        return response()->json(["ok" => true], 200);
+        return response()->json(['ok' => true], 200);
     }
 
     public function userJoined(Request $request, $slug)
     {
-        $challengeUser = ChallengeUser::whereHas("challenge", function (
+        $challengeUser = ChallengeUser::whereHas('challenge', function (
             $query
         ) use ($slug) {
-            $query->where("slug", $slug);
+            $query->where('slug', $slug);
         })
-            ->with("user")
-            ->with("challenge")
-            ->where("user_id", $request->user()->id)
+            ->with('user')
+            ->with('challenge')
+            ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
         return new ChallengeUserResource($challengeUser);
@@ -224,49 +212,49 @@ class ChallengeController extends Controller
         //only the user who joined the challenge can update their own data
         $challengeUser = $this->userJoined($request, $slug);
 
-        if (!$challengeUser) {
+        if (! $challengeUser) {
             return response()->json(
-                ["error" => "You did not join this challenge"],
+                ['error' => 'You did not join this challenge'],
                 403
             );
         }
 
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
 
         $validated = $request->validate([
-            "completed" => "nullable|boolean",
-            "joined_discord" => "nullable|boolean",
-            "fork_url" => "nullable|url",
+            'completed' => 'nullable|boolean',
+            'joined_discord' => 'nullable|boolean',
+            'fork_url' => 'nullable|url',
         ]);
 
         $challenge
             ->users()
             ->updateExistingPivot($request->user()->id, $validated);
 
-        return response()->json(["ok" => true], 200);
+        return response()->json(['ok' => true], 200);
     }
 
     public function getChallengeParticipantsBanner(Request $request, $slug)
     {
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
         $participantsCount = $challenge->users()->count();
         $participantsInfo = $challenge
             ->users()
             ->select(
-                "users.avatar_url",
-                "users.name",
-                "users.is_pro",
-                "users.is_admin"
+                'users.avatar_url',
+                'users.name',
+                'users.is_pro',
+                'users.is_admin'
             )
             ->when(Auth::check(), function ($query) {
-                $query->orderByRaw("users.id = ? DESC", [auth()->id()]);
+                $query->orderByRaw('users.id = ? DESC', [auth()->id()]);
             })
             ->get()
             ->take(20);
 
         return [
-            "count" => $participantsCount,
-            "avatars" => UserAvatarResource::collection($participantsInfo),
+            'count' => $participantsCount,
+            'avatars' => UserAvatarResource::collection($participantsInfo),
         ];
     }
 
@@ -274,65 +262,65 @@ class ChallengeController extends Controller
     {
         // Validate the request
         $validated = $request->validate([
-            "submission_url" => "required|url",
-            "metadata.twitter_username" => "nullable",
-            "metadata.rinha_largest_filename" => "nullable",
+            'submission_url' => 'required|url',
+            'metadata.twitter_username' => 'nullable',
+            'metadata.rinha_largest_filename' => 'nullable',
         ]);
 
         // Check if the user has joined the challenge
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
         $challengeUser = $challenge
             ->users()
-            ->where("user_id", $request->user()->id)
+            ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        if ($challengeUser->pivot["submission_url"]) {
-            abort(400, "Você já submeteu esse Mini Projeto");
+        if ($challengeUser->pivot['submission_url']) {
+            abort(400, 'Você já submeteu esse Mini Projeto');
         }
 
         // Check if the URL is not from a github repository
-        if (Str::contains($validated["submission_url"], "github.com")) {
+        if (Str::contains($validated['submission_url'], 'github.com')) {
             abort(
                 400,
-                "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente."
+                'Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente.'
             );
         }
 
         // Check if the URL is valid
         $response = \Illuminate\Support\Facades\Http::get(
-            $validated["submission_url"]
+            $validated['submission_url']
         );
         $status = $response->status();
 
         if ($status > 300) {
             abort(
                 400,
-                "Não conseguimos acessar a URL informada. Verifique e tente novamente."
+                'Não conseguimos acessar a URL informada. Verifique e tente novamente.'
             );
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        $apiUrl = "https://screenshot-service.codante.io/screenshot/process";
+        $apiUrl = 'https://screenshot-service.codante.io/screenshot/process';
 
         $response = Http::withHeaders([
-            "Authorization" => "Bearer " . config("services.screenshot.token"),
-            "Accept" => "application/json",
+            'Authorization' => 'Bearer '.config('services.screenshot.token'),
+            'Accept' => 'application/json',
         ])->post($apiUrl, [
-            "url" => $validated["submission_url"],
-            "bucketName" => config("services.screenshot.bucket"),
-            "imagePath" => $imagePath,
+            'url' => $validated['submission_url'],
+            'bucketName' => config('services.screenshot.bucket'),
+            'imagePath' => $imagePath,
         ]);
 
         if ($response->failed()) {
-            abort(500, "API request failed");
+            abort(500, 'API request failed');
         }
 
         $data = $response->json();
-        $s3Location = $data["s3Location"];
+        $s3Location = $data['s3Location'];
 
         // Saves in DB
-        $challengeUser->pivot->submission_url = $validated["submission_url"];
-        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
+        $challengeUser->pivot->submission_url = $validated['submission_url'];
+        $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
         $challengeUser->pivot->submission_image_url = $s3Location;
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
@@ -347,26 +335,26 @@ class ChallengeController extends Controller
     {
         // Validate the request
         $validated = $request->validate([
-            "submission_url" => "required|url",
-            "metadata.twitter_username" => "nullable",
-            "metadata.rinha_largest_filename" => "nullable",
+            'submission_url' => 'required|url',
+            'metadata.twitter_username' => 'nullable',
+            'metadata.rinha_largest_filename' => 'nullable',
         ]);
 
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
         $challengeUser = $challenge
             ->users()
-            ->where("user_id", $request->user()->id)
+            ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
         // Check if the user has joined the challenge
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
         $challengeUser = $challenge
             ->users()
-            ->where("user_id", $request->user()->id)
+            ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        if (!$challengeUser->pivot["submission_url"]) {
-            abort(400, "Não existe nenhuma submissão para ser atualizada.");
+        if (! $challengeUser->pivot['submission_url']) {
+            abort(400, 'Não existe nenhuma submissão para ser atualizada.');
         }
 
         // if (
@@ -377,49 +365,49 @@ class ChallengeController extends Controller
         // }
 
         // Check if the URL is not from a github repository
-        if (Str::contains($validated["submission_url"], "github.com")) {
+        if (Str::contains($validated['submission_url'], 'github.com')) {
             abort(
                 400,
-                "Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente."
+                'Você não pode adicionar o link do repositório. Adicione o link do deploy e tente novamente.'
             );
         }
 
         $response = \Illuminate\Support\Facades\Http::get(
-            $validated["submission_url"]
+            $validated['submission_url']
         );
         $status = $response->status();
 
         if ($status > 300) {
             abort(
                 400,
-                "Não conseguimos acessar a URL informada. Verifique e tente novamente."
+                'Não conseguimos acessar a URL informada. Verifique e tente novamente.'
             );
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        $apiUrl = "https://screenshot-service.codante.io/screenshot/update";
+        $apiUrl = 'https://screenshot-service.codante.io/screenshot/update';
 
         $response = Http::withHeaders([
-            "Authorization" => "Bearer " . config("services.screenshot.token"),
-            "Accept" => "application/json",
+            'Authorization' => 'Bearer '.config('services.screenshot.token'),
+            'Accept' => 'application/json',
         ])->put($apiUrl, [
-            "url" => $validated["submission_url"],
-            "bucketName" => config("services.screenshot.bucket"),
-            "imagePath" => $imagePath,
-            "imageURLToDelete" => $challengeUser->pivot->submission_image_url,
+            'url' => $validated['submission_url'],
+            'bucketName' => config('services.screenshot.bucket'),
+            'imagePath' => $imagePath,
+            'imageURLToDelete' => $challengeUser->pivot->submission_image_url,
         ]);
 
         if ($response->failed()) {
             $error = $response->json();
-            abort(500, "API request failed: " . $error["message"]);
+            abort(500, 'API request failed: '.$error['message']);
         }
 
         $data = $response->json();
-        $s3Location = $data["s3Location"];
+        $s3Location = $data['s3Location'];
 
         // Saves in DB
-        $challengeUser->pivot->submission_url = $validated["submission_url"];
-        $challengeUser->pivot->metadata = $validated["metadata"] ?? null;
+        $challengeUser->pivot->submission_url = $validated['submission_url'];
+        $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
         $challengeUser->pivot->submission_image_url = $s3Location;
         $challengeUser->pivot->submitted_at = now();
         if ($challengeUser->pivot->listed == false) {
@@ -430,18 +418,18 @@ class ChallengeController extends Controller
 
     public function getSubmissions(Request $request, $slug)
     {
-        $challenge = Challenge::where("slug", $slug)->firstOrFail();
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
 
         $challengeSubmissions = ChallengeUser::where(
-            "challenge_id",
+            'challenge_id',
             $challenge->id
         )
-            ->whereNotNull("submission_url")
-            ->orderBy("is_solution", "desc")
-            ->orderByRaw("user_id = ? DESC", auth()->id()) // Current user submission is first
-            ->orderBy("submitted_at", "desc")
+            ->whereNotNull('submission_url')
+            ->orderBy('is_solution', 'desc')
+            ->orderByRaw('user_id = ? DESC', auth()->id()) // Current user submission is first
+            ->orderBy('submitted_at', 'desc')
             ->with(
-                "user:id,name,avatar_url,github_user,is_pro,is_admin,linkedin_user"
+                'user:id,name,avatar_url,github_user,is_pro,is_admin,linkedin_user'
             )
             ->get();
 
@@ -453,32 +441,32 @@ class ChallengeController extends Controller
         $slug,
         $githubUser
     ) {
-        $challenge = Challenge::where("slug", $slug)
-            ->select("id", "name")
+        $challenge = Challenge::where('slug', $slug)
+            ->select('id', 'name')
             ->firstOrFail();
-        $user = User::where("github_user", $githubUser)
-            ->select("id", "name")
+        $user = User::where('github_user', $githubUser)
+            ->select('id', 'name')
             ->firstOrFail();
-        $challengeUser = ChallengeUser::where("challenge_id", $challenge->id)
-            ->where("user_id", $user->id)
+        $challengeUser = ChallengeUser::where('challenge_id', $challenge->id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
         return [
-            "challenge_name" => $challenge->name,
-            "user_name" => $user->name,
-            "submission_image_url" => $challengeUser->submission_image_url,
+            'challenge_name' => $challenge->name,
+            'user_name' => $user->name,
+            'submission_image_url' => $challengeUser->submission_image_url,
         ];
     }
 
     private function getChallenge($slug)
     {
-        $challenge = Challenge::where("slug", $slug)
+        $challenge = Challenge::where('slug', $slug)
             ->visible()
-            ->with("workshop")
-            ->with("workshop.lessons")
-            ->with("workshop.instructor")
-            ->withCount("users")
-            ->with("tags")
+            ->with('workshop')
+            ->with('workshop.lessons')
+            ->with('workshop.instructor')
+            ->withCount('users')
+            ->with('tags')
             ->firstOrFail();
 
         return $challenge;
@@ -486,26 +474,26 @@ class ChallengeController extends Controller
 
     private function getChallengeWithCompletedLessons($slug)
     {
-        $challenge = Challenge::where("slug", $slug)
+        $challenge = Challenge::where('slug', $slug)
             ->visible()
-            ->with("workshop")
-            ->with("workshop.lessons")
-            ->with("workshop.instructor")
+            ->with('workshop')
+            ->with('workshop.lessons')
+            ->with('workshop.instructor')
             ->with([
-                "workshop",
-                "workshop.lessons",
-                "workshop.lessons.users" => function ($query) {
+                'workshop',
+                'workshop.lessons',
+                'workshop.lessons.users' => function ($query) {
                     $query
-                        ->select("users.id")
-                        ->where("user_id", Auth::guard("sanctum")->id());
+                        ->select('users.id')
+                        ->where('user_id', Auth::guard('sanctum')->id());
                 },
             ])
-            ->withCount("users")
-            ->with("tags")
+            ->withCount('users')
+            ->with('tags')
             ->firstOrFail();
 
         if (
-            !$challenge->workshop ||
+            ! $challenge->workshop ||
             $challenge->workshop->lessons->count() === 0
         ) {
             return $challenge;
@@ -519,7 +507,3 @@ class ChallengeController extends Controller
         return $challenge;
     }
 }
-
-// private function getScreenShot() {
-//     // ...
-// }
