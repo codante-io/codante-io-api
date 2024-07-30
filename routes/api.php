@@ -85,7 +85,7 @@ Route::get('/pagarme/get-subscription-by-order-id/{pagarmeOrderID}', [
 ])->middleware('auth:sanctum');
 
 Route::get('/workshops', [WorkshopController::class, 'index'])->middleware(
-    'cache.headers:public;max_age=7200;etag'
+    'cache.headers:public;max_age=120;etag'
 );
 
 Route::get('/workshops/{slug}', [WorkshopController::class, 'show']);
@@ -109,7 +109,7 @@ Route::get('/challenges/{slug}/certificate', [
 ])->middleware('auth:sanctum');
 
 Route::get('/challenges', [ChallengeController::class, 'index'])->middleware(
-    'cache.headers:public;max_age=60;etag'
+    'cache.headers:public;max_age=120;etag'
 );
 Route::get('/challenges/featured', [
     ChallengeController::class,

@@ -27,7 +27,11 @@ task('test', function () {
     runLocally('php artisan test');
 });
 
+task('deploy:reload-process', function () {
+    run('sudo supervisorctl restart all');
+});
+
 // Hooks
 // before("deploy", "test");
-after('deploy:cleanup', 'artisan:octane:reload');
+after('deploy:cleanup', 'deploy:reload-process');
 after('deploy:failed', 'deploy:unlock');
