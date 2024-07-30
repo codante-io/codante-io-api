@@ -109,7 +109,7 @@ Route::get('/challenges/{slug}/certificate', [
 ])->middleware('auth:sanctum');
 
 Route::get('/challenges', [ChallengeController::class, 'index'])->middleware(
-    'cache.headers:public;max_age=1800;etag'
+    'cache.headers:public;max_age=60;etag'
 );
 Route::get('/challenges/featured', [
     ChallengeController::class,
