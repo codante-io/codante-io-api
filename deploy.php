@@ -29,10 +29,5 @@ task('test', function () {
 
 // Hooks
 // before("deploy", "test");
-after('deploy:cleanup', 'reload-octane');
+after('deploy:cleanup', 'artisan:octane:reload');
 after('deploy:failed', 'deploy:unlock');
-
-// Sudo for reload-octane
-task('reload-octane', function () {
-    run('sudo php artisan octane:reload');
-});
