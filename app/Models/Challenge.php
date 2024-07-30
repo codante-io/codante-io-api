@@ -12,24 +12,24 @@ use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
 
 class Challenge extends Model
 {
-    use HasEagerLimit;
     use CrudTrait;
+    use HasEagerLimit;
     use HasFactory;
     use Reactable;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     protected $casts = [
-        "published_at" => "datetime",
-        "weekly_featured_start_date" => "datetime",
-        "solution_publish_date" => "datetime",
-        "resources" => "array",
+        'published_at' => 'datetime',
+        'weekly_featured_start_date' => 'datetime',
+        'solution_publish_date' => 'datetime',
+        'resources' => 'array',
     ];
 
     public function getTypeAttribute()
     {
-        return "challenge";
+        return 'challenge';
     }
 
     public function workshop()
@@ -46,31 +46,31 @@ class Challenge extends Model
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function mainTechnology()
     {
-        return $this->belongsTo(Tag::class, "main_technology_id");
+        return $this->belongsTo(Tag::class, 'main_technology_id');
     }
 
     public function tracks()
     {
-        return $this->morphToMany(Track::class, "trackable");
+        return $this->morphToMany(Track::class, 'trackable');
     }
 
     public function users()
     {
         return $this->belongsToMany(User::class)
             ->withPivot([
-                "id",
-                "completed",
-                "fork_url",
-                "joined_discord",
-                "submission_url",
-                "submitted_at",
-                "submission_image_url",
-                "metadata",
+                'id',
+                'completed',
+                'fork_url',
+                'joined_discord',
+                'submission_url',
+                'submitted_at',
+                'submission_image_url',
+                'metadata',
             ])
             ->withTimestamps();
     }
@@ -83,38 +83,47 @@ class Challenge extends Model
     public function scopeVisible($query)
     {
         return $query
-            ->where("status", "!=", "soon")
-            ->where("status", "!=", "draft")
-            ->where("status", "!=", "archived");
+            ->where('status', '!=', 'soon')
+            ->where('status', '!=', 'draft')
+            ->where('status', '!=', 'archived');
     }
 
     public function scopeListed($query)
     {
         return $query
-            ->where("status", "!=", "draft")
-            ->where("status", "!=", "archived")
-            ->where("status", "!=", "unlisted");
+            ->where('status', '!=', 'draft')
+            ->where('status', '!=', 'archived')
+            ->where('status', '!=', 'unlisted');
+    }
+
+    public function scopeWeeklyFeatured($query)
+    {
+        return $query
+            ->whereNotNull('weekly_featured_start_date')
+            ->whereNotNull('solution_publish_date')
+            ->where('weekly_featured_start_date', '<=', now())
+            ->where('solution_publish_date', '>', now());
     }
 
     public function userJoined(): bool
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return false;
         }
 
         return $this->users()
-            ->where("user_id", auth()->id())
+            ->where('user_id', auth()->id())
             ->exists();
     }
 
-    public function userStatus(): string|null
+    public function userStatus(): ?string
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return null;
         }
 
         $challengeUser = $this->users()
-            ->where("user_id", auth()->id())
+            ->where('user_id', auth()->id())
             ->first();
 
         if (
@@ -122,7 +131,7 @@ class Challenge extends Model
             $challengeUser->pivot &&
             $challengeUser->pivot->completed
         ) {
-            return "completed";
+            return 'completed';
         }
 
         if (
@@ -130,7 +139,7 @@ class Challenge extends Model
             $challengeUser->pivot &&
             $challengeUser->pivot->submitted_at !== null
         ) {
-            return "submitted";
+            return 'submitted';
         }
 
         if (
@@ -138,7 +147,7 @@ class Challenge extends Model
             $challengeUser->pivot &&
             $challengeUser->pivot->fork_url
         ) {
-            return "forked";
+            return 'forked';
         }
 
         if (
@@ -146,21 +155,21 @@ class Challenge extends Model
             $challengeUser->pivot &&
             $challengeUser->pivot->joined_discord
         ) {
-            return "joined-discord";
+            return 'joined-discord';
         }
 
         if ($this->userJoined()) {
-            return "joined";
+            return 'joined';
         }
 
-        return "not-joined";
+        return 'not-joined';
     }
 
     public function hasSolution(): bool
     {
         if (
-            !$this->workshop ||
-            $this->workshop->status !== "published" ||
+            ! $this->workshop ||
+            $this->workshop->status !== 'published' ||
             $this->workshop->lessons->count() < 1
         ) {
             return false;
@@ -179,9 +188,9 @@ class Challenge extends Model
 
     public function setImageUrlAttribute($value)
     {
-        $attribute_name = "image_url";
-        $disk = "s3";
-        $destination_path = "challenges/cover-images";
+        $attribute_name = 'image_url';
+        $disk = 's3';
+        $destination_path = 'challenges/cover-images';
 
         $this->uploadFileToDisk(
             $value,
@@ -206,7 +215,7 @@ class Challenge extends Model
             $this->{$attribute_name} != null
         ) {
             \Storage::disk($disk)->delete(
-                Str::replace(\Storage::url("/"), "", $this->{$attribute_name})
+                Str::replace(\Storage::url('/'), '', $this->{$attribute_name})
             );
             $this->attributes[$attribute_name] = null;
         }
@@ -214,7 +223,7 @@ class Challenge extends Model
         // if the file input is empty, delete the file from the disk
         if (is_null($value) && $this->{$attribute_name} != null) {
             \Storage::disk($disk)->delete(
-                Str::replace(\Storage::url("/"), "", $this->{$attribute_name})
+                Str::replace(\Storage::url('/'), '', $this->{$attribute_name})
             );
             $this->attributes[$attribute_name] = null;
         }
@@ -233,11 +242,11 @@ class Challenge extends Model
             $new_file_name =
                 $fileName ??
                 md5(
-                    $file->getClientOriginalName() .
-                        random_int(1, 9999) .
+                    $file->getClientOriginalName().
+                        random_int(1, 9999).
                         time()
-                ) .
-                    "." .
+                ).
+                    '.'.
                     $file->getClientOriginalExtension();
 
             // 2. Move the new file to the correct path
