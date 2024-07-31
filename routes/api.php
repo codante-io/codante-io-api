@@ -108,9 +108,7 @@ Route::get('/challenges/{slug}/certificate', [
     'show',
 ])->middleware('auth:sanctum');
 
-Route::get('/challenges', [ChallengeController::class, 'index'])->middleware(
-    'cache.headers:public;max_age=120;etag'
-);
+Route::get('/challenges', [ChallengeController::class, 'index']);
 Route::get('/challenges/featured', [
     ChallengeController::class,
     'getFeaturedChallenge',
