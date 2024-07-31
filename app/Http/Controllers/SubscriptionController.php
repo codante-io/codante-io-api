@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CouponResource;
 use App\Http\Resources\PlanResource;
 use App\Http\Resources\SubscriptionResource;
+use App\Models\Coupon;
 use App\Models\Plan;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware("auth:sanctum", ["except" => ["getPlanDetails"]]);
+        $this->middleware('auth:sanctum', ['except' => ['getPlanDetails']]);
     }
 
     public function showSubscription()
     {
         $subscriptions = Auth::user()
             ->subscriptions()
-            ->orderBy("created_at", "desc")
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // if there is no subscription, return null
@@ -34,7 +37,7 @@ class SubscriptionController extends Controller
         // if there is more than one subscription, return the active one
         $activeSubscription = $subscriptions
             ->filter(function ($subscription) {
-                return $subscription->status === "active";
+                return $subscription->status === 'active';
             })
             ->first();
 
@@ -46,8 +49,27 @@ class SubscriptionController extends Controller
         return new SubscriptionResource($subscriptions->first());
     }
 
-    public function getPlanDetails()
+    public function getPlanDetails(Request $request)
     {
-        return new PlanResource(Plan::find(1));
+        $plan = Plan::find(1);
+
+        // checa se o cupom existe, senão erro
+        $couponCode = $request->input('coupon');
+        $coupon = null;
+        if ($couponCode) {
+            $coupon = (new Coupon())->getValidCoupon($couponCode, 1);
+            if (! $coupon) {
+                return response()->json(
+                    ['message' => 'Cupom inválido', 'error' => true],
+                    400
+                );
+            }
+        }
+
+        //retorna o plano + detalhes do cupom
+        return response()->json([
+            'coupon' => [$coupon ? new CouponResource($coupon) : null],
+            'plan' => new PlanResource($plan),
+        ]);
     }
 }
