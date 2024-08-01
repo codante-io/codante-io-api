@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\SubscriptionResource;
 use App\Mail\PaymentConfirmed;
+use App\Models\Coupon;
 use App\Models\Plan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Mail;
+use Illuminate\Http\Request;
+use Log;
 
 class PagarmeController extends Controller
 {
@@ -17,7 +20,7 @@ class PagarmeController extends Controller
         $this->middleware("auth:sanctum");
     }
 
-    public function createOrderAndGetCheckoutLink()
+    public function createOrderAndGetCheckoutLink(Request $request)
     {
         $user = Auth::user();
         $plan = Plan::find(1);
@@ -28,6 +31,17 @@ class PagarmeController extends Controller
             $plan->price_in_cents +
             $planDetails->content_count * 100 +
             $planDetails->user_raised_count * 10 * 100;
+
+        $couponCode = $request->coupon;
+        $coupon = Coupon::where("code", $couponCode)->first();
+
+        if ($coupon) {
+            $promoPrice =
+                $coupon->type === "percentage"
+                    ? $promoPrice -
+                        ($promoPrice * $coupon->discount_amount) / 100
+                    : $promoPrice - $coupon->discount_amount;
+        }
 
         $endpoint = "https://api.pagar.me/core/v5/orders";
         // to get pagarme checkout link we need to create an order:
@@ -130,6 +144,8 @@ class PagarmeController extends Controller
         ]);
 
         $pagarmeOrder = $response->json();
+
+        Log::info("Pagarme Order", $pagarmeOrder);
 
         // add user to subscription
         $subscription = $user->subscribeToPlan(
