@@ -11,11 +11,17 @@ class Coupon extends Model
 
     public function getValidCoupon($couponCode, $planId = null)
     {
-        return $this->where('code', $couponCode)
-            ->where('active', true)
-            ->where('expires_at', '>', now())
-            ->whereColumn('redemptions', '<', 'max_redemptions')
-            ->where('plan_id', $planId)
+        return $this->where("code", $couponCode)
+            ->where("active", true)
+            ->where("expires_at", ">", now())
+            ->whereColumn("redemptions", "<", "max_redemptions")
+            ->where("plan_id", $planId)
             ->first();
+    }
+
+    public function markAsUsed()
+    {
+        $this->redemptions++;
+        $this->save();
     }
 }

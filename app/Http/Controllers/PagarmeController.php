@@ -33,7 +33,7 @@ class PagarmeController extends Controller
             $planDetails->user_raised_count * 10 * 100;
 
         $couponCode = $request->coupon;
-        $coupon = Coupon::where("code", $couponCode)->first();
+        $coupon = (new Coupon())->getValidCoupon($couponCode, 1);
 
         if ($coupon) {
             $promoPrice =
@@ -54,6 +54,9 @@ class PagarmeController extends Controller
                 "name" => $user->name,
                 "email" => $user->email,
                 "code" => $user->id,
+                "metadata" => [
+                    "coupon_code" => $coupon ? $coupon->code : null,
+                ],
             ],
             "items" => [
                 [
