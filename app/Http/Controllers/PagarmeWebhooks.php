@@ -7,6 +7,7 @@ use App\Events\PurchaseStarted;
 use App\Mail\PaymentConfirmed;
 use App\Mail\SubscriptionCanceled;
 use App\Mail\UserSubscribedToPlan;
+use App\Models\Coupon;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\Discord;
@@ -21,9 +22,12 @@ class PagarmeWebhooks
     {
         $eventType = $request->post("type");
         $pagarmeOrderId = $request->post("data")["id"];
+        $couponCode =
+            $request->post("data")["customer"]["metadata"]["coupon_code"] ??
+            null;
 
         new Discord(
-            "Entrando nos Webhooks... (Evento $eventType)",
+            "Entrando nos Webhooks... (Evento $eventType) - Coupon: $couponCode",
             "notificacoes-compras"
         );
 
@@ -65,7 +69,7 @@ class PagarmeWebhooks
         switch ($newStatus) {
             case "paid":
                 // Ativar o plano
-                $this->handlePaid($request, $subscription, $user);
+                $this->handlePaid($request, $subscription, $user, $couponCode);
                 break;
             case "pending":
                 // Cancelar o plano
@@ -82,8 +86,12 @@ class PagarmeWebhooks
         return new Response();
     }
 
-    public function handlePaid($request, Subscription $subscription, User $user)
-    {
+    public function handlePaid(
+        $request,
+        Subscription $subscription,
+        User $user,
+        string $couponCode = null
+    ) {
         new Discord("chamando handlePaid", "notificacoes-compras");
         // se status anterior é ativo, não faz nada.
         if ($subscription->status === "active") {
@@ -95,6 +103,11 @@ class PagarmeWebhooks
 
         // Muda status do User
         $user->upgradeUserToPro();
+
+        if ($couponCode) {
+            $coupon = Coupon::where("code", $couponCode)->first();
+            $coupon->markAsUsed();
+        }
 
         // Manda email de pagamento.
         Mail::to($user->email)->send(

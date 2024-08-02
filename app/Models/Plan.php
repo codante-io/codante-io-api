@@ -9,10 +9,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Plan extends Model
 {
-    use HasFactory, CrudTrait, SoftDeletes;
+    use CrudTrait, HasFactory, SoftDeletes;
 
     public function subscriptions()
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
+    public function validCoupon($couponCode)
+    {
+        return $this->coupon()
+            ->where('code', $couponCode)
+            ->where('active', true)
+            ->where('expires_at', '>', now())
+            ->whereColumn('redemptions', '<', 'max_redemptions')
+            ->first();
     }
 }
