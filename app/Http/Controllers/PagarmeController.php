@@ -148,8 +148,6 @@ class PagarmeController extends Controller
 
         $pagarmeOrder = $response->json();
 
-        Log::info("Pagarme Order", $pagarmeOrder);
-
         // add user to subscription
         $subscription = $user->subscribeToPlan(
             $plan->id,
