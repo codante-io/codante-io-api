@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ChallengeJoined;
+use App\Events\PurchaseStarted;
 use App\Events\UserEnteredWorkshop;
 use App\Events\UsersFirstWorkshop;
 use App\Events\WorkshopUserCreated;
@@ -48,6 +49,17 @@ class EmailOctopus
             $emailOctopus->updateEmailOctopusContact($event->user->email, [
                 "first_workshop" => $event->workshop->name,
             ]);
+        }
+
+        if ($event instanceof PurchaseStarted) {
+            $emailOctopus = new EmailOctopusService();
+            $emailOctopus->updateEmailOctopusContact(
+                $event->user->email,
+                [],
+                [
+                    "purchase_started" => true,
+                ]
+            );
         }
     }
 }

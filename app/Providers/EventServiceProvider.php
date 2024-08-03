@@ -63,7 +63,10 @@ class EventServiceProvider extends ServiceProvider
         UserCompletedLesson::class => [LessonCompleted::class],
         UserErasedLesson::class => [LessonRemoved::class],
         PurchaseCompleted::class => [SendEventToMetaPixel::class],
-        PurchaseStarted::class => [SendEventToMetaPixel::class],
+        PurchaseStarted::class => [
+            SendEventToMetaPixel::class,
+            EmailOctopus::class,
+        ],
         UsersFirstWorkshop::class => [EmailOctopus::class],
         UserJoinedWorkshop::class => [ListenersUserJoinedWorkshop::class],
     ];
