@@ -75,7 +75,9 @@ class ChallengeController extends Controller
         return [
             'data' => [
                 'challenges' => ChallengeCardResource::collection($challenges),
-                'featuredChallenge' => $featuredChallenge ? new ChallengeCardResource($featuredChallenge) : null,
+                'featuredChallenge' => $featuredChallenge
+                    ? new ChallengeCardResource($featuredChallenge)
+                    : null,
             ],
         ];
     }
@@ -299,7 +301,10 @@ class ChallengeController extends Controller
             );
         }
 
-        $imagePath = "challenges/$slug/$challengeUser->github_id";
+        $imagePath =
+            "challenge-screenshots/$slug-$challengeUser->github_id-".
+            Str::random(10).
+            '.webp';
         $apiUrl = config('services.screenshot.base_url').'/screenshot';
 
         $response = Http::withHeaders([
@@ -383,7 +388,10 @@ class ChallengeController extends Controller
             );
         }
 
-        $imagePath = "challenges/$slug/$challengeUser->github_id";
+        $imagePath =
+            "challenge-screenshots/$slug-$challengeUser->github_id-".
+            Str::random(10).
+            '.webp';
         $apiUrl = config('services.screenshot.base_url').'/screenshot';
 
         $response = Http::withHeaders([
