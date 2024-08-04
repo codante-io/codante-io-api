@@ -300,28 +300,27 @@ class ChallengeController extends Controller
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        $apiUrl = 'https://screenshot-service.codante.io/screenshot/process';
+        $apiUrl = config('services.screenshot.base_url').'/screenshot';
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.config('services.screenshot.token'),
             'Accept' => 'application/json',
         ])->post($apiUrl, [
             'url' => $validated['submission_url'],
-            'bucketName' => config('services.screenshot.bucket'),
-            'imagePath' => $imagePath,
+            'fileName' => $imagePath,
         ]);
 
         if ($response->failed()) {
-            abort(500, 'API request failed');
+            abort(500, $response);
         }
 
         $data = $response->json();
-        $s3Location = $data['s3Location'];
+        $imageUrl = $data['imageUrl'];
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated['submission_url'];
         $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
-        $challengeUser->pivot->submission_image_url = $s3Location;
+        $challengeUser->pivot->submission_image_url = $imageUrl;
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
 
@@ -385,16 +384,15 @@ class ChallengeController extends Controller
         }
 
         $imagePath = "challenges/$slug/$challengeUser->github_id";
-        $apiUrl = 'https://screenshot-service.codante.io/screenshot/update';
+        $apiUrl = config('services.screenshot.base_url').'/screenshot';
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer '.config('services.screenshot.token'),
             'Accept' => 'application/json',
         ])->put($apiUrl, [
             'url' => $validated['submission_url'],
-            'bucketName' => config('services.screenshot.bucket'),
-            'imagePath' => $imagePath,
-            'imageURLToDelete' => $challengeUser->pivot->submission_image_url,
+            'fileName' => $imagePath,
+            'oldFilename' => $challengeUser->pivot->submission_image_url,
         ]);
 
         if ($response->failed()) {
@@ -403,7 +401,7 @@ class ChallengeController extends Controller
         }
 
         $data = $response->json();
-        $s3Location = $data['s3Location'];
+        $s3Location = $data['imageUrl'];
 
         // Saves in DB
         $challengeUser->pivot->submission_url = $validated['submission_url'];
