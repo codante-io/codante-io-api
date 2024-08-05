@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Certificate;
 use App\Observers\CertificateObserver;
 use Illuminate\Support\ServiceProvider;
+use URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +23,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Certificate::observe(CertificateObserver::class);
+
+        // only use https in production
+        if ($this->app->environment("production")) {
+            URL::forceScheme("https");
+        }
     }
 }
