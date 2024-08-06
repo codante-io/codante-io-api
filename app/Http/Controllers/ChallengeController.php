@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\File;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\Encoders\WebpEncoder;
-use Intervention\Image\ImageManager;
 
 class ChallengeController extends Controller
 {
@@ -343,8 +340,12 @@ class ChallengeController extends Controller
     {
         // Validate the request
         $validated = $request->validate([
-            'submission_image' => ['required', File::image()->max('5mb')],
+            'submission_image' => ['required', File::image()],
         ]);
+
+        info($validated['submission_image']);
+
+        $imgFile = $validated['submission_image'];
 
         // Check if the challenge exists
         $challenge = Challenge::where('slug', $slug)->firstOrFail();
@@ -360,29 +361,29 @@ class ChallengeController extends Controller
             abort(400, 'Você já submeteu esse Mini Projeto');
         }
 
-        // Make the image
-        $manager = new ImageManager(Driver::class);
-        $image = $manager
-            ->read($validated['submission_image'])
-            ->resize(1280, 720)
-            ->encode(new WebpEncoder(quality: 80));
-
-        // send image to S3
+        $apiUrl = config('services.screenshot.base_url').'/upload-image';
         $imagePath =
             "challenge-screenshots/$slug-$challengeUser->github_id-".
             Str::random(10).
             '.webp';
 
-        // save to s3
-        $result = \Storage::disk('s3')->put($imagePath, $image->toFilePointer());
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.config('services.screenshot.token'),
+            'Accept' => 'application/json',
+        ])
+            ->attach('submission_image', file_get_contents($imgFile->getPathname()), $imgFile->getClientOriginalName())
+            ->attach('submission_path', $imagePath)
+            ->post($apiUrl);
 
-        if (! $result) {
-            abort(500, 'Erro ao salvar a imagem no S3');
+        if ($response->failed()) {
+            abort(500, 'Erro ao submeter a imagem: '.$response);
         }
 
+        $data = $response->json();
+        $imageSubmissionUrl = $data['imageUrl'];
+
         // Saves in DB
-        $challengeUser->pivot->submission_image_url =
-            $validated['submission_image'];
+        $challengeUser->pivot->submission_image_url = $imageSubmissionUrl;
         $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
@@ -391,6 +392,8 @@ class ChallengeController extends Controller
         event(
             new ChallengeCompleted($challengeUser, $challenge, $request->user())
         );
+
+        return $data;
     }
 
     public function updateSubmission(Request $request, $slug)
@@ -488,7 +491,7 @@ class ChallengeController extends Controller
             'challenge_id',
             $challenge->id
         )
-            ->whereNotNull('submission_url')
+            ->whereNotNull('submitted_at')
             ->orderBy('is_solution', 'desc')
             ->orderByRaw('user_id = ? DESC', auth()->id()) // Current user submission is first
             ->orderBy('submitted_at', 'desc')
