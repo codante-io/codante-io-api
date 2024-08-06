@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\File;
 
 class ChallengeController extends Controller
 {
@@ -276,7 +277,7 @@ class ChallengeController extends Controller
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        if ($challengeUser->pivot['submission_url']) {
+        if ($challengeUser->pivot['submitted_at']) {
             abort(400, 'Você já submeteu esse Mini Projeto');
         }
 
@@ -333,6 +334,66 @@ class ChallengeController extends Controller
         event(
             new ChallengeCompleted($challengeUser, $challenge, $request->user())
         );
+    }
+
+    public function submitWithoutDeploy(Request $request, $slug)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'submission_image' => ['required', File::image()],
+        ]);
+
+        info($validated['submission_image']);
+
+        $imgFile = $validated['submission_image'];
+
+        // Check if the challenge exists
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+
+        // Check if the user has joined the challenge
+        $challengeUser = $challenge
+            ->users()
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        // Check if the user has already submitted
+        if ($challengeUser->pivot['submitted_at']) {
+            abort(400, 'Você já submeteu esse Mini Projeto');
+        }
+
+        $apiUrl = config('services.screenshot.base_url').'/upload-image';
+        $imagePath =
+            "challenge-screenshots/$slug-$challengeUser->github_id-".
+            Str::random(10).
+            '.webp';
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer '.config('services.screenshot.token'),
+            'Accept' => 'application/json',
+        ])
+            ->attach('submission_image', file_get_contents($imgFile->getPathname()), $imgFile->getClientOriginalName())
+            ->attach('submission_path', $imagePath)
+            ->post($apiUrl);
+
+        if ($response->failed()) {
+            abort(500, 'Erro ao submeter a imagem: '.$response);
+        }
+
+        $data = $response->json();
+        $imageSubmissionUrl = $data['imageUrl'];
+
+        // Saves in DB
+        $challengeUser->pivot->submission_image_url = $imageSubmissionUrl;
+        $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
+        $challengeUser->pivot->submitted_at = now();
+        $challengeUser->pivot->save();
+
+        // Trigger event to award points
+        event(
+            new ChallengeCompleted($challengeUser, $challenge, $request->user())
+        );
+
+        return $data;
     }
 
     public function updateSubmission(Request $request, $slug)
@@ -430,7 +491,7 @@ class ChallengeController extends Controller
             'challenge_id',
             $challenge->id
         )
-            ->whereNotNull('submission_url')
+            ->whereNotNull('submitted_at')
             ->orderBy('is_solution', 'desc')
             ->orderByRaw('user_id = ? DESC', auth()->id()) // Current user submission is first
             ->orderBy('submitted_at', 'desc')

@@ -115,10 +115,19 @@ Route::get('/challenges/featured', [
 ]);
 
 Route::get('/challenges/{slug}', [ChallengeController::class, 'show']);
+
+// Submit with Deploy URL
 Route::post('/challenges/{slug}/submit', [
     ChallengeController::class,
     'submit',
 ])->middleware('auth:sanctum');
+
+// Submit with Image
+Route::post('/challenges/{slug}/submit-without-deploy', [
+    ChallengeController::class,
+    'submitWithoutDeploy',
+])->middleware('auth:sanctum');
+
 Route::put('/challenges/{slug}/submit', [
     ChallengeController::class,
     'updateSubmission',
