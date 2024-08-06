@@ -23,6 +23,10 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\File;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
 
 class ChallengeController extends Controller
 {
@@ -276,7 +280,7 @@ class ChallengeController extends Controller
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
 
-        if ($challengeUser->pivot['submission_url']) {
+        if ($challengeUser->pivot['submitted_at']) {
             abort(400, 'Você já submeteu esse Mini Projeto');
         }
 
@@ -326,6 +330,60 @@ class ChallengeController extends Controller
         $challengeUser->pivot->submission_url = $validated['submission_url'];
         $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
         $challengeUser->pivot->submission_image_url = $imageUrl;
+        $challengeUser->pivot->submitted_at = now();
+        $challengeUser->pivot->save();
+
+        // Trigger event to award points
+        event(
+            new ChallengeCompleted($challengeUser, $challenge, $request->user())
+        );
+    }
+
+    public function submitWithoutDeploy(Request $request, $slug)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'submission_image' => ['required', File::image()->max('5mb')],
+        ]);
+
+        // Check if the challenge exists
+        $challenge = Challenge::where('slug', $slug)->firstOrFail();
+
+        // Check if the user has joined the challenge
+        $challengeUser = $challenge
+            ->users()
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
+
+        // Check if the user has already submitted
+        if ($challengeUser->pivot['submitted_at']) {
+            abort(400, 'Você já submeteu esse Mini Projeto');
+        }
+
+        // Make the image
+        $manager = new ImageManager(Driver::class);
+        $image = $manager
+            ->read($validated['submission_image'])
+            ->resize(1280, 720)
+            ->encode(new WebpEncoder(quality: 80));
+
+        // send image to S3
+        $imagePath =
+            "challenge-screenshots/$slug-$challengeUser->github_id-".
+            Str::random(10).
+            '.webp';
+
+        // save to s3
+        $result = \Storage::disk('s3')->put($imagePath, $image->toFilePointer());
+
+        if (! $result) {
+            abort(500, 'Erro ao salvar a imagem no S3');
+        }
+
+        // Saves in DB
+        $challengeUser->pivot->submission_image_url =
+            $validated['submission_image'];
+        $challengeUser->pivot->metadata = $validated['metadata'] ?? null;
         $challengeUser->pivot->submitted_at = now();
         $challengeUser->pivot->save();
 
