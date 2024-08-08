@@ -91,19 +91,19 @@ class Workshop extends Model
     {
         return $query
             ->select(
-                "id",
-                "name",
-                "slug",
-                "image_url",
-                "status",
-                "video_url",
-                "is_standalone",
-                "is_premium",
-                "streaming_url",
-                "created_at",
-                "updated_at",
-                "published_at",
-                "instructor_id"
+                "workshops.id",
+                "workshops.name",
+                "workshops.slug",
+                "workshops.image_url",
+                "workshops.status",
+                "workshops.video_url",
+                "workshops.is_standalone",
+                "workshops.is_premium",
+                "workshops.streaming_url",
+                "workshops.created_at",
+                "workshops.updated_at",
+                "workshops.published_at",
+                "workshops.instructor_id"
             )
             ->with("instructor")
             ->withCount("lessons")
