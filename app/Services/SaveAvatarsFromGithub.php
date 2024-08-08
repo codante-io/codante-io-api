@@ -30,7 +30,7 @@ class SaveAvatarsFromGithub
 
             $res = Http::withHeaders([
                 "Authorization" =>
-                    "bearer " . config("services.screenshot.token"),
+                    "Bearer " . config("services.screenshot.token"),
             ])->post(
                 config("services.screenshot.base_url") . "/upload-avatar-image",
                 [
