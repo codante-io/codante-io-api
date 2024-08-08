@@ -102,7 +102,8 @@ class Workshop extends Model
                 "streaming_url",
                 "created_at",
                 "updated_at",
-                "published_at"
+                "published_at",
+                "instructor_id"
             )
             ->with("instructor")
             ->withCount("lessons")
