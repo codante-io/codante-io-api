@@ -90,6 +90,20 @@ class Workshop extends Model
     public function scopeCardQuery($query)
     {
         return $query
+            ->select(
+                "id",
+                "name",
+                "slug",
+                "image_url",
+                "status",
+                "video_url",
+                "is_standalone",
+                "is_premium",
+                "streaming_url",
+                "created_at",
+                "updated_at",
+                "published_at"
+            )
             ->with("instructor")
             ->withCount("lessons")
             ->withSum("lessons", "duration_in_seconds");

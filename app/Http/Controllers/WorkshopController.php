@@ -139,12 +139,19 @@ class WorkshopController extends Controller
 
         // Filtro de Tecnologia (tags)
         if ($request->has("tecnologia")) {
-            $tecnologias = explode(",", $request->input("tecnologia"));
-            $query->whereHas("mainTechnology", function ($subquery) use (
-                $tecnologias
-            ) {
-                $subquery->whereIn("slug", $tecnologias);
-            });
+            $technologies = explode(",", $request->input("tecnologia"));
+
+            $query
+                ->whereHas("mainTechnology", function ($subquery) use (
+                    $technologies
+                ) {
+                    $subquery->whereIn("slug", $technologies);
+                })
+                ->orWhere(function ($query) {
+                    $query
+                        ->where("status", "soon")
+                        ->where("published_at", ">", now());
+                });
         }
 
         // Filtro de Tipo
