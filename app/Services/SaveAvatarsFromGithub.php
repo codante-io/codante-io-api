@@ -39,6 +39,10 @@ class SaveAvatarsFromGithub
                 ]
             );
 
+            if ($res->status() !== 200) {
+                continue;
+            }
+
             $user->avatar_url = $res->json()["smImageUrl"];
             $user->save();
         }
