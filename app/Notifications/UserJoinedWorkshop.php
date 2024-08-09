@@ -40,7 +40,7 @@ class UserJoinedWorkshop extends Notification implements ShouldQueue
         $type = $this->workshop->is_standalone ? "workshop" : "tutorial";
 
         return (new MailMessage())
-            ->subject("Você está participando de um novo " . $type . "!")
+            ->subject("Você se inscreveu em um novo " . $type . "!")
             ->markdown("emails.user-joined-workshop", [
                 "workshop" => $this->workshop,
                 "user" => $notifiable,

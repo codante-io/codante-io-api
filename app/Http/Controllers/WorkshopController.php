@@ -101,7 +101,7 @@ class WorkshopController extends Controller
         return new WorkshopResource($workshop);
     }
 
-    public function userEnteredWorkshopLesson(Request $request, $slug)
+    public function userJoined(Request $request, $slug)
     {
         $user = Auth::user();
 

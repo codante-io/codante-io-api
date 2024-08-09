@@ -4,11 +4,9 @@ namespace App\Listeners;
 
 use App\Events\ChallengeJoined;
 use App\Events\PurchaseStarted;
-use App\Events\UserEnteredWorkshop;
 use App\Events\UsersFirstWorkshop;
-use App\Events\WorkshopUserCreated;
+use App\Events\UserJoinedWorkshop;
 use App\Models\ChallengeUser;
-use App\Models\Workshop;
 use App\Services\Mail\EmailOctopusService;
 
 class EmailOctopus
@@ -26,6 +24,8 @@ class EmailOctopus
      */
     public function handle(object $event): void
     {
+        $emailOctopus = new EmailOctopusService();
+
         if ($event instanceof ChallengeJoined) {
             $event->user->id;
 
@@ -36,7 +36,6 @@ class EmailOctopus
 
             // if is first project, update email octopus tag
             if ($challenges->count() == 1) {
-                $emailOctopus = new EmailOctopusService();
                 $emailOctopus->updateEmailOctopusContact(
                     $event->user->email,
                     [],
@@ -45,14 +44,22 @@ class EmailOctopus
             }
         }
         if ($event instanceof UsersFirstWorkshop) {
-            $emailOctopus = new EmailOctopusService();
             $emailOctopus->updateEmailOctopusContact($event->user->email, [
                 "first_workshop" => $event->workshop->name,
             ]);
         }
 
+        if ($event instanceof UserJoinedWorkshop) {
+            $emailOctopus->updateEmailOctopusContact(
+                $event->user->email,
+                [],
+                [
+                    "workshop-{$event->workshop->slug}" => true,
+                ]
+            );
+        }
+
         if ($event instanceof PurchaseStarted) {
-            $emailOctopus = new EmailOctopusService();
             $emailOctopus->updateEmailOctopusContact(
                 $event->user->email,
                 [],
