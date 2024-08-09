@@ -43,6 +43,12 @@ class Kernel extends ConsoleKernel
                 (new CompareChallengeReadmes())->checkAll();
             })
             ->weeklyOn(1, "04:30");
+
+        $schedule
+            ->call(function () {
+                (new \App\Services\SaveAvatarsFromGithub())->handle();
+            })
+            ->dailyAt("04:45");
     }
 
     /**
