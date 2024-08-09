@@ -68,7 +68,10 @@ class EventServiceProvider extends ServiceProvider
             EmailOctopus::class,
         ],
         UsersFirstWorkshop::class => [EmailOctopus::class],
-        UserJoinedWorkshop::class => [ListenersUserJoinedWorkshop::class],
+        UserJoinedWorkshop::class => [
+            ListenersUserJoinedWorkshop::class,
+            EmailOctopus::class,
+        ],
     ];
 
     /**
