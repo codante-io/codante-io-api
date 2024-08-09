@@ -10,19 +10,15 @@ class SaveAvatarsFromGithub
     public static function handle()
     {
         // pega todos os usuários que têm avatar
-        $users = User::whereNotNull("avatar_url")->get();
+        $users = User::where(
+            "avatar_url",
+            "like",
+            "https://avatars.githubusercontent.com%"
+        )->get();
 
         // // para cada usuário, pega o avatar do github e salva no banco
         foreach ($users as $user) {
             // a url deve começar com https://avatars.githubusercontent.com
-            if (
-                strpos(
-                    $user->avatar_url,
-                    "https://avatars.githubusercontent.com"
-                ) === false
-            ) {
-                continue;
-            }
 
             if ($user->avatar_url === null) {
                 continue;
