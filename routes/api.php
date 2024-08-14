@@ -204,6 +204,11 @@ Route::get("/dashboard/workshops", [
     "getWorkshops",
 ]);
 
+Route::post("/dashboard/change-avatar", [
+    DashboardController::class,
+    "changeAvatar",
+]);
+
 Route::post("/lessons/{lesson}/completed", [
     LessonController::class,
     "setCompleted",

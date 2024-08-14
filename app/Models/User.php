@@ -4,13 +4,19 @@ namespace App\Models;
 
 use App\Services\Mail\EmailOctopusService;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
+use Carbon\Carbon;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
+use Intervention\Image\Laravel\Facades\Image;
+use Storage;
+use Tuupola\Base62;
 
 class User extends Authenticatable
 {
@@ -189,5 +195,43 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->is_admin == 1;
+    }
+
+    public function changeAvatar(UploadedFile $avatar)
+    {
+        $base62 = new Base62();
+        $encodedEmail = $base62->encode($this->email);
+
+        // reduce image size
+        $image = Image::read($avatar->getRealPath())
+            ->resize(600, 600, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->toAvif(80);
+
+        // path: user-avatars/encodedemail/randomstring.avif
+        $avatarPath =
+            "user-avatars/" . $encodedEmail . "/" . Str::random(10) . ".avif";
+
+        Storage::disk("s3")->put($avatarPath, $image);
+        $avatarUrl = config("app.asset_url") . "/" . $avatarPath;
+
+        $settings = $this->settings;
+        $settings["changed_avatar"] = Carbon::now();
+        $this->settings = $settings;
+
+        $this->avatar_url = $avatarUrl;
+        $this->save();
+
+        // delete old avatar
+        $files = Storage::disk("s3")->files("user-avatars/" . $encodedEmail);
+
+        // delete all, except the one we just uploaded
+        foreach ($files as $file) {
+            if ($file !== $avatarPath) {
+                Storage::disk("s3")->delete($file);
+            }
+        }
     }
 }

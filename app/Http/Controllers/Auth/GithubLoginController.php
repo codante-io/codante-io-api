@@ -52,7 +52,14 @@ class GithubLoginController extends AuthenticatedSessionController
             }
 
             // update avatar and github id (útil caso o user tenha previamente se cadastrado com email e senha)
-            $user->avatar_url = $githubUserData->getAvatar();
+            // só vamos mudar o avatar se o usuário não tiver avatar ou se o usuário não tiver trocado o avatar
+            if (
+                $user->avatar_url === null ||
+                !isset($user->settings["changed_avatar"])
+            ) {
+                $user->avatar_url = $githubUserData->getAvatar();
+            }
+
             $user->github_id = $githubUserData->getId();
             $user->github_user = $githubUserData->getNickname();
             $user->github_data = $githubUserData->user;

@@ -9,7 +9,7 @@ class SaveAvatarsFromGithub
 {
     public static function handle()
     {
-        // pega todos os usuários que têm avatar
+        // pega todos os usuários que têm avatar do github
         $users = User::where(
             "avatar_url",
             "like",
