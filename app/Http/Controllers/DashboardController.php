@@ -124,4 +124,20 @@ class DashboardController extends Controller
 
         return response()->json($workshopCard);
     }
+
+    public function changeAvatar(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            "avatar" => "required|image",
+        ]);
+
+        $user->changeAvatar($request->file("avatar"));
+
+        return [
+            "success" => true,
+            "message" => "Avatar changed successfully",
+        ];
+    }
 }

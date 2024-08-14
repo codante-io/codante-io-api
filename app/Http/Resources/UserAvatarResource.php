@@ -25,7 +25,11 @@ class UserAvatarResource extends JsonResource
     private function getBadgeName()
     {
         // if user dont want to show badge
-        if ($this->settings && $this->settings["show_badge"] === false) {
+        if (
+            $this->settings &&
+            isset($this->settings["show_badge"]) &&
+            $this->settings["show_badge"] === false
+        ) {
             return null;
         }
 

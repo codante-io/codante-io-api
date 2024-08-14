@@ -18,6 +18,7 @@
         "graham-campbell/github": "^12.2",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^3.5",
+        "intervention/image-laravel": "^1.2",
         "laravel/framework": "^10.0",
         "laravel/octane": "^2.4",
         "laravel/pulse": "^1.0@beta",
@@ -33,7 +34,8 @@
         "spatie/laravel-backup": "^8.1",
         "staudenmeir/eloquent-eager-limit": "^1.0",
         "symfony/http-client": "^6.2",
-        "symfony/mailgun-mailer": "^6.2"
+        "symfony/mailgun-mailer": "^6.2",
+        "tuupola/base62": "^2.1"
     },
     "require-dev": {
         "backpack/generators": "^3.3",
