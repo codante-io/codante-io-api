@@ -25,8 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Certificate::observe(CertificateObserver::class);
 
         // only use https in production
-        if ($this->app->environment("production")) {
-            URL::forceScheme("https");
-        }
+        // if ($this->app->environment("production")) {
+        //     URL::forceScheme("https");
+        // }
     }
 }
