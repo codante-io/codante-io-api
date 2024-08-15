@@ -261,3 +261,7 @@ Route::get("/sitemap", [HomeController::class, "sitemap"]);
 Route::post("/get-unused-slug", [LessonController::class, "getUnusedSlug"]);
 
 require __DIR__ . "/auth.php";
+
+Route::fallback(function () {
+    return response()->json(["message" => "Not Found"], 404);
+});

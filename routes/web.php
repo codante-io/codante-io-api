@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get("/", function () {
     return ["name" => "Codante API", "version" => "1.0.0"];
 });
+
+Route::fallback(function () {
+    return response()->json(["message" => "Not Found"], 404);
+});
