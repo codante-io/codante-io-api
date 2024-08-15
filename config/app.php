@@ -59,6 +59,11 @@ return [
 
     "asset_url" => env("ASSET_URL"),
 
+    "frontend_assets_url" => env(
+        "FRONTEND_ASSETS_URL",
+        "https://assets.codante.io"
+    ),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

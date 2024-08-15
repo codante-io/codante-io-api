@@ -215,7 +215,7 @@ class User extends Authenticatable
             "user-avatars/" . $encodedEmail . "/" . Str::random(10) . ".avif";
 
         Storage::disk("s3")->put($avatarPath, $image);
-        $avatarUrl = config("app.asset_url") . "/" . $avatarPath;
+        $avatarUrl = config("app.frontend_assets_url") . "/" . $avatarPath;
 
         $settings = $this->settings;
         $settings["changed_avatar"] = Carbon::now();

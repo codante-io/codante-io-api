@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbecc180365de7c77ca228c2b3d633f6",
+    "content-hash": "d5194a667525c2933d372669f1a178d7",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -3741,20 +3741,20 @@
         },
         {
             "name": "laravel/pulse",
-            "version": "v1.0.0-beta16",
+            "version": "v1.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pulse.git",
-                "reference": "bd05ae7bfb9a6671c91f7eb25e742ee2497df0df"
+                "reference": "2e7699a602e13bada4c64e3bc7c148ddcaec81bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pulse/zipball/bd05ae7bfb9a6671c91f7eb25e742ee2497df0df",
-                "reference": "bd05ae7bfb9a6671c91f7eb25e742ee2497df0df",
+                "url": "https://api.github.com/repos/laravel/pulse/zipball/2e7699a602e13bada4c64e3bc7c148ddcaec81bc",
+                "reference": "2e7699a602e13bada4c64e3bc7c148ddcaec81bc",
                 "shasum": ""
             },
             "require": {
-                "doctrine/sql-formatter": "^1.1",
+                "doctrine/sql-formatter": "^1.2",
                 "guzzlehttp/promises": "^1.0|^2.0",
                 "illuminate/auth": "^10.48.4|^11.0.8",
                 "illuminate/cache": "^10.48.4|^11.0.8",
@@ -3769,7 +3769,7 @@
                 "illuminate/routing": "^10.48.4|^11.0.8",
                 "illuminate/support": "^10.48.4|^11.0.8",
                 "illuminate/view": "^10.48.4|^11.0.8",
-                "livewire/livewire": "^3.2",
+                "livewire/livewire": "^3.4.9",
                 "nesbot/carbon": "^2.67|^3.0",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0"
@@ -3824,7 +3824,7 @@
                 "issues": "https://github.com/laravel/pulse/issues",
                 "source": "https://github.com/laravel/pulse"
             },
-            "time": "2024-03-24T15:02:27+00:00"
+            "time": "2024-07-08T15:09:50+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -14378,9 +14378,7 @@
     ],
     "aliases": [],
     "minimum-stability": "beta",
-    "stability-flags": {
-        "laravel/pulse": 10
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
