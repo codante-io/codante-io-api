@@ -10,50 +10,51 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(
     [
-        "prefix" => config("backpack.base.route_prefix", "admin"),
-        "middleware" => array_merge(
-            (array) config("backpack.base.web_middleware", "web"),
-            (array) config("backpack.base.middleware_key", "admin")
+        'prefix' => config('backpack.base.route_prefix', 'admin'),
+        'middleware' => array_merge(
+            (array) config('backpack.base.web_middleware', 'web'),
+            (array) config('backpack.base.middleware_key', 'admin')
         ),
-        "namespace" => "App\Http\Controllers\Admin",
+        'namespace' => "App\Http\Controllers\Admin",
     ],
     function () {
         // custom admin routes
-        Route::crud("challenge", "ChallengeCrudController");
-        Route::crud("instructor", "InstructorCrudController");
-        Route::crud("lesson", "LessonCrudController");
-        Route::crud("tag", "TagCrudController");
-        Route::crud("track", "TrackCrudController");
-        Route::crud("track-section", "TrackSectionCrudController");
-        Route::crud("track-item", "TrackItemCrudController");
-        Route::crud("user", "UserCrudController");
-        Route::crud("workshop", "WorkshopCrudController");
-        Route::crud("blog-post", "BlogPostCrudController");
+        Route::crud('challenge', 'ChallengeCrudController');
+        Route::crud('instructor', 'InstructorCrudController');
+        Route::crud('lesson', 'LessonCrudController');
+        Route::crud('tag', 'TagCrudController');
+        Route::crud('track', 'TrackCrudController');
+        Route::crud('track-section', 'TrackSectionCrudController');
+        Route::crud('track-item', 'TrackItemCrudController');
+        Route::crud('user', 'UserCrudController');
+        Route::crud('workshop', 'WorkshopCrudController');
+        Route::crud('blog-post', 'BlogPostCrudController');
         Route::crud(
-            "technical-assessment",
-            "TechnicalAssessmentCrudController"
+            'technical-assessment',
+            'TechnicalAssessmentCrudController'
         );
-        Route::crud("testimonial", "TestimonialCrudController");
-        Route::crud("subscription", "SubscriptionCrudController");
-        Route::crud("challenge-user", "ChallengeUserCrudController");
+        Route::crud('testimonial', 'TestimonialCrudController');
+        Route::crud('subscription', 'SubscriptionCrudController');
+        Route::crud('challenge-user', 'ChallengeUserCrudController');
 
-        Route::crud("certificate", "CertificateCrudController");
-        Route::crud("comment", "CommentCrudController");
+        Route::crud('certificate', 'CertificateCrudController');
+        Route::crud('comment', 'CommentCrudController');
+        Route::crud('coupon', 'CouponCrudController');
 
-        Route::get("test-readmes/{slug}", "CompareReadmeController@test");
-        Route::get("compare-readmes/{slug}", "CompareReadmeController@compare");
+        Route::get('test-readmes/{slug}', 'CompareReadmeController@test');
+        Route::get('compare-readmes/{slug}', 'CompareReadmeController@compare');
 
         Route::get(
-            "challenge-notification/discord-launched-mp/{challenge}",
-            "ChallengeCrudController@notifyDiscordChallengeLaunched"
+            'challenge-notification/discord-launched-mp/{challenge}',
+            'ChallengeCrudController@notifyDiscordChallengeLaunched'
         );
         Route::get(
-            "challenge-notification/discord-launched-solution/{challenge}",
-            "ChallengeCrudController@notifyDiscordChallengeSolutionLaunched"
+            'challenge-notification/discord-launched-solution/{challenge}',
+            'ChallengeCrudController@notifyDiscordChallengeSolutionLaunched'
         );
         Route::get(
-            "submission-unlisted/email-launched/{challengeUser}",
-            "ChallengeUserCrudController@notifySubmissionUnlistedEmail"
+            'submission-unlisted/email-launched/{challengeUser}',
+            'ChallengeUserCrudController@notifySubmissionUnlistedEmail'
         );
     }
 ); // this should be the absolute last line of this file
