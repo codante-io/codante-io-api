@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('lessons', function (Blueprint $table) {
+            $table->foreignId('challenge_id')->after('workshop_id')->nullable()->constrained('challenges');
+            $table->unsignedBigInteger('workshop_id')->nullable()->change();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('lessons', function (Blueprint $table) {
+            $table->dropForeign(['challenge_id']);
+            $table->dropColumn('challenge_id');
+            $table->unsignedBigInteger('workshop_id')->nullable(false)->change();
+        });
+    }
+};
