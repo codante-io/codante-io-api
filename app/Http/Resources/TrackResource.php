@@ -24,7 +24,8 @@ class TrackResource extends JsonResource
             "difficulty" => $this->difficulty,
             "duration_in_minutes" => $this->duration_in_minutes,
             "status" => $this->status,
-            "sections" => $this->sectionsWithTrackables(),
+            // "sections" => $this->sectionsWithTrackables(),
+            "trackables" => $this->trackables(),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
         ];
