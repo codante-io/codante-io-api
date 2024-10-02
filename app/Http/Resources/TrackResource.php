@@ -25,7 +25,7 @@ class TrackResource extends JsonResource
             "duration_in_minutes" => $this->duration_in_minutes,
             "status" => $this->status,
             // "sections" => $this->sectionsWithTrackables(),
-            "trackables" => $this->trackables(),
+            "trackables" => TrackableCardResource::collection($this->trackables()),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
         ];

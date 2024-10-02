@@ -30,9 +30,9 @@ class TrackController extends Controller
                     'workshops.lessons',
                     'workshops.tags',
                     'workshops.instructor',
-                    'challenges.users',
                     'challenges.tags',
                     'challenges.workshop.instructor',
+                    'challenges.workshop.lessons',
                 ])
                 ->firstOrFail()
         );
