@@ -32,7 +32,7 @@ class LessonResource extends JsonResource
             'section' => $this->section,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'user_completed' => $this->user_completed ? true : false,
+            'user_completed' => $this->userCompleted(Auth::guard("sanctum")->id()),
             'comments' => Comment::getComments(
                 'App\\Models\\Lesson',
                 $this->id

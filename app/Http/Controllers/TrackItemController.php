@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TrackItemResource;
+use App\Http\Resources\Tracks\TrackItemResource;
 use App\Models\TrackItem;
 
 class TrackItemController extends Controller

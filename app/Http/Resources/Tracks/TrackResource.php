@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Tracks;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -24,7 +24,6 @@ class TrackResource extends JsonResource
             "difficulty" => $this->difficulty,
             "duration_in_minutes" => $this->duration_in_minutes,
             "status" => $this->status,
-            // "sections" => $this->sectionsWithTrackables(),
             "trackables" => TrackableCardResource::collection($this->trackables()),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,

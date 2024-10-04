@@ -40,7 +40,16 @@ class Lesson extends Model
         );
     }
 
-    public function userCompleted(User $user, bool $setComplete = true)
+    public function userCompleted(string | null $userId): bool
+    {
+        if (!$userId) {
+            return false;
+        }
+
+        return $this->users()->where('user_id', $userId)->exists();
+    }
+
+    public function markAsCompleted(User $user, bool $setComplete = true)
     {
         if (!$setComplete) {
             $this->users()->detach($user->id);

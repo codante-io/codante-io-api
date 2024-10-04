@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Tracks;
 
+use App\Http\Resources\LessonResource;
+use App\Http\Resources\Tracks\ChallengeCardResource;
+use App\Http\Resources\Tracks\WorkshopCardResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
