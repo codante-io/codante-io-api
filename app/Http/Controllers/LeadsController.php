@@ -18,6 +18,8 @@ class LeadsController extends Controller
                 [
                     "email" => "required|email|unique:leads|unique:users",
                     "tags" => "array",
+                    "name" => "nullable|string",
+                    "phone" => "nullable|string",
                 ],
                 [
                     "email.required" => "O campo email é obrigatório.",
@@ -29,6 +31,8 @@ class LeadsController extends Controller
             );
             $lead = new Leads();
             $lead->email = $request->email;
+            $lead->name = $request->name;
+            $lead->phone = $request->phone;
             $lead->save();
 
             $tags = $request->tags ?? [];
