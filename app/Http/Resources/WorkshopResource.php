@@ -38,9 +38,9 @@ class WorkshopResource extends JsonResource
                 "lessons",
                 $this->getLessonSectionsArray()
             ),
-            "lessons" => LessonResource::collection(
-                $this->whenLoaded("lessons")
-            ),
+            "lessons" => $this->lessons->groupBy('section')->map(function ($lessons, $section) {
+                return LessonResource::collection($lessons);
+            }),
             "challenge" => $this->challenge,
             "next_lesson" => $this->next_lesson,
             "instructor" => new InstructorResource(
