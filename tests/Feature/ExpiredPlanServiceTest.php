@@ -13,76 +13,76 @@ class ExpiredPlanServiceTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** 
+    /**
      * @test
      * @group subscription
      */
     public function expired_active_subscriptions_are_marked_as_expired_and_users_downgraded()
     {
         // Arrange
-        $user = User::factory()->create(['is_pro' => true]);
+        $user = User::factory()->create(["is_pro" => true]);
         $subscription = Subscription::factory()->create([
-            'user_id' => $user->id,
-            'starts_at' => Carbon::now()->subMonth(),
-            'ends_at' => Carbon::now()->subDay(),
-            'status' => 'active',
+            "user_id" => $user->id,
+            "starts_at" => Carbon::now()->subMonth(),
+            "ends_at" => Carbon::now()->subDay(),
+            "status" => "active",
         ]);
 
         // Act
         ExpiredPlanService::handle();
 
         // Assert
-        $this->assertDatabaseHas('subscriptions', [
-            'id' => $subscription->id,
-            'status' => 'expired',
+        $this->assertDatabaseHas("subscriptions", [
+            "id" => $subscription->id,
+            "status" => "expired",
         ]);
-        $this->assertFalse($user->fresh()->is_pro);
+        $this->assertEquals($user->fresh()->is_pro, 0);
     }
 
-    /** 
+    /**
      * @test
      * @group subscription
      */
     public function users_with_inactive_subscriptions_are_downgraded()
     {
         // Arrange
-        $user = User::factory()->create(['is_pro' => true]);
+        $user = User::factory()->create(["is_pro" => true]);
         Subscription::factory()->create([
-            'user_id' => $user->id,
-            'starts_at' => Carbon::now()->subMonth(),
-            'status' => 'inactive',
+            "user_id" => $user->id,
+            "starts_at" => Carbon::now()->subMonth(),
+            "status" => "inactive",
         ]);
 
         // Act
         ExpiredPlanService::handle();
 
         // Assert
-        $this->assertFalse($user->fresh()->is_pro);
+        $this->assertEquals($user->fresh()->is_pro, 0);
     }
 
-    /** 
+    /**
      * @test
      * @group subscription
      */
     public function active_subscriptions_not_expired_remain_unchanged()
     {
         // Arrange
-        $user = User::factory()->create(['is_pro' => true]);
+        $user = User::factory()->create(["is_pro" => true]);
         $subscription = Subscription::factory()->create([
-            'user_id' => $user->id,
-            'starts_at' => Carbon::now()->subMonth(),
-            'ends_at' => Carbon::now()->addDays(5),
-            'status' => 'active',
+            "user_id" => $user->id,
+            "starts_at" => Carbon::now()->subMonth(),
+            "ends_at" => Carbon::now()->addDays(5),
+            "status" => "active",
         ]);
 
         // Act
         ExpiredPlanService::handle();
 
         // Assert
-        $this->assertDatabaseHas('subscriptions', [
-            'id' => $subscription->id,
-            'status' => 'active',
+        $this->assertDatabaseHas("subscriptions", [
+            "id" => $subscription->id,
+            "status" => "active",
         ]);
-        $this->assertTrue($user->fresh()->is_pro);
+        $this->assertEquals($user->fresh()->is_pro, 1);
     }
 }
