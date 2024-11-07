@@ -18,12 +18,12 @@ class EmailOctopusService
     public function registerEmailOctopusContact($email, $fields, $tags = [])
     {
         Http::post(
-            "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
-            [
-                "api_key" => $this->api_key,
-                "email_address" => $email,
-                "fields" => $fields,
-                "tags" => $tags,
+        "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
+        [
+            "api_key" => $this->api_key,
+            "email_address" => $email,
+            "fields" => $fields,
+            "tags" => $tags,
             ]
         );
     }
@@ -59,16 +59,23 @@ class EmailOctopusService
         );
     }
 
-    public function createLead($email, $tags = [])
+    public function createLead($email, $tags = [], $firstName = null, $lastName = null)
     {
         $this->registerEmailOctopusContact(
             $email,
             [
                 "is_registered_user" => false,
                 "is_pro" => false,
+                "FirstName" => $firstName,
+                "LastName" => $lastName,
             ],
             $tags
         );
+    }
+
+    public function updateLead($email, $tags = [])
+    {
+        $this->updateEmailOctopusContact($email, [], $tags);
     }
 
     public function addUser(User $user)
