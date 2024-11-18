@@ -102,7 +102,7 @@ class Comment extends Model
 
                 return "/workshops/" .
                     $workshop->slug .
-                    "/resolucao/" .
+                    "/" .
                     $lessonSlug;
             }
 
