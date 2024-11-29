@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManagerStatic as Image;
 
 class Testimonial extends Model
@@ -41,12 +44,19 @@ class Testimonial extends Model
         // if a base64 was sent, store it in the db
         if (Str::startsWith($value, "data:image")) {
             // 0. Make the image
-            $image = Image::make($value)
-                ->encode("webp", 80)
-                ->resize(400, 400, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+
+            $manager = new ImageManager(Driver::class);
+            $image = $manager->read($value);
+            $image = $image
+                ->resize(400, 400)
+                ->encode(new WebpEncoder(quality: 65));
+
+            // $image = Image::make($value)
+            //     ->encode("webp", 80)
+            //     ->resize(400, 400, function ($constraint) {
+            //         $constraint->aspectRatio();
+            //         $constraint->upsize();
+            //     });
 
             // 1. Generate a filename.
             $filename = md5($value . time()) . ".webp";
@@ -54,7 +64,7 @@ class Testimonial extends Model
             // 2. Store the image on disk.
             \Storage::disk($disk)->put(
                 $destination_path . "/" . $filename,
-                $image->stream()
+                $image->toFilePointer()
             );
 
             // 3. Delete the previous image, if there was one.
