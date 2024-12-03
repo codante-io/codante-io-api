@@ -27,9 +27,7 @@ class SidebarLessonResource extends JsonResource
             "slug" => $this->slug,
             "url" => $url,
             "thumbnail_url" => $this->thumbnail_url,
-            "user_completed" => $this->userCompleted(
-                Auth::guard("sanctum")->id()
-            ),
+            "user_completed" => $this->userCompleted(Auth::id()),
             "open" => $this->canViewVideo(),
         ];
     }
@@ -44,6 +42,8 @@ class SidebarLessonResource extends JsonResource
             return false;
         }
 
-        return Auth::user()->can("view", $this->resource);
+        $lessonResource = $this->resource->resource;
+
+        return Auth::user()->can("view", $lessonResource);
     }
 }
