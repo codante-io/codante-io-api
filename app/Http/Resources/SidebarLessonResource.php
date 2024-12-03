@@ -26,6 +26,7 @@ class SidebarLessonResource extends JsonResource
             "name" => $this->name,
             "slug" => $this->slug,
             "url" => $url,
+            "thumbnail_url" => $this->thumbnail_url,
             "user_completed" => $this->userCompleted(
                 Auth::guard("sanctum")->id()
             ),

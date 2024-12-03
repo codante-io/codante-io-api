@@ -25,9 +25,23 @@ class Workshop extends Model
         "resources" => "array",
     ];
 
+    protected $appends = ["type", "first_unwatched_lesson"];
+
     public function getTypeAttribute()
     {
         return "workshop";
+    }
+
+    // Atributo first_unwatched_lesson (para a próxima aula não assistida)
+    public function getFirstUnwatchedLessonAttribute()
+    {
+        if (!auth()->check() || !$this->lessons || !$this->lessons->first()) {
+            return null;
+        }
+
+        return $this->lessons->first(function ($lesson) {
+            return !($lesson->user_completed ?? false);
+        });
     }
 
     public function users()
@@ -40,6 +54,28 @@ class Workshop extends Model
     public function lessons()
     {
         return $this->morphMany(Lesson::class, "lessonable");
+    }
+
+    public function lessonsSidebarList()
+    {
+        return $this->morphMany(Lesson::class, "lessonable")->select([
+            "id",
+            "name",
+            "slug",
+            "available_to",
+            "lessonable_id",
+            "lessonable_type",
+            "section",
+        ]);
+    }
+
+    public function lessonsSidebarListWithUserProgress()
+    {
+        return $this->lessonsSidebarList()->with([
+            "users" => function ($query) {
+                $query->select("users.id")->where("user_id", auth()->id());
+            },
+        ]);
     }
 
     public function instructor()

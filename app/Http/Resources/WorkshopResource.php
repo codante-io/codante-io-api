@@ -32,7 +32,7 @@ class WorkshopResource extends JsonResource
             "image_url" => $this->image_url,
             "video_url" => $this->video_url,
             "difficulty" => $this->difficulty,
-            "duration_in_minutes" => $this->duration_in_minutes,
+            "duration_in_seconds" => $this->lessons_sum_duration_in_seconds,
             "status" => $this->status,
             "is_standalone" => $this->is_standalone,
             "is_premium" => $this->is_premium,
@@ -46,7 +46,10 @@ class WorkshopResource extends JsonResource
             ),
 
             "challenge" => $this->challenge,
-            "next_lesson" => $this->next_lesson,
+            "first_unwatched_lesson" => new SidebarLessonResource(
+                $this->first_unwatched_lesson,
+                $baseUrl
+            ),
             "instructor" => new InstructorResource(
                 $this->whenLoaded("instructor")
             ),
