@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LessonResource;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
+    public function show(string $slug)
+    {
+        $lesson = Lesson::where("slug", $slug)->first();
+        return new LessonResource($lesson);
+    }
+
     public function setCompleted(Request $request, Lesson $lesson)
     {
         if (!$lesson) {

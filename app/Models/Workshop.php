@@ -39,9 +39,7 @@ class Workshop extends Model
 
     public function lessons()
     {
-        return $this->hasMany(Lesson::class)
-            ->orderBy("position")
-            ->orderBy("id");
+        return $this->morphMany(Lesson::class, "lessonable");
     }
 
     public function instructor()
@@ -130,7 +128,7 @@ class Workshop extends Model
             ->map(function ($lessons, $section) {
                 return [
                     "name" => $section,
-                    "lessons" => $lessons->pluck("id"),
+                    "lesson_ids" => $lessons->pluck("id"),
                 ];
             })
             ->values();

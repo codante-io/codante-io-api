@@ -27,12 +27,10 @@ class TrackController extends Controller
             Track::query()
                 ->where("slug", $slug)
                 ->with([
-                    'workshops.lessons',
-                    'workshops.tags',
-                    'workshops.instructor',
-                    'challenges.tags',
-                    'challenges.workshop.instructor',
-                    'challenges.workshop.lessons',
+                    "workshops.tags",
+                    "workshops.instructor",
+                    "challenges.tags",
+                    "challenges.workshop.instructor",
                 ])
                 ->firstOrFail()
         );

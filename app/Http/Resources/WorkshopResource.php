@@ -15,6 +15,8 @@ class WorkshopResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $baseUrl = config("app.frontend_url") . "/workshops/{$this->slug}";
+
         $workshopUser = $request->user()
             ? WorkshopUser::where("user_id", $request->user()->id)
                 ->where("workshop_id", $this->id)
@@ -38,9 +40,11 @@ class WorkshopResource extends JsonResource
                 "lessons",
                 $this->getLessonSectionsArray()
             ),
-            "lessons" => $this->lessons->groupBy('section')->map(function ($lessons, $section) {
-                return LessonResource::collection($lessons);
-            }),
+            "lessons" => $this->whenLoaded(
+                "lessons",
+                new SidebarLessonCollection($this->lessons, $baseUrl)
+            ),
+
             "challenge" => $this->challenge,
             "next_lesson" => $this->next_lesson,
             "instructor" => new InstructorResource(

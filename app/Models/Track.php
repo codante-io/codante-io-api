@@ -20,39 +20,45 @@ class Track extends Model
 
     protected $guarded = ["id"];
 
+    // Retorna Trackables (workshops e mini projetos)
     public function trackables()
     {
         $workshops = $this->workshops;
-
-        $challenges = $this->challenges;
+        $challenges = $this->challenges()->get();
 
         $trackables = $workshops->concat($challenges);
 
         $trackableIds = $trackables->pluck("pivot.id");
 
-        $userTrackables = Auth::user()
-            ? DB::table("trackable_user")
-                ->whereIn("trackable_id", $trackableIds)
-                ->where("user_id", Auth::user()->id)
-                ->where("completed", true)
-                ->get()
-            : new Collection();
+        // Fetch user completed trackables based on trackable IDs
+        // $userTrackables = $this->getUserCompletedTrackables($trackableIds);
+        // $trackables = $trackables->map(function ($trackable) use (
+        //     $userTrackables
+        // ) {
+        //     $trackable->completed =
+        //         (bool) $userTrackables
+        //             ->where("trackable_id", $trackable->pivot->id)
+        //             ->first()?->completed ?? false;
 
-        $trackables = $trackables->map(function ($trackable) use (
-            $userTrackables
-        ) {
-            $trackable->completed =
-                (bool) $userTrackables
-                    ->where("trackable_id", $trackable->pivot->id)
-                    ->first()?->completed ?? false;
+        //     return $trackable;
+        // });
 
-            return $trackable;
+        return $trackables->sortBy(function ($trackable) {
+            return $trackable->pivot->position;
         });
+    }
 
-        return $trackables
-            ->sortBy(function ($trackable) {
-                return $trackable->pivot->position;
-            });
+    private function getUserCompletedTrackables($trackableIds)
+    {
+        if (!Auth::check()) {
+            return new Collection();
+        }
+
+        return DB::table("trackable_user")
+            ->whereIn("trackable_id", $trackableIds)
+            ->where("user_id", Auth::user()->id)
+            ->where("completed", true)
+            ->get();
     }
 
     public function workshops()
@@ -98,25 +104,25 @@ class Track extends Model
         return $this->hasMany(TrackSection::class);
     }
 
-    public function sectionsWithTrackables()
-    {
-        $sections = $this->trackSections()->with("tags");
+    // public function sectionsWithTrackables()
+    // {
+    //     $sections = $this->trackSections()->with("tags");
 
-        $trackables = $this->trackables();
+    //     $trackables = $this->trackables();
 
-        return $sections->get()->map(function ($section) use ($trackables) {
-            $section->trackables = $trackables->get($section->id);
+    //     return $sections->get()->map(function ($section) use ($trackables) {
+    //         $section->trackables = $trackables->get($section->id);
 
-            $section->instructors = $section->trackables
-                ->map(function ($trackable) {
-                    return $trackable->instructor;
-                })
-                ->filter()
-                ->flatten()
-                ->unique("name")
-                ->values();
+    //         $section->instructors = $section->trackables
+    //             ->map(function ($trackable) {
+    //                 return $trackable->instructor;
+    //             })
+    //             ->filter()
+    //             ->flatten()
+    //             ->unique("name")
+    //             ->values();
 
-            return $section;
-        });
-    }
+    //         return $section;
+    //     });
+    // }
 }

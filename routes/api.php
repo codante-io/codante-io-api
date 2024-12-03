@@ -56,10 +56,6 @@ Route::get("/user/subscriptions", function (Request $request) {
     return response()->json(new UserResource($request->user()));
 })->middleware("auth:sanctum");
 
-Route::get("/workshops/{slug}", function ($slug) {
-    return \App\Models\Workshop::where("slug", $slug)->firstOrFail();
-});
-
 Route::post("/workshops/{slug}/joined", [
     WorkshopController::class,
     "userJoined",
@@ -89,6 +85,7 @@ Route::get("/workshops", [WorkshopController::class, "index"])->middleware(
 );
 
 Route::get("/workshops/{slug}", [WorkshopController::class, "show"]);
+Route::get("/lessons/{slug}", [LessonController::class, "show"]);
 
 Route::get("/instructors", [InstructorController::class, "index"]);
 Route::get("/instructors/{slug}", [InstructorController::class, "show"]);
