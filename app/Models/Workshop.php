@@ -55,6 +55,7 @@ class Workshop extends Model
             'available_to',
             'lessonable_id',
             'lessonable_type',
+            'duration_in_seconds',
             'section',
         ]);
     }

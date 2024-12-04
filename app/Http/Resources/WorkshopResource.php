@@ -68,7 +68,6 @@ class WorkshopResource extends JsonResource
         }
 
         return $resource;
-        // return parent::toArray($request);
     }
 
     public function firstUnwatchedLesson()

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -19,23 +18,24 @@ class SidebarLessonResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $url = $this->baseUrl . "/" . $this->slug;
+        $url = $this->baseUrl.'/'.$this->slug;
 
         return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "slug" => $this->slug,
-            "url" => $url,
-            "thumbnail_url" => $this->thumbnail_url,
-            "user_completed" => $this->userCompleted(Auth::id()),
-            "open" => $this->canViewVideo(),
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'url' => $url,
+            'thumbnail_url' => $this->thumbnail_url,
+            'user_completed' => $this->userCompleted(Auth::id()),
+            'duration_in_seconds' => $this->duration_in_seconds,
+            'open' => $this->canViewVideo(),
         ];
     }
 
     private function canViewVideo(): bool
     {
-        if (!Auth::check()) {
-            if ($this->available_to === "all") {
+        if (! Auth::check()) {
+            if ($this->available_to === 'all') {
                 return true;
             }
 
@@ -44,6 +44,6 @@ class SidebarLessonResource extends JsonResource
 
         $lessonResource = $this->resource->resource;
 
-        return Auth::user()->can("view", $lessonResource);
+        return Auth::user()->can('view', $lessonResource);
     }
 }
