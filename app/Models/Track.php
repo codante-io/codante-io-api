@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Resources\WorkshopResource;
-use App\Http\Resources\WorkshopTrackResource;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,85 +16,87 @@ class Track extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     // Retorna Trackables (workshops e mini projetos)
-    public function trackables()
+    /**
+     * Get all trackable items (workshops and challenges) for this track
+     */
+    public function trackables(): Collection
     {
-        $workshops = $this->workshops;
-        $challenges = $this->challenges()->get();
+        $allTrackables = $this->workshops
+            ->concat($this->challenges()->get())
+            ->sortBy('pivot.position');
 
-        $trackables = $workshops->concat($challenges);
+        if (! Auth::check()) {
+            return $allTrackables->map(function ($trackable) {
+                $trackable->track_slug = $this->slug;
 
-        $trackableIds = $trackables->pluck("pivot.id");
+                return $trackable;
+            });
+        }
 
-        // Fetch user completed trackables based on trackable IDs
-        // $userTrackables = $this->getUserCompletedTrackables($trackableIds);
-        // $trackables = $trackables->map(function ($trackable) use (
-        //     $userTrackables
-        // ) {
-        //     $trackable->completed =
-        //         (bool) $userTrackables
-        //             ->where("trackable_id", $trackable->pivot->id)
-        //             ->first()?->completed ?? false;
+        $trackableIds = $allTrackables->pluck('pivot.id');
+        $completedTrackables = $this->getUserCompletedTrackables($trackableIds);
 
-        //     return $trackable;
-        // });
+        return $allTrackables->map(function ($trackable) use ($completedTrackables) {
+            $trackable->completed = $completedTrackables
+                ->contains('trackable_id', $trackable->pivot->id);
+            $trackable->track_slug = $this->slug;
 
-        return $trackables->sortBy(function ($trackable) {
-            return $trackable->pivot->position;
+            return $trackable;
         });
     }
 
     private function getUserCompletedTrackables($trackableIds)
     {
-        if (!Auth::check()) {
-            return new Collection();
+        if (! Auth::check()) {
+            return new Collection;
         }
 
-        return DB::table("trackable_user")
-            ->whereIn("trackable_id", $trackableIds)
-            ->where("user_id", Auth::user()->id)
-            ->where("completed", true)
+        return DB::table('trackable_user')
+            ->whereIn('trackable_id', $trackableIds)
+            ->where('user_id', Auth::user()->id)
+            ->where('completed', true)
             ->get();
     }
 
     public function workshops()
     {
-        return $this->morphedByMany(Workshop::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(Workshop::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function challenges()
     {
-        return $this->morphedByMany(Challenge::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(Challenge::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function items()
     {
-        return $this->morphedByMany(TrackItem::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(TrackItem::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function trackSections()

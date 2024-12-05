@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Challenge;
 use App\Models\Lesson;
 use App\Models\Workshop;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class MigrateLessonToLessonable extends Seeder
@@ -20,6 +20,8 @@ class MigrateLessonToLessonable extends Seeder
         foreach ($lessons as $lesson) {
             $this->migrateLesson($lesson);
         }
+
+        $this->migrateInstructor();
     }
 
     private function migrateLesson(Lesson $lesson): void
@@ -36,14 +38,34 @@ class MigrateLessonToLessonable extends Seeder
         // if the lesson is from a challenge.
         // we will set the lessonable_type to challenge and lessonable_id to the challenge id
 
-        if (!$workshop->is_standalone) {
+        if (! $workshop->is_standalone) {
             $lesson->lessonable_type = "App\Models\Challenge";
             $lesson->lessonable_id = $workshop->challenge_id;
+            $lesson->type = 'solution';
         }
 
         $lesson->save();
 
         // if the lesson is from a track.
         // we will set the lessonable_type to track and lessonable_id to the track id
+    }
+
+    private function migrateInstructor()
+    {
+        // get all challenges
+        $challenges = Challenge::all();
+
+        foreach ($challenges as $challenge) {
+            $workshop = $challenge->workshop;
+
+            if (! $workshop) {
+                continue;
+            }
+
+            if ($workshop->instructor_id) {
+                $challenge->instructor_id = $workshop->instructor_id;
+                $challenge->save();
+            }
+        }
     }
 }

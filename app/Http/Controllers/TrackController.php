@@ -11,12 +11,12 @@ class TrackController extends Controller
     {
         return TrackResource::collection(
             Track::query()
-                ->where("status", "published")
-                ->orWhere("status", "soon")
-                ->with("workshops")
-                ->with("challenges")
-                ->with("tags")
-                ->orderBy("position", "asc")
+                ->where('status', 'published')
+                ->orWhere('status', 'soon')
+                ->with('workshops')
+                ->with('challenges')
+                ->with('tags')
+                ->orderBy('position', 'asc')
                 ->get()
         );
     }
@@ -25,12 +25,12 @@ class TrackController extends Controller
     {
         return new TrackResource(
             Track::query()
-                ->where("slug", $slug)
+                ->where('slug', $slug)
                 ->with([
-                    "workshops.tags",
-                    "workshops.instructor",
-                    "challenges.tags",
-                    "challenges.workshop.instructor",
+                    'workshops.tags',
+                    'workshops.instructor',
+                    'challenges.tags',
+                    'challenges.instructor',
                 ])
                 ->firstOrFail()
         );
