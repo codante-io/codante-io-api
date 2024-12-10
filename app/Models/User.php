@@ -47,6 +47,7 @@ class User extends Authenticatable
         "settings" => "array",
         "discord_data" => "array",
         "github_data" => "array",
+        "is_pro" => "boolean",
     ];
 
     protected static function booted()

@@ -99,11 +99,10 @@ class Comment extends Model
             $lessonSlug = $this->commentable->slug;
 
             if ($workshop->is_standalone == 0) {
-                $challengeSlug = $workshop->challenge->slug;
 
-                return "/mini-projetos/" .
-                    $challengeSlug .
-                    "/resolucao/" .
+                return "/workshops/" .
+                    $workshop->slug .
+                    "/" .
                     $lessonSlug;
             }
 

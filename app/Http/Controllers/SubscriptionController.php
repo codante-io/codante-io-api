@@ -51,7 +51,8 @@ class SubscriptionController extends Controller
 
     public function getPlanDetails(Request $request)
     {
-        $plan = Plan::find(1);
+        $planId = $request->input("plan_id") ?? 1;
+        $plan = Plan::find($planId);
 
         // checa se o cupom existe, senão erro
         $couponCode = $request->input("coupon");
