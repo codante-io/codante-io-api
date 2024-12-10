@@ -15,12 +15,13 @@ class TrackableCardResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
         return match ($this->pivot->trackable_type) {
             'App\\Models\\Workshop' => (new WorkshopTrackableCard(
                 $this
             ))->toArray($request),
             'App\\Models\\Challenge' => (new ChallengeTrackableCard(
-                $this
+                $this, $this->track_slug
             ))->toArray($request),
             default => [
                 'id' => $this->pivot->id,

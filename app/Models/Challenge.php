@@ -194,6 +194,52 @@ class Challenge extends Model
             ->values();
     }
 
+    // Esse método irá trazer um array de lessons que é usado no track
+    // A princípio são 3 aulas: descrição do projeto, participe do projeto, submeta sua resolução.
+    // 'id' => $this->id,
+    // 'name' => $this->name,
+    // 'slug' => $this->slug,
+    // 'url' => $url,
+    // 'thumbnail_url' => $this->thumbnail_url,
+    // 'user_completed' => $this->userCompleted(Auth::id()),
+    // 'duration_in_seconds' => $this->duration_in_seconds,
+    // 'open' => $this->canViewVideo(),
+    public function getTrackLessons($trackSlug)
+    {
+        return collect([
+            [
+                'id' => 997,
+                'name' => 'Informações do Projeto',
+                'slug' => '01-informacoes-do-projeto',
+                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/01-informacoes-do-projeto",
+                'thumbnail_url' => null,
+                'user_completed' => false,
+                'duration_in_seconds' => null,
+                'open' => true,
+            ],
+            [
+                'id' => 998,
+                'name' => 'Participe do Projeto',
+                'slug' => '02-participe-do-projeto',
+                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/02-participe-do-projeto",
+                'thumbnail_url' => null,
+                'user_completed' => false,
+                'duration_in_seconds' => null,
+                'open' => true,
+            ],
+            [
+                'id' => 999,
+                'name' => 'Submeta sua Resolução',
+                'slug' => '03-submeta-sua-resolucao',
+                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/03-submeta-sua-resolucao",
+                'thumbnail_url' => null,
+                'user_completed' => false,
+                'duration_in_seconds' => null,
+                'open' => true,
+            ],
+        ]);
+    }
+
     public function isWeeklyFeatured()
     {
         return $this->weekly_featured_start_date &&

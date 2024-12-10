@@ -2,12 +2,20 @@
 
 namespace App\Http\Resources\Tracks;
 
-use App\Http\Resources\SidebarLessonResource;
+use App\Http\Resources\SidebarLessonCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ChallengeTrackableCard extends JsonResource
 {
+    protected $trackSlug;
+
+    public function __construct($resource, $trackSlug)
+    {
+        parent::__construct($resource);
+        $this->trackSlug = $trackSlug;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -15,9 +23,12 @@ class ChallengeTrackableCard extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $lessons = $this->lessons()
-            ->select('id', 'name', 'slug')
+        $solutionLessons = $this->lessons()
+            ->select('id', 'name', 'slug', 'type')
+            ->where('type', 'solution')
             ->get();
+
+        $solutionBaseUrl = "/trilhas/{$this->trackSlug}/projeto/{$this->slug}";
 
         $resource = [
             'id' => $this->id,
@@ -25,10 +36,13 @@ class ChallengeTrackableCard extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'video_url' => $this->video_url,
-            'lessons' => $lessons
-                ? SidebarLessonResource::collection($lessons)
-                : [],
-            'lesson_sections' => $this->getLessonSectionsArray(),
+            'track_lessons' => $this->getTrackLessons($this->trackSlug),
+            'solution' => [
+                'lessons' => $solutionLessons
+                    ? new SidebarLessonCollection($solutionLessons, $solutionBaseUrl)
+                    : [],
+                'lesson_sections' => $this->getLessonSectionsArray(),
+            ],
         ];
 
         return $resource;
