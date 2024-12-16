@@ -181,7 +181,12 @@ class Challenge extends Model
         $grouped = $this->lessons->groupBy('section');
 
         if ($grouped->count() === 1) {
-            return null;
+            return [
+                [
+                    'name' => '',
+                    'lesson_ids' => $grouped->first()->pluck('id'),
+                ],
+            ];
         }
 
         return $grouped

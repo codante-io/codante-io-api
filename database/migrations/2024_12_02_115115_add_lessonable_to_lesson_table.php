@@ -19,6 +19,9 @@ return new class extends Migration {
                 ->string("lessonable_type")
                 ->nullable()
                 ->after("lessonable_id");
+            
+                // make workshop_id nullable
+            $table->foreignId("workshop_id")->nullable()->change();
         });
     }
 
@@ -30,6 +33,7 @@ return new class extends Migration {
         Schema::table("lessons", function (Blueprint $table) {
             $table->dropColumn("lessonable_id");
             $table->dropColumn("lessonable_type");
+            $table->foreignId("workshop_id")->nullable(false)->change();
         });
     }
 };
