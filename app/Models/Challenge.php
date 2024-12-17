@@ -213,7 +213,7 @@ class Challenge extends Model
     {
         return collect([
             [
-                'id' => 997,
+                'id' => 990,
                 'name' => 'Informações do Projeto',
                 'slug' => '01-informacoes-do-projeto',
                 'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/01-informacoes-do-projeto",
@@ -223,20 +223,10 @@ class Challenge extends Model
                 'open' => true,
             ],
             [
-                'id' => 998,
-                'name' => 'Participe do Projeto',
-                'slug' => '02-participe-do-projeto',
-                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/02-participe-do-projeto",
-                'thumbnail_url' => null,
-                'user_completed' => false,
-                'duration_in_seconds' => null,
-                'open' => true,
-            ],
-            [
-                'id' => 999,
+                'id' => 991,
                 'name' => 'Submeta sua Resolução',
-                'slug' => '03-submeta-sua-resolucao',
-                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/03-submeta-sua-resolucao",
+                'slug' => '02-submeta-sua-resolucao',
+                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/02-submeta-sua-resolucao",
                 'thumbnail_url' => null,
                 'user_completed' => false,
                 'duration_in_seconds' => null,
