@@ -1,4 +1,4 @@
-<p align="center"><a href="https://codante.io" target="_blank"><img src="https://codante.s3.sa-east-1.amazonaws.com/img/logo/mail-logo.png" width="150" alt="Codante Logo"></a></p>
+<p align="center"><a href="https://codante.io" target="_blank"><img src="https://codante.s3.sa-east-1.amazonaws.com/img/logo/mail-logo.png" width="300" alt="Codante Logo"></a></p>
 
 ## Sobre o Codante
 
