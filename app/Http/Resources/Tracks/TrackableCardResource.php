@@ -32,24 +32,9 @@ class TrackableCardResource extends JsonResource
                 'image_url' => $this->image_url,
                 'video_url' => $this->video_url,
                 'track_slug' => $this->track_slug,
-                // 'lessons' => $this->lessons ? LessonResource::collection($this->lessons) : [],
             ],
         };
 
-        // if ($this->pivot->trackable_type === 'App\\Models\\Workshop') {
-        //     return (new WorkshopCardResource($this))->toArray($request);
-
-        //     // return [
-        //     //     'type' => 'workshop',
-        //     //     'name' => $this->name,
-        //     //     'slug' => $this->slug,
-        //     //     'short_description' => $this->short_description,
-        //     //     'image_url' => $this->image_url,
-        //     //     'video_url' => $this->video_url,
-        //     //     'lessons' => $this->lessons ? LessonCar::collection($this->lessons) : [],
-        //     // ];
-        // } else {
-        //     return (new ChallengeTrackableCard($this))->toArray($request);
-        // }
+       
     }
 }

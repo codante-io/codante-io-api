@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Reactable;
+use Auth;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -200,7 +201,7 @@ class Challenge extends Model
     }
 
     // Esse método irá trazer um array de lessons que é usado no track
-    // A princípio são 3 aulas: descrição do projeto, participe do projeto, submeta sua resolução.
+    // A princípio são 2 aulas: informações do projeto, submeta sua resolução.
     // 'id' => $this->id,
     // 'name' => $this->name,
     // 'slug' => $this->slug,
@@ -211,6 +212,12 @@ class Challenge extends Model
     // 'open' => $this->canViewVideo(),
     public function getTrackLessons($trackSlug)
     {
+
+        $userSubmitted = $this->users()
+            ->where('user_id', Auth::id())
+            ->where('completed', 1)
+            ->exists();
+
         return collect([
             [
                 'id' => 990,
@@ -218,7 +225,7 @@ class Challenge extends Model
                 'slug' => '01-informacoes-do-projeto',
                 'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/01-informacoes-do-projeto",
                 'thumbnail_url' => null,
-                'user_completed' => false,
+                'user_completed' => $userSubmitted,
                 'duration_in_seconds' => null,
                 'open' => true,
             ],
@@ -228,7 +235,7 @@ class Challenge extends Model
                 'slug' => '02-submeta-sua-resolucao',
                 'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/02-submeta-sua-resolucao",
                 'thumbnail_url' => null,
-                'user_completed' => false,
+                'user_completed' => $userSubmitted,
                 'duration_in_seconds' => null,
                 'open' => true,
             ],
