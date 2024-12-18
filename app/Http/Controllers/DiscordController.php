@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
+use App\Notifications\Discord;
 use Http;
 use Illuminate\Http\Request;
 
@@ -59,5 +60,25 @@ class DiscordController extends Controller
         }
 
         return $response;
+    }
+
+    // sendMessage
+
+    public function sendMessage(Request $request)
+    {
+        $data = $request->validate([
+            "message" => "required|string|max:2000",
+            "channel" => "required|string",
+        ]);
+
+        // if it is not a valid channel, return 404
+        if (!array_key_exists($data["channel"], config("discord.channels"))) {
+            return response()->json(["message" => "Channel not found"], 404);
+        }
+
+        $message = $request->message;
+        $channel = $request->channel;
+
+        new Discord($message, $channel);
     }
 }

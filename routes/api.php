@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminApi\WorkshopAdminController;
 use App\Http\Controllers\BlogPostController;
 use App\Http\Controllers\BugsnagWebhookController;
 use App\Http\Controllers\CalendarController;
@@ -255,10 +256,21 @@ Route::post("/leads", [LeadsController::class, "create"]);
 
 Route::get("/sitemap", [HomeController::class, "sitemap"]);
 
+// Rotas de admin
 Route::post("/get-unused-slug", [LessonController::class, "getUnusedSlug"]);
+Route::post("/get-admin-api-token", []);
+Route::put("/custom-admin/workshops/{id}", [
+    WorkshopAdminController::class,
+    "editWorkshop",
+]);
 
 require __DIR__ . "/auth.php";
 
 Route::fallback(function () {
     return response()->json(["message" => "Not Found"], 404);
 });
+
+Route::post("/send-discord-notification", [
+    DiscordController::class,
+    "sendMessage",
+]);

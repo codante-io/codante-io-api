@@ -22,8 +22,10 @@ class PagarmeController extends Controller
 
     public function createOrderAndGetCheckoutLink(Request $request)
     {
+        $plan_id = $request->plan_id ?? 1;
         $user = Auth::user();
-        $plan = Plan::find(1);
+        $plan = Plan::find($plan_id);
+
 
         $planDetails = json_decode($plan->details);
 
@@ -33,7 +35,7 @@ class PagarmeController extends Controller
             $planDetails->user_raised_count * 10 * 100;
 
         $couponCode = $request->coupon;
-        $coupon = (new Coupon())->getValidCoupon($couponCode, 1);
+        $coupon = (new Coupon())->getValidCoupon($couponCode, $plan_id);
 
         if ($coupon) {
             $promoPrice =
@@ -62,7 +64,7 @@ class PagarmeController extends Controller
                 [
                     "id" => "1",
                     "amount" => $promoPrice,
-                    "description" => "Codante Vitalício - PRO",
+                    "description" => $plan->name,
                     "quantity" => 1,
                     "code" => $plan->id,
                 ],
