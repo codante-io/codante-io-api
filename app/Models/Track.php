@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Resources\WorkshopResource;
-use App\Http\Resources\WorkshopTrackResource;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,92 +16,87 @@ class Track extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
-    public function trackables()
+    // Retorna Trackables (workshops e mini projetos)
+    /**
+     * Get all trackable items (workshops and challenges) for this track
+     */
+    public function trackables(): Collection
     {
-        $workshops = $this->workshops()
-            ->with("lessons")
-            ->with("tags")
-            ->with("instructor")
-            ->get();
+        $allTrackables = $this->workshops
+            ->concat($this->challenges()->get())
+            ->sortBy('pivot.position');
 
-        $challenges = $this->challenges()
-            ->withCount("users")
-            ->with("tags")
-            ->with("workshop.instructor")
-            ->get();
+        if (! Auth::check()) {
+            return $allTrackables->map(function ($trackable) {
+                $trackable->track_slug = $this->slug;
 
-        $items = $this->items()
-            ->with("tags")
-            ->get();
+                return $trackable;
+            });
+        }
 
-        $trackables = $workshops->concat($challenges)->concat($items);
+        $trackableIds = $allTrackables->pluck('pivot.id');
+        $completedTrackables = $this->getUserCompletedTrackables($trackableIds);
 
-        $trackableIds = $trackables->pluck("pivot.id");
-
-        $userTrackables = Auth::user()
-            ? DB::table("trackable_user")
-                ->whereIn("trackable_id", $trackableIds)
-                ->where("user_id", Auth::user()->id)
-                ->where("completed", true)
-                ->get()
-            : new Collection();
-
-        $trackables = $trackables->map(function ($trackable) use (
-            $userTrackables
-        ) {
-            $trackable->completed =
-                (bool) $userTrackables
-                    ->where("trackable_id", $trackable->pivot->id)
-                    ->first()?->completed ?? false;
+        return $allTrackables->map(function ($trackable) use ($completedTrackables) {
+            $trackable->completed = $completedTrackables
+                ->contains('trackable_id', $trackable->pivot->id);
+            $trackable->track_slug = $this->slug;
 
             return $trackable;
         });
+    }
 
-        return $trackables
-            ->sortBy(function ($trackable) {
-                return $trackable->pivot->position;
-            })
-            ->groupBy("pivot.section_id");
+    private function getUserCompletedTrackables($trackableIds)
+    {
+        if (! Auth::check()) {
+            return new Collection;
+        }
+
+        return DB::table('trackable_user')
+            ->whereIn('trackable_id', $trackableIds)
+            ->where('user_id', Auth::user()->id)
+            ->where('completed', true)
+            ->get();
     }
 
     public function workshops()
     {
-        return $this->morphedByMany(Workshop::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(Workshop::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function challenges()
     {
-        return $this->morphedByMany(Challenge::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(Challenge::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function items()
     {
-        return $this->morphedByMany(TrackItem::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(TrackItem::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function trackSections()
@@ -111,25 +104,25 @@ class Track extends Model
         return $this->hasMany(TrackSection::class);
     }
 
-    public function sectionsWithTrackables()
-    {
-        $sections = $this->trackSections()->with("tags");
+    // public function sectionsWithTrackables()
+    // {
+    //     $sections = $this->trackSections()->with("tags");
 
-        $trackables = $this->trackables();
+    //     $trackables = $this->trackables();
 
-        return $sections->get()->map(function ($section) use ($trackables) {
-            $section->trackables = $trackables->get($section->id);
+    //     return $sections->get()->map(function ($section) use ($trackables) {
+    //         $section->trackables = $trackables->get($section->id);
 
-            $section->instructors = $section->trackables
-                ->map(function ($trackable) {
-                    return $trackable->instructor;
-                })
-                ->filter()
-                ->flatten()
-                ->unique("name")
-                ->values();
+    //         $section->instructors = $section->trackables
+    //             ->map(function ($trackable) {
+    //                 return $trackable->instructor;
+    //             })
+    //             ->filter()
+    //             ->flatten()
+    //             ->unique("name")
+    //             ->values();
 
-            return $section;
-        });
-    }
+    //         return $section;
+    //     });
+    // }
 }

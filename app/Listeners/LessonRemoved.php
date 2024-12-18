@@ -28,9 +28,9 @@ class LessonRemoved
             ->where("workshop_id", $workshop->id)
             ->count();
 
-        $user->workshops()->updateExistingPivot($workshop->id, [
-            "status" => "in-progress",
-            "percentage_completed" => ($completedLessons / $lessonCount) * 100,
-        ]);
+            $user->workshops()->updateExistingPivot($workshop->id, [
+                "status" => "in-progress",
+                "percentage_completed" => $lessonCount > 0 ? ($completedLessons / $lessonCount) * 100 : 0,
+            ]);
     }
 }
