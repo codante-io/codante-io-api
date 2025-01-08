@@ -11,33 +11,33 @@ class Reaction extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public static $allowedReactionTypes = [
-        "like",
-        "exploding-head",
-        "fire",
-        "rocket",
+        'like',
+        'exploding-head',
+        'fire',
+        'rocket',
     ];
 
     public static function validateReactable($reactableType)
     {
-        $reactableClass = "App\\Models\\" . $reactableType;
+        $reactableClass = 'App\\Models\\'.$reactableType;
 
         $validator = Validator::make(
-            ["reactable_type" => $reactableClass],
+            ['reactable_type' => $reactableClass],
             [
-                "reactable_type" => [
+                'reactable_type' => [
                     function ($attribute, $value, $fail) {
-                        if (!class_exists($value)) {
-                            $fail("Reactable model does not exist.");
+                        if (! class_exists($value)) {
+                            $fail('Reactable model does not exist.');
                         } elseif (
-                            !in_array(
-                                "App\\Traits\\Reactable",
+                            ! in_array(
+                                'App\\Traits\\Reactable',
                                 class_uses($value)
                             )
                         ) {
-                            $fail("Model is not reactable.");
+                            $fail('Model is not reactable.');
                         }
                     },
                 ],
@@ -57,25 +57,25 @@ class Reaction extends Model
         // get the reactions count by type
         $reactions = $reactable
             ->reactions()
-            ->selectRaw("reaction, count(*) as count")
-            ->groupBy("reaction")
+            ->selectRaw('reaction, count(*) as count')
+            ->groupBy('reaction')
             ->get();
 
         // get the user specific reactions
-        if (!auth("sanctum")->user()) {
-            return ["reaction_counts" => $reactions];
+        if (! auth('sanctum')->user()) {
+            return ['reaction_counts' => $reactions];
         }
 
         // get user reactions in an array of types
         $userReactions = $reactable
             ->reactions()
-            ->where("user_id", auth("sanctum")->user()->id)
-            ->pluck("reaction")
+            ->where('user_id', auth('sanctum')->user()->id)
+            ->pluck('reaction')
             ->toArray();
 
         return [
-            "reaction_counts" => $reactions,
-            "user_reactions" => $userReactions,
+            'reaction_counts' => $reactions,
+            'user_reactions' => $userReactions,
         ];
     }
 }

@@ -3,15 +3,16 @@
 namespace App\Listeners;
 
 use App\Models\Leads;
-use Illuminate\Auth\Events\Registered as RegisteredEvent;
 use App\Notifications\Discord;
 use App\Services\Mail\EmailOctopusService;
+use Illuminate\Auth\Events\Registered as RegisteredEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
 class Registered implements ShouldQueue
 {
     use InteractsWithQueue;
+
     /**
      * Create the event listener.
      */
@@ -35,16 +36,16 @@ class Registered implements ShouldQueue
     private function sendDiscordNotification(RegisteredEvent $event): void
     {
         $message =
-            "Novo usuário cadastrado 🥳 \n " .
-            $event->user->name .
-            " | " .
+            "Novo usuário cadastrado 🥳 \n ".
+            $event->user->name.
+            ' | '.
             $event->user->email;
         new Discord($message);
     }
 
     private function addToEmailList($user): void
     {
-        $lead = Leads::where("email", $user->email)->first();
+        $lead = Leads::where('email', $user->email)->first();
 
         if ($lead) {
             (new EmailOctopusService())->updateLeadAfterSignUp($user);

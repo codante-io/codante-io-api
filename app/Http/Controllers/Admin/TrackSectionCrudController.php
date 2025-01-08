@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\TrackSectionRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
  * Class TrackSectionCrudController
- * @package App\Http\Controllers\Admin
+ *
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
 class TrackSectionCrudController extends CrudController
 {
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\DeleteOperation;
-    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\FetchOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
+    use \Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 
     protected function fetchTags()
     {
@@ -33,23 +32,24 @@ class TrackSectionCrudController extends CrudController
     public function setup()
     {
         CRUD::setModel(\App\Models\TrackSection::class);
-        CRUD::setRoute(config("backpack.base.route_prefix") . "/track-section");
-        CRUD::setEntityNameStrings("track section", "track sections");
+        CRUD::setRoute(config('backpack.base.route_prefix').'/track-section');
+        CRUD::setEntityNameStrings('track section', 'track sections');
     }
 
     /**
      * Define what happens when the List operation is loaded.
      *
      * @see  https://backpackforlaravel.com/docs/crud-operation-list-entries
+     *
      * @return void
      */
     protected function setupListOperation()
     {
-        CRUD::column("track_id");
-        CRUD::column("name");
-        CRUD::column("description");
-        CRUD::column("created_at");
-        CRUD::column("updated_at");
+        CRUD::column('track_id');
+        CRUD::column('name');
+        CRUD::column('description');
+        CRUD::column('created_at');
+        CRUD::column('updated_at');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -62,18 +62,19 @@ class TrackSectionCrudController extends CrudController
      * Define what happens when the Create operation is loaded.
      *
      * @see https://backpackforlaravel.com/docs/crud-operation-create
+     *
      * @return void
      */
     protected function setupCreateOperation()
     {
-        CRUD::field("track_id");
-        CRUD::field("name");
-        CRUD::field("description");
+        CRUD::field('track_id');
+        CRUD::field('name');
+        CRUD::field('description');
         $this->crud->addField([
-            "type" => "relationship",
-            "name" => "tags",
-            "label" => "Tags",
-            "inline_create" => ["entity" => "tag"],
+            'type' => 'relationship',
+            'name' => 'tags',
+            'label' => 'Tags',
+            'inline_create' => ['entity' => 'tag'],
         ]);
 
         /**
@@ -87,6 +88,7 @@ class TrackSectionCrudController extends CrudController
      * Define what happens when the Update operation is loaded.
      *
      * @see https://backpackforlaravel.com/docs/crud-operation-update
+     *
      * @return void
      */
     protected function setupUpdateOperation()

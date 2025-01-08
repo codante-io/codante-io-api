@@ -14,15 +14,15 @@ class TrackItem extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function tracks(): MorphToMany
     {
-        return $this->morphToMany(Track::class, "trackable");
+        return $this->morphToMany(Track::class, 'trackable');
     }
 }

@@ -9,22 +9,23 @@ class WorkshopUser extends Model
 {
     use HasFactory;
 
-    protected $table = "workshop_user";
-    protected $fillable = ["status", "completed_at"];
+    protected $table = 'workshop_user';
+
+    protected $fillable = ['status', 'completed_at'];
     // protected $dates = ["completed_at"];
 
-    function User()
+    public function User()
     {
         return $this->belongsTo(User::class);
     }
 
-    function Workshop()
+    public function Workshop()
     {
         return $this->belongsTo(Workshop::class);
     }
 
-    function Certificate()
+    public function Certificate()
     {
-        return $this->morphOne(Certificate::class, "certifiable");
+        return $this->morphOne(Certificate::class, 'certifiable');
     }
 }

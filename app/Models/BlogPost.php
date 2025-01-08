@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use App\Traits\Reactable;
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,7 +15,7 @@ class BlogPost extends Model
     use Reactable;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function instructor()
     {
@@ -24,6 +24,6 @@ class BlogPost extends Model
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 }

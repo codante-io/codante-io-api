@@ -3,8 +3,6 @@
 namespace App\Observers;
 
 use App\Models\Certificate;
-use App\Notifications\Discord;
-use Notification;
 
 class CertificateObserver
 {
@@ -21,7 +19,7 @@ class CertificateObserver
      */
     public function updated(Certificate $certificate)
     {
-        $prevStatus = $certificate->getOriginal("status");
+        $prevStatus = $certificate->getOriginal('status');
         $status = $certificate->status;
 
         if ($status !== $prevStatus) {

@@ -4,17 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table("plans", function (Blueprint $table) {
+        Schema::table('plans', function (Blueprint $table) {
             $table
-                ->json("details")
+                ->json('details')
                 ->nullable()
-                ->after("price_in_cents");
+                ->after('price_in_cents');
         });
     }
 
@@ -23,8 +24,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("plans", function (Blueprint $table) {
-            $table->dropColumn("details");
+        Schema::table('plans', function (Blueprint $table) {
+            $table->dropColumn('details');
         });
     }
 };

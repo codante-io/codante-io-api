@@ -28,7 +28,7 @@ class ChallengeRequest extends FormRequest
             'name' => 'required|min:5|max:255',
             'status' => 'required',
             'difficulty' => 'required',
-            'slug' => 'required|unique:challenges,slug,' . $this->id,
+            'slug' => 'required|unique:challenges,slug,'.$this->id,
 
         ];
     }

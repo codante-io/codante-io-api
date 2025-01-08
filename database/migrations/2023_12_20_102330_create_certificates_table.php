@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->references('id')->on('users');
             $table->string('certifiable_type');
             $table->unsignedBigInteger('certifiable_id');
-            $table->string("status")->nullable();
-            $table->json("metadata")->nullable();
+            $table->string('status')->nullable();
+            $table->json('metadata')->nullable();
             $table->timestamps();
         });
     }

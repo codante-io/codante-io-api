@@ -10,7 +10,7 @@ class Trackable extends MorphPivot
 {
     use HasFactory;
 
-    protected $table = "trackables";
+    protected $table = 'trackables';
 
     public function users(): BelongsToMany
     {

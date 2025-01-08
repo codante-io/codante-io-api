@@ -16,15 +16,15 @@ class ExpiredPlanService
     private static function expireActiveSubscriptions()
     {
         $expiredSubscriptions = Subscription::where(
-            "ends_at",
-            "<",
+            'ends_at',
+            '<',
             Carbon::now()
         )
-            ->where("status", "active")
+            ->where('status', 'active')
             ->get();
 
         foreach ($expiredSubscriptions as $expiredSubscription) {
-            $expiredSubscription->status = "expired";
+            $expiredSubscription->status = 'expired';
             $expiredSubscription->save();
             $expiredSubscription->user->downgradeUserFromPro();
         }
@@ -32,9 +32,9 @@ class ExpiredPlanService
 
     private static function downgradeOutlierSubscriptions()
     {
-        $outliersSubscriptions = Subscription::where("status", "!=", "active")
-            ->join("users", "users.id", "=", "subscriptions.user_id")
-            ->where("users.is_pro", true)
+        $outliersSubscriptions = Subscription::where('status', '!=', 'active')
+            ->join('users', 'users.id', '=', 'subscriptions.user_id')
+            ->where('users.is_pro', true)
             ->get();
 
         foreach ($outliersSubscriptions as $outlierSubscription) {

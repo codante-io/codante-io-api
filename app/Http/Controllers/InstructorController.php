@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\InstructorCollection;
 use App\Http\Resources\InstructorResource;
 use App\Models\Instructor;
-use Illuminate\Http\Request;
 
 class InstructorController extends Controller
 {

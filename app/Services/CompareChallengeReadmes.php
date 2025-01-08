@@ -10,12 +10,12 @@ class CompareChallengeReadmes
 {
     public function checkAll()
     {
-        $challenges = Challenge::where("status", "published")->get("slug");
+        $challenges = Challenge::where('status', 'published')->get('slug');
 
         // Discord Message
         new Discord(
-            "==== 🔍 Iniciando comparação de Readmes de todos os Mini Projetos... ====",
-            "notificacoes-site"
+            '==== 🔍 Iniciando comparação de Readmes de todos os Mini Projetos... ====',
+            'notificacoes-site'
         );
 
         foreach ($challenges as $challenge) {
@@ -26,22 +26,22 @@ class CompareChallengeReadmes
 
         // Discord Message
         new Discord(
-            "==== 🎉 Finalizada comparação de Readmes de todos os Mini Projetos.",
-            "notificacoes-site"
+            '==== 🎉 Finalizada comparação de Readmes de todos os Mini Projetos.',
+            'notificacoes-site'
         );
     }
 
     public static function getDiffHtml(string $slug)
     {
         // first we get the challenge description from the database
-        $challenge = Challenge::select("id", "description", "repository_name")
-            ->where("slug", $slug)
+        $challenge = Challenge::select('id', 'description', 'repository_name')
+            ->where('slug', $slug)
             ->first();
 
-        if (!$challenge) {
+        if (! $challenge) {
             return [
-                "style" => Diff::createStyler()->getStyleTag(),
-                "html" => "Challenge not found",
+                'style' => Diff::createStyler()->getStyleTag(),
+                'html' => 'Challenge not found',
             ];
         }
 
@@ -54,7 +54,7 @@ class CompareChallengeReadmes
         );
 
         // now we remove the h1 title from the readme
-        $challengeReadme = preg_replace("/^#[^#].*$/m", "", $challengeReadme);
+        $challengeReadme = preg_replace('/^#[^#].*$/m', '', $challengeReadme);
 
         // now we trim the first and last line of the readme and description
         $challengeReadme = trim($challengeReadme);
@@ -69,7 +69,7 @@ class CompareChallengeReadmes
 
     public function testChallengeDescription($challengeSlug)
     {
-        $challenge = Challenge::where("slug", $challengeSlug)->first();
+        $challenge = Challenge::where('slug', $challengeSlug)->first();
 
         if ($challenge) {
             $repositoryName = $challenge->repository_name;
@@ -80,8 +80,8 @@ class CompareChallengeReadmes
 
             // Remove the h1 title from the readme
             $challengeReadme = preg_replace(
-                "/^#[^#].*$/m",
-                "",
+                '/^#[^#].*$/m',
+                '',
                 $challengeReadme
             );
 
@@ -97,14 +97,14 @@ class CompareChallengeReadmes
 
             $isEqual = true;
             $diffUrl =
-                config("app.url") . "/admin/compare-readmes/$challengeSlug";
+                config('app.url')."/admin/compare-readmes/$challengeSlug";
 
             foreach ($diff as $line) {
                 if ($line[1] !== 0) {
                     // Log a message or throw an exception if the descriptions are different
                     new Discord(
                         "❌ Mini Projeto **$challenge->slug**: diferença nos Readmes. Diff: $diffUrl",
-                        "notificacoes-site"
+                        'notificacoes-site'
                     );
                     $isEqual = false;
                     break;
@@ -114,7 +114,7 @@ class CompareChallengeReadmes
             if ($isEqual) {
                 new Discord(
                     "✅ Mini Projeto **$challenge->slug**: Readmes iguais.",
-                    "notificacoes-site"
+                    'notificacoes-site'
                 );
             }
         }

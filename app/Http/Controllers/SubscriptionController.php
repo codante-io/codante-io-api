@@ -14,14 +14,14 @@ class SubscriptionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware("auth:sanctum", ["except" => ["getPlanDetails"]]);
+        $this->middleware('auth:sanctum', ['except' => ['getPlanDetails']]);
     }
 
     public function showSubscription()
     {
         $subscriptions = Auth::user()
             ->subscriptions()
-            ->orderBy("created_at", "desc")
+            ->orderBy('created_at', 'desc')
             ->get();
 
         // if there is no subscription, return null
@@ -37,7 +37,7 @@ class SubscriptionController extends Controller
         // if there is more than one subscription, return the active one
         $activeSubscription = $subscriptions
             ->filter(function ($subscription) {
-                return $subscription->status === "active";
+                return $subscription->status === 'active';
             })
             ->first();
 
@@ -51,11 +51,11 @@ class SubscriptionController extends Controller
 
     public function getPlanDetails(Request $request)
     {
-        $planId = $request->input("plan_id") ?? 1;
+        $planId = $request->input('plan_id') ?? 1;
         $plan = Plan::find($planId);
 
         // checa se o cupom existe, senão erro
-        $couponCode = $request->input("coupon");
+        $couponCode = $request->input('coupon');
 
         $couponInfo = null;
         if ($couponCode) {
@@ -64,15 +64,15 @@ class SubscriptionController extends Controller
             $couponInfo = $coupon
                 ? new CouponResource($coupon)
                 : [
-                    "error" => true,
-                    "message" => "Cupom inválido",
+                    'error' => true,
+                    'message' => 'Cupom inválido',
                 ];
         }
 
         //retorna o plano + detalhes do cupom
         return response()->json([
-            "coupon" => [$couponCode ? $couponInfo : null],
-            "plan" => new PlanResource($plan),
+            'coupon' => [$couponCode ? $couponInfo : null],
+            'plan' => new PlanResource($plan),
         ]);
     }
 }

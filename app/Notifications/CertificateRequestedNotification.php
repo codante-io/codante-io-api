@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
@@ -13,6 +12,7 @@ class CertificateRequestedNotification extends Notification
     use Queueable;
 
     private $certificate;
+
     // private $challenge;
     /**
      * Create a new notification instance.
@@ -29,7 +29,7 @@ class CertificateRequestedNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ["mail"];
+        return ['mail'];
     }
 
     /**
@@ -37,19 +37,19 @@ class CertificateRequestedNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $firstName = Str::title(explode(" ", $notifiable->name)[0]);
+        $firstName = Str::title(explode(' ', $notifiable->name)[0]);
         $message =
             $this->certificate->certifiable_type === "App\Models\ChallengeUser"
                 ? "Recebemos a sua solicitação de certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name}!"
                 : "Seu certificado com ID {$this->certificate->id} foi solicitado e em breve estará disponível!";
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Codante")
-            ->subject("[Codante] Recebemos sua solicitação de certificado!")
+            ->from('contato@codante.io', 'Codante')
+            ->subject('[Codante] Recebemos sua solicitação de certificado!')
             ->greeting("Olá $firstName")
             ->line($message)
             ->line(
-                "Avisaremos você assim que ele estiver disponível. O prazo de publicação é de 3 dias úteis"
+                'Avisaremos você assim que ele estiver disponível. O prazo de publicação é de 3 dias úteis'
             );
     }
 
@@ -61,7 +61,7 @@ class CertificateRequestedNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

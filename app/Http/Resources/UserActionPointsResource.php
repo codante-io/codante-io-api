@@ -15,10 +15,10 @@ class UserActionPointsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "avatar" => new UserAvatarResource($this),
-            "points" => $this->points,
-            "completed_challenge_count" => $this->completed_challenge_count,
-            "received_reaction_count" => $this->received_reaction_count,
+            'avatar' => new UserAvatarResource($this),
+            'points' => $this->points,
+            'completed_challenge_count' => $this->completed_challenge_count,
+            'received_reaction_count' => $this->received_reaction_count,
         ];
     }
 }

@@ -12,7 +12,7 @@ return [
     |-------------------
     */
 
-    'show_translatable_field_icon'     => true,
+    'show_translatable_field_icon' => true,
     'translatable_field_icon_position' => 'right', // left or right
 
     'locales' => [
@@ -315,7 +315,7 @@ return [
         // "fa" => "Persian",
         // "pl_PL" => "Polish (Poland)",
         // "pl" => "Polish",
-        "pt_BR" => "Portuguese (Brazil)",
+        'pt_BR' => 'Portuguese (Brazil)',
         // "pt_GW" => "Portuguese (Guinea-Bissau)",
         // "pt_MZ" => "Portuguese (Mozambique)",
         // "pt_PT" => "Portuguese (Portugal)",

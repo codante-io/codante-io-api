@@ -4,18 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table("tags", function (Blueprint $table) {
+        Schema::table('tags', function (Blueprint $table) {
             $table
-                ->string("slug")
+                ->string('slug')
                 ->unique()
                 ->nullable()
-                ->after("name");
+                ->after('name');
         });
     }
 
@@ -24,8 +25,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("tags", function (Blueprint $table) {
-            $table->dropColumn("slug");
+        Schema::table('tags', function (Blueprint $table) {
+            $table->dropColumn('slug');
         });
     }
 };

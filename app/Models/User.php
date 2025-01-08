@@ -12,42 +12,42 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 use Laravel\Sanctum\HasApiTokens;
 use Staudenmeir\EloquentEagerLimit\HasEagerLimit;
-use Intervention\Image\Laravel\Facades\Image;
 use Storage;
 use Tuupola\Base62;
 
 class User extends Authenticatable
 {
-    use HasEagerLimit;
     use CrudTrait;
     use HasApiTokens;
+    use HasEagerLimit;
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
 
     protected $guarded = [
-        "id",
-        "github_user",
-        "linkedin_user",
-        "discord_user",
-        "discord_data",
+        'id',
+        'github_user',
+        'linkedin_user',
+        'discord_user',
+        'discord_data',
     ];
 
     protected $hidden = [
-        "password",
-        "remember_token",
-        "discord_data",
-        "github_data",
+        'password',
+        'remember_token',
+        'discord_data',
+        'github_data',
     ];
 
     protected $casts = [
-        "email_verified_at" => "datetime",
-        "settings" => "array",
-        "discord_data" => "array",
-        "github_data" => "array",
-        "is_pro" => "boolean",
+        'email_verified_at' => 'datetime',
+        'settings' => 'array',
+        'discord_data' => 'array',
+        'github_data' => 'array',
+        'is_pro' => 'boolean',
     ];
 
     protected static function booted()
@@ -67,7 +67,7 @@ class User extends Authenticatable
             $user->removeFromEmailLists();
 
             // add deleted to user email (to avoid email conflicts when user resubscribe)
-            $user->email = $user->email . "-deleted";
+            $user->email = $user->email.'-deleted';
             $user->save();
         });
     }
@@ -80,7 +80,7 @@ class User extends Authenticatable
     public function challenges()
     {
         return $this->belongsToMany(Challenge::class)
-            ->withPivot(["completed", "fork_url", "joined_discord"])
+            ->withPivot(['completed', 'fork_url', 'joined_discord'])
             ->withTimestamps();
     }
 
@@ -88,15 +88,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(
             Trackable::class,
-            "trackable_user",
-            "user_id",
-            "trackable_id"
+            'trackable_user',
+            'user_id',
+            'trackable_id'
         );
     }
 
     public function lessons()
     {
-        return $this->belongsToMany(Lesson::class)->withPivot(["completed_at"]);
+        return $this->belongsToMany(Lesson::class)->withPivot(['completed_at']);
     }
 
     public function challengeUsers()
@@ -111,8 +111,8 @@ class User extends Authenticatable
 
     public function workshops()
     {
-        return $this->belongsToMany(Workshop::class, "workshop_user")
-            ->withPivot(["status", "completed_at", "percentage_completed"])
+        return $this->belongsToMany(Workshop::class, 'workshop_user')
+            ->withPivot(['status', 'completed_at', 'percentage_completed'])
             ->withTimestamps();
     }
 
@@ -124,8 +124,8 @@ class User extends Authenticatable
     public function subscribeToPlan(
         $planId,
         $providerId = null,
-        $acquisitionType = "purchase",
-        $status = "pending",
+        $acquisitionType = 'purchase',
+        $status = 'pending',
         $paymentMethod = null,
         $boletoUrl = null,
         $pricePaidInCents = null
@@ -153,7 +153,7 @@ class User extends Authenticatable
         $subscription->acquisition_type = $acquisitionType;
         $subscription->save();
 
-        if ($status === "active") {
+        if ($status === 'active') {
             $this->upgradeUserToPro();
         }
 
@@ -174,7 +174,7 @@ class User extends Authenticatable
         // do not downgrade if there is an active subscription
         if (
             $this->subscriptions()
-                ->where("status", "active")
+                ->where('status', 'active')
                 ->count() > 0
         ) {
             return;
@@ -213,25 +213,25 @@ class User extends Authenticatable
 
         // path: user-avatars/encodedemail/randomstring.avif
         $avatarPath =
-            "user-avatars/" . $encodedEmail . "/" . Str::random(10) . ".avif";
+            'user-avatars/'.$encodedEmail.'/'.Str::random(10).'.avif';
 
-        Storage::disk("s3")->put($avatarPath, $image);
-        $avatarUrl = config("app.frontend_assets_url") . "/" . $avatarPath;
+        Storage::disk('s3')->put($avatarPath, $image);
+        $avatarUrl = config('app.frontend_assets_url').'/'.$avatarPath;
 
         $settings = $this->settings;
-        $settings["changed_avatar"] = Carbon::now();
+        $settings['changed_avatar'] = Carbon::now();
         $this->settings = $settings;
 
         $this->avatar_url = $avatarUrl;
         $this->save();
 
         // delete old avatar
-        $files = Storage::disk("s3")->files("user-avatars/" . $encodedEmail);
+        $files = Storage::disk('s3')->files('user-avatars/'.$encodedEmail);
 
         // delete all, except the one we just uploaded
         foreach ($files as $file) {
             if ($file !== $avatarPath) {
-                Storage::disk("s3")->delete($file);
+                Storage::disk('s3')->delete($file);
             }
         }
     }

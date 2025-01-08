@@ -39,33 +39,33 @@ class SendEventToMetaPixel
 
     private function sendRegisteredLeadEvent($event)
     {
-        $fbp = request()->cookie("_fbp");
-        $fbc = request()->cookie("_fbc");
+        $fbp = request()->cookie('_fbp');
+        $fbc = request()->cookie('_fbc');
 
         $userData = MetaPixel::userData()
             ->setEmail($event->email)
-            ->setFbp($fbp, "_fbp")
-            ->setFbc($fbc, "_fbc");
-        $eventId = uniqid("prefix_");
+            ->setFbp($fbp, '_fbp')
+            ->setFbc($fbc, '_fbc');
+        $eventId = uniqid('prefix_');
         $customData = new CustomData();
 
-        MetaPixel::send("Lead", $eventId, $customData, $userData);
+        MetaPixel::send('Lead', $eventId, $customData, $userData);
     }
 
     private function sendRegisteredUserEvent($event)
     {
-        $fbp = request()->cookie("_fbp");
-        $fbc = request()->cookie("_fbc");
+        $fbp = request()->cookie('_fbp');
+        $fbc = request()->cookie('_fbc');
 
         $userData = MetaPixel::userData()
             ->setEmail($event->user->email)
-            ->setFbp($fbp, "_fbp")
-            ->setFbc($fbc, "_fbc");
-        $eventId = uniqid("prefix_");
+            ->setFbp($fbp, '_fbp')
+            ->setFbc($fbc, '_fbc');
+        $eventId = uniqid('prefix_');
         $customData = new CustomData();
 
         MetaPixel::send(
-            "CompleteRegistration",
+            'CompleteRegistration',
             $eventId,
             $customData,
             $userData
@@ -74,13 +74,13 @@ class SendEventToMetaPixel
 
     private function sendPurchaseEvent($event)
     {
-        $fbp = request()->cookie("_fbp");
-        $fbc = request()->cookie("_fbc");
+        $fbp = request()->cookie('_fbp');
+        $fbc = request()->cookie('_fbc');
 
         $userData = MetaPixel::userData()
             ->setEmail($event->user->email)
-            ->setFbp($fbp, "_fbp")
-            ->setFbc($fbc, "_fbc");
+            ->setFbp($fbp, '_fbp')
+            ->setFbc($fbc, '_fbc');
 
         $content = (new Content())
             ->setProductId($event->subscription->id)
@@ -89,15 +89,15 @@ class SendEventToMetaPixel
 
         $customData = (new CustomData())
             ->setContents([$content])
-            ->setCurrency("brl")
+            ->setCurrency('brl')
             ->setValue($event->subscription->price_paid_in_cents / 100);
 
-        $eventId = uniqid("prefix_");
+        $eventId = uniqid('prefix_');
 
         $eventType =
             $event instanceof PurchaseCompleted
-                ? "Purchase"
-                : "InitiateCheckout";
+                ? 'Purchase'
+                : 'InitiateCheckout';
 
         MetaPixel::send($eventType, $eventId, $customData, $userData);
     }

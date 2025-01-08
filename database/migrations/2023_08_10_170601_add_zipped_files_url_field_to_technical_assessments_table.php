@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table("technical_assessments", function (Blueprint $table) {
+        Schema::table('technical_assessments', function (Blueprint $table) {
             $table
-                ->string("zipped_files_url")
+                ->string('zipped_files_url')
                 ->nullable()
-                ->after("assessment_instructions_text");
+                ->after('assessment_instructions_text');
         });
     }
 
@@ -24,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table("technical_assessments", function (Blueprint $table) {
-            $table->dropColumn("zipped_files_url");
+        Schema::table('technical_assessments', function (Blueprint $table) {
+            $table->dropColumn('zipped_files_url');
         });
     }
 };

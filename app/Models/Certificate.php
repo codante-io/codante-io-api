@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use App\Notifications\Discord;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Str;
 
 class Certificate extends Model
 {
@@ -15,7 +14,8 @@ class Certificate extends Model
     use HasFactory;
 
     public $incrementing = false; // desativa increment pois o id é uuid
-    protected $keyType = "string";
+
+    protected $keyType = 'string';
 
     public static function boot()
     {
@@ -23,13 +23,13 @@ class Certificate extends Model
         static::creating(function ($model) {
             do {
                 $uuid = (string) Str::random(8);
-            } while (self::where("id", $uuid)->exists());
+            } while (self::where('id', $uuid)->exists());
 
             $model->id = $uuid;
         });
     }
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function user()
     {
@@ -38,12 +38,12 @@ class Certificate extends Model
 
     protected $casts = [
         // usado para o laravel converter json corretamente
-        "metadata" => "array",
+        'metadata' => 'array',
     ];
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function certifiable()
@@ -53,13 +53,13 @@ class Certificate extends Model
 
     public static function validateCertifiable($certifiableType)
     {
-        $certifiableClass = "App\\Models\\" . $certifiableType;
+        $certifiableClass = 'App\\Models\\'.$certifiableType;
 
         // check if certifiable model exists, if not, return error
-        if (!class_exists($certifiableClass)) {
+        if (! class_exists($certifiableClass)) {
             return response()->json(
                 [
-                    "message" => "Reactable model does not exist",
+                    'message' => 'Reactable model does not exist',
                 ],
                 404
             );

@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
 use Intervention\Image\ImageManagerStatic as Image;
 
 class Testimonial extends Model
@@ -18,22 +18,22 @@ class Testimonial extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function setAvatarUrlAttribute($value)
     {
-        $attribute_name = "avatar_url";
+        $attribute_name = 'avatar_url';
         // or use your own disk, defined in config/filesystems.php
-        $disk = "s3";
+        $disk = 's3';
         // destination path relative to the disk above
-        $destination_path = "testimonials/avatars";
+        $destination_path = 'testimonials/avatars';
 
         // if the image was erased
         if (empty($value)) {
             // delete the image from disk
             if (
                 isset($this->{$attribute_name}) &&
-                !empty($this->{$attribute_name})
+                ! empty($this->{$attribute_name})
             ) {
                 \Storage::disk($disk)->delete($this->{$attribute_name});
             }
@@ -42,7 +42,7 @@ class Testimonial extends Model
         }
 
         // if a base64 was sent, store it in the db
-        if (Str::startsWith($value, "data:image")) {
+        if (Str::startsWith($value, 'data:image')) {
             // 0. Make the image
 
             $manager = new ImageManager(Driver::class);
@@ -59,18 +59,18 @@ class Testimonial extends Model
             //     });
 
             // 1. Generate a filename.
-            $filename = md5($value . time()) . ".webp";
+            $filename = md5($value.time()).'.webp';
 
             // 2. Store the image on disk.
             \Storage::disk($disk)->put(
-                $destination_path . "/" . $filename,
+                $destination_path.'/'.$filename,
                 $image->toFilePointer()
             );
 
             // 3. Delete the previous image, if there was one.
             if (
                 isset($this->{$attribute_name}) &&
-                !empty($this->{$attribute_name})
+                ! empty($this->{$attribute_name})
             ) {
                 \Storage::disk($disk)->delete($this->{$attribute_name});
             }
@@ -82,9 +82,9 @@ class Testimonial extends Model
             // $public_destination_path = Str::replaceFirst('public/', '', $destination_path);
             // $this->attributes[$attribute_name] = $public_destination_path . '/' . $filename;
             $this->attributes[$attribute_name] = \Storage::url(
-                $destination_path . "/" . $filename
+                $destination_path.'/'.$filename
             );
-        } elseif (!empty($value)) {
+        } elseif (! empty($value)) {
             // if value isn't empty, but it's not an image, assume it's the model value for that attribute.
             $this->attributes[$attribute_name] = $this->{$attribute_name};
         }

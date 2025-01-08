@@ -11,9 +11,9 @@ class TrackItemController extends Controller
     {
         return TrackItemResource::collection(
             TrackItem::query()
-                ->where("status", "published")
-                ->orWhere("status", "soon")
-                ->with("tags")
+                ->where('status', 'published')
+                ->orWhere('status', 'soon')
+                ->with('tags')
                 ->get()
         );
     }
@@ -22,8 +22,8 @@ class TrackItemController extends Controller
     {
         return new TrackItemResource(
             TrackItem::query()
-                ->where("slug", $slug)
-                ->with("tags")
+                ->where('slug', $slug)
+                ->with('tags')
                 ->firstOrFail()
         );
     }

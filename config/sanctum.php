@@ -19,7 +19,7 @@ return [
     //     env('FRONTEND_URL') ? ','.parse_url(env('FRONTEND_URL'), PHP_URL_HOST) : ''
     // ))),
 
-    "stateful" => null,
+    'stateful' => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     |
     */
 
-    "expiration" => null,
+    'expiration' => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -45,7 +45,7 @@ return [
     |
     */
 
-    "middleware" => [
+    'middleware' => [
         // 'verify_csrf_token' => App\Http\Middleware\VerifyCsrfToken::class,
         // "encrypt_cookies" => App\Http\Middleware\EncryptCookies::class,
     ],

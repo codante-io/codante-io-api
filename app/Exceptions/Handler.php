@@ -31,9 +31,9 @@ class Handler extends ExceptionHandler
      * @var array<int, string>
      */
     protected $dontFlash = [
-        "current_password",
-        "password",
-        "password_confirmation",
+        'current_password',
+        'password',
+        'password_confirmation',
     ];
 
     /**
@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
 
     protected function shouldReturnJson($request, Throwable $e)
     {
-        if ($request->is("api/*")) {
+        if ($request->is('api/*')) {
             return true;
         }
 

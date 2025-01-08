@@ -2,10 +2,8 @@
 
 namespace App\Notifications;
 
-use App\Models\ChallengeUser;
 use App\Models\Comment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
@@ -13,8 +11,11 @@ use Illuminate\Support\Str;
 class ChallengeUserReplyCommentNotification extends Notification
 {
     use Queueable;
+
     private $parentComment;
+
     private $commentable;
+
     private $comment;
 
     /**
@@ -34,7 +35,7 @@ class ChallengeUserReplyCommentNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ["mail"];
+        return ['mail'];
     }
 
     /**
@@ -42,16 +43,16 @@ class ChallengeUserReplyCommentNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $firstName = Str::title(explode(" ", $notifiable->name)[0]);
-        $frontUrl = config("app.frontend_url");
+        $firstName = Str::title(explode(' ', $notifiable->name)[0]);
+        $frontUrl = config('app.frontend_url');
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Codante")
-            ->subject("[Codante] Uma pessoa respondeu seu comentário!")
+            ->from('contato@codante.io', 'Codante')
+            ->subject('[Codante] Uma pessoa respondeu seu comentário!')
             ->greeting("Olá $firstName")
-            ->line("Alguém respondeu a um comentário seu no Codante!")
-            ->action("Ver comentário", $this->comment->commentable_url)
-            ->line("Clique no botão acima para ver ou responder o comentário.");
+            ->line('Alguém respondeu a um comentário seu no Codante!')
+            ->action('Ver comentário', $this->comment->commentable_url)
+            ->line('Clique no botão acima para ver ou responder o comentário.');
     }
 
     /**
@@ -62,7 +63,7 @@ class ChallengeUserReplyCommentNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

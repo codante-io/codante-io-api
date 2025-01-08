@@ -17,20 +17,20 @@ class BlogPostResource extends JsonResource
     {
         return [
             ...$this->resource->only([
-                "id",
-                "title",
-                "content",
-                "image_url",
-                "short_description",
-                "slug",
-                "status",
-                "created_at",
+                'id',
+                'title',
+                'content',
+                'image_url',
+                'short_description',
+                'slug',
+                'status',
+                'created_at',
             ]),
-            "reactions" => Reaction::getReactions(
-                "App\\Models\\BlogPost",
+            'reactions' => Reaction::getReactions(
+                'App\\Models\\BlogPost',
                 $this->id
             ),
-            "instructor" => new InstructorResource($this->instructor),
+            'instructor' => new InstructorResource($this->instructor),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
         ];
     }

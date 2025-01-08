@@ -6,8 +6,6 @@ use App\Models\Challenge;
 use App\Models\Lesson;
 use App\Models\Workshop;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class ChallengeTest extends TestCase
@@ -17,18 +15,18 @@ class ChallengeTest extends TestCase
     /** @test */
     public function it_gets_200_to_challenge_list(): void
     {
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
 
-        $response = $this->getJson("/api/challenges");
+        $response = $this->getJson('/api/challenges');
         $response->assertStatus(200);
     }
 
     /** @test */
     public function it_gets_404_when_challenge_does_not_exist(): void
     {
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
 
-        $response = $this->getJson("/api/challenges/does-not-exist");
+        $response = $this->getJson('/api/challenges/does-not-exist');
         $response->assertStatus(404);
     }
 
@@ -37,11 +35,11 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
         // add challenge
         $challenge = Challenge::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $challenge->slug;
 
@@ -52,10 +50,10 @@ class ChallengeTest extends TestCase
     /** @test */
     public function it_gets_404_when_challenge_is_draft(): void
     {
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
 
         $challenge = Challenge::factory()->create([
-            "status" => "draft",
+            'status' => 'draft',
         ]);
         $slug = $challenge->slug;
 
@@ -66,10 +64,10 @@ class ChallengeTest extends TestCase
     /** @test */
     public function it_gets_404_when_challenge_is_soon(): void
     {
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
 
         $challenge = Challenge::factory()->create([
-            "status" => "soon",
+            'status' => 'soon',
         ]);
         $slug = $challenge->slug;
 
@@ -82,11 +80,11 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
         $challenge = Challenge::factory()->create([
-            "status" => "unlisted",
+            'status' => 'unlisted',
         ]);
         $slug = $challenge->slug;
 
@@ -99,14 +97,14 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
-        $challenge = Challenge::factory()->create(["status" => "published"]);
+        $challenge = Challenge::factory()->create(['status' => 'published']);
         $slug = $challenge->slug;
 
         $response = $this->getJson("/api/challenges/$slug");
-        $this->assertNull($response->json()["data"]["workshop"]);
+        $this->assertNull($response->json()['data']['workshop']);
     }
 
     /** @test */
@@ -114,12 +112,12 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
-        $challenge = Challenge::factory()->create(["status" => "published"]);
+        $challenge = Challenge::factory()->create(['status' => 'published']);
         $workshop = Workshop::factory()->create([
-            "challenge_id" => $challenge->id,
+            'challenge_id' => $challenge->id,
         ]);
 
         $slug = $challenge->slug;
@@ -127,7 +125,7 @@ class ChallengeTest extends TestCase
         $response = $this->getJson("/api/challenges/$slug");
         $this->assertEquals(
             $workshop->id,
-            $response->json()["data"]["workshop"]["id"]
+            $response->json()['data']['workshop']['id']
         );
     }
 
@@ -136,16 +134,16 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
-        $challenge = Challenge::factory()->create(["status" => "published"]);
+        $challenge = Challenge::factory()->create(['status' => 'published']);
         $workshop = Workshop::factory()->create([
-            "challenge_id" => $challenge->id,
+            'challenge_id' => $challenge->id,
         ]);
 
         $lessons = Lesson::factory(3)->create([
-            "workshop_id" => $workshop->id,
+            'workshop_id' => $workshop->id,
         ]);
 
         $slug = $challenge->slug;
@@ -153,7 +151,7 @@ class ChallengeTest extends TestCase
 
         $this->assertEquals(
             $lessons->count(),
-            count($response->json()["data"]["workshop"]["lessons"])
+            count($response->json()['data']['workshop']['lessons'])
         );
     }
 
@@ -162,24 +160,24 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
-        $challenge = Challenge::factory()->create(["status" => "published"]);
+        $challenge = Challenge::factory()->create(['status' => 'published']);
         $workshop = Workshop::factory()->create([
-            "challenge_id" => $challenge->id,
+            'challenge_id' => $challenge->id,
         ]);
 
         $lesson = Lesson::factory()->create([
-            "workshop_id" => $workshop->id,
+            'workshop_id' => $workshop->id,
         ]);
 
         $slug = $challenge->slug;
         $response = $this->getJson("/api/challenges/$slug");
 
         $this->assertFalse(
-            $response->json()["data"]["workshop"]["lessons"][0][
-                "user_completed"
+            $response->json()['data']['workshop']['lessons'][0][
+                'user_completed'
             ]
         );
     }
@@ -189,27 +187,27 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
         $token = $this->signInAndReturnToken();
 
-        $challenge = Challenge::factory()->create(["status" => "published"]);
+        $challenge = Challenge::factory()->create(['status' => 'published']);
         $workshop = Workshop::factory()->create([
-            "challenge_id" => $challenge->id,
+            'challenge_id' => $challenge->id,
         ]);
         $lesson = Lesson::factory()->create([
-            "workshop_id" => $workshop->id,
+            'workshop_id' => $workshop->id,
         ]);
 
         $slug = $challenge->slug;
         $response = $this->getJson("/api/challenges/$slug", [
-            "Authorization" => "Bearer $token",
+            'Authorization' => "Bearer $token",
         ]);
 
         $this->assertFalse(
-            $response->json()["data"]["workshop"]["lessons"][0][
-                "user_completed"
+            $response->json()['data']['workshop']['lessons'][0][
+                'user_completed'
             ]
         );
     }
@@ -219,26 +217,26 @@ class ChallengeTest extends TestCase
     {
         //skip
         $this->markTestSkipped(
-            "Não está funcionando no CI (pq não temos a variável github token). Verificar depois."
+            'Não está funcionando no CI (pq não temos a variável github token). Verificar depois.'
         );
 
         $token = $this->signInAndReturnToken();
-        $challenge = Challenge::factory()->create(["status" => "published"]);
+        $challenge = Challenge::factory()->create(['status' => 'published']);
         $workshop = Workshop::factory()->create([
-            "challenge_id" => $challenge->id,
+            'challenge_id' => $challenge->id,
         ]);
         $lesson = Lesson::factory()->create([
-            "workshop_id" => $workshop->id,
+            'workshop_id' => $workshop->id,
         ]);
 
         $slug = $challenge->slug;
         $response = $this->getJson("/api/challenges/$slug", [
-            "Authorization" => "Bearer $token",
+            'Authorization' => "Bearer $token",
         ]);
 
         $this->assertFalse(
-            $response->json()["data"]["workshop"]["lessons"][0][
-                "user_completed"
+            $response->json()['data']['workshop']['lessons'][0][
+                'user_completed'
             ]
         );
 
@@ -246,17 +244,17 @@ class ChallengeTest extends TestCase
             "/api/lessons/$lesson->id/completed",
             [],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
 
         $response = $this->getJson("/api/challenges/$slug", [
-            "Authorization" => "Bearer $token",
+            'Authorization' => "Bearer $token",
         ]);
 
         $this->assertTrue(
-            $response->json()["data"]["workshop"]["lessons"][0][
-                "user_completed"
+            $response->json()['data']['workshop']['lessons'][0][
+                'user_completed'
             ]
         );
     }

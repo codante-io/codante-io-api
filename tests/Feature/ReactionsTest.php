@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Reaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class ReactionsTest extends TestCase
@@ -14,7 +13,7 @@ class ReactionsTest extends TestCase
     /** @test */
     public function it_cannot_react_if_not_logged_in(): void
     {
-        $response = $this->postJson("/api/reactions");
+        $response = $this->postJson('/api/reactions');
         $response->assertStatus(401);
     }
 
@@ -24,18 +23,18 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("reactable_id");
-        $response->assertJsonValidationErrors("reactable_type");
-        $response->assertJsonValidationErrors("reaction");
+        $response->assertJsonValidationErrors('reactable_id');
+        $response->assertJsonValidationErrors('reactable_type');
+        $response->assertJsonValidationErrors('reaction');
     }
 
     /** @test */
@@ -44,19 +43,19 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_type" => "App\Models\BlogPost",
-                "reaction" => "like",
+                'reactable_type' => "App\Models\BlogPost",
+                'reaction' => 'like',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("reactable_id");
+        $response->assertJsonValidationErrors('reactable_id');
     }
 
     /** @test */
@@ -65,19 +64,19 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_id" => 1,
-                "reaction" => "like",
+                'reactable_id' => 1,
+                'reaction' => 'like',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("reactable_type");
+        $response->assertJsonValidationErrors('reactable_type');
     }
 
     /** @test */
@@ -86,19 +85,19 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_id" => 1,
-                "reactable_type" => "App\Models\BlogPost",
+                'reactable_id' => 1,
+                'reactable_type' => "App\Models\BlogPost",
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("reaction");
+        $response->assertJsonValidationErrors('reaction');
     }
 
     /** @test */
@@ -107,20 +106,20 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_id" => 1,
-                "reactable_type" => "InvalidModel",
-                "reaction" => "like",
+                'reactable_id' => 1,
+                'reactable_type' => 'InvalidModel',
+                'reaction' => 'like',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors("reactable_type");
+        $response->assertJsonValidationErrors('reactable_type');
         $response->assertJsonFragment([
-            "reactable_type" => ["Reactable model does not exist."],
+            'reactable_type' => ['Reactable model does not exist.'],
         ]);
     }
 
@@ -130,22 +129,22 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_id" => 1,
-                "reactable_type" => "User",
-                "reaction" => "like",
+                'reactable_id' => 1,
+                'reactable_type' => 'User',
+                'reaction' => 'like',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors("reactable_type");
+        $response->assertJsonValidationErrors('reactable_type');
 
         // message should be Model is not reactable
         $response->assertJsonFragment([
-            "reactable_type" => ["Model is not reactable."],
+            'reactable_type' => ['Model is not reactable.'],
         ]);
     }
 
@@ -155,27 +154,27 @@ class ReactionsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_id" => $blogPost->id,
-                "reactable_type" => "BlogPost",
-                "reaction" => "like",
+                'reactable_id' => $blogPost->id,
+                'reactable_type' => 'BlogPost',
+                'reaction' => 'like',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(201);
 
         // assert reaction
-        $this->assertDatabaseHas("reactions", [
-            "reactable_id" => $blogPost->id,
-            "reactable_type" => "App\Models\BlogPost",
-            "reaction" => "like",
+        $this->assertDatabaseHas('reactions', [
+            'reactable_id' => $blogPost->id,
+            'reactable_type' => "App\Models\BlogPost",
+            'reaction' => 'like',
         ]);
     }
 
@@ -183,34 +182,34 @@ class ReactionsTest extends TestCase
     public function it_can_unreact()
     {
         $user = \App\Models\User::factory()->create([
-            "password" => bcrypt("password"),
+            'password' => bcrypt('password'),
         ]);
 
         $token = $this->signInAndReturnToken($user);
 
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
 
         $reaction = \App\Models\Reaction::factory()->create([
-            "reactable_id" => $blogPost->id,
-            "reactable_type" => "App\Models\BlogPost",
-            "reaction" => "like",
-            "user_id" => $user->id,
+            'reactable_id' => $blogPost->id,
+            'reactable_type' => "App\Models\BlogPost",
+            'reaction' => 'like',
+            'user_id' => $user->id,
         ]);
 
         $reactions = \App\Models\Reaction::all();
         $this->assertCount(1, $reactions);
 
         $response = $this->postJson(
-            "/api/reactions",
+            '/api/reactions',
             [
-                "reactable_id" => $blogPost->id,
-                "reactable_type" => "BlogPost",
-                "reaction" => "like",
+                'reactable_id' => $blogPost->id,
+                'reactable_type' => 'BlogPost',
+                'reaction' => 'like',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(204);

@@ -22,11 +22,11 @@ class AuthenticatedSessionController extends Controller
         $this->deleteUserTokens($request);
         $token = $this->createUserToken(
             $request,
-            $request->input("token_name") ?? "api_token"
+            $request->input('token_name') ?? 'api_token'
         );
 
         return response()->json([
-            "token" => $token,
+            'token' => $token,
         ]);
     }
 
@@ -39,18 +39,18 @@ class AuthenticatedSessionController extends Controller
             $request
                 ->user()
                 ->tokens()
-                ->where("name", "api_token")
+                ->where('name', 'api_token')
                 ->delete();
         }
 
         return response()->noContent();
     }
 
-    protected function createUserToken($request, $tokenName = "api_token")
+    protected function createUserToken($request, $tokenName = 'api_token')
     {
         // Create a new token and get only the token
         $fullToken = Auth::user()->createToken($tokenName)->plainTextToken;
-        $token = explode("|", $fullToken)[1];
+        $token = explode('|', $fullToken)[1];
 
         return $token;
     }
@@ -59,25 +59,26 @@ class AuthenticatedSessionController extends Controller
     {
         $user = Auth::user();
 
-        $userId = $request->input("user_id");
+        $userId = $request->input('user_id');
 
         if ($user->is_admin) {
-            $userId = $request->input("user_id");
+            $userId = $request->input('user_id');
             $userToTokenize = User::find($userId);
 
             if ($userToTokenize) {
-                $fullToken = $userToTokenize->createToken("api_token")
+                $fullToken = $userToTokenize->createToken('api_token')
                     ->plainTextToken;
-                $token = explode("|", $fullToken)[1];
-                return response()->json(["token" => $token]);
+                $token = explode('|', $fullToken)[1];
+
+                return response()->json(['token' => $token]);
             } else {
                 return response()->json(
-                    ["error" => "Usuário não encontrado"],
+                    ['error' => 'Usuário não encontrado'],
                     404
                 );
             }
         } else {
-            return response()->json(["error" => "Permissão negada"], 403);
+            return response()->json(['error' => 'Permissão negada'], 403);
         }
     }
 
@@ -87,7 +88,7 @@ class AuthenticatedSessionController extends Controller
             $request
                 ->user()
                 ->tokens()
-                ->where("name", "api_token")
+                ->where('name', 'api_token')
                 ->delete();
         }
     }

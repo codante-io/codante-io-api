@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Resources\WorkshopResource;
-use App\Http\Resources\WorkshopTrackResource;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,35 +16,35 @@ class Track extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function trackables()
     {
         $workshops = $this->workshops()
-            ->with("lessons")
-            ->with("tags")
-            ->with("instructor")
+            ->with('lessons')
+            ->with('tags')
+            ->with('instructor')
             ->get();
 
         $challenges = $this->challenges()
-            ->withCount("users")
-            ->with("tags")
-            ->with("workshop.instructor")
+            ->withCount('users')
+            ->with('tags')
+            ->with('workshop.instructor')
             ->get();
 
         $items = $this->items()
-            ->with("tags")
+            ->with('tags')
             ->get();
 
         $trackables = $workshops->concat($challenges)->concat($items);
 
-        $trackableIds = $trackables->pluck("pivot.id");
+        $trackableIds = $trackables->pluck('pivot.id');
 
         $userTrackables = Auth::user()
-            ? DB::table("trackable_user")
-                ->whereIn("trackable_id", $trackableIds)
-                ->where("user_id", Auth::user()->id)
-                ->where("completed", true)
+            ? DB::table('trackable_user')
+                ->whereIn('trackable_id', $trackableIds)
+                ->where('user_id', Auth::user()->id)
+                ->where('completed', true)
                 ->get()
             : new Collection();
 
@@ -55,7 +53,7 @@ class Track extends Model
         ) {
             $trackable->completed =
                 (bool) $userTrackables
-                    ->where("trackable_id", $trackable->pivot->id)
+                    ->where('trackable_id', $trackable->pivot->id)
                     ->first()?->completed ?? false;
 
             return $trackable;
@@ -65,45 +63,45 @@ class Track extends Model
             ->sortBy(function ($trackable) {
                 return $trackable->pivot->position;
             })
-            ->groupBy("pivot.section_id");
+            ->groupBy('pivot.section_id');
     }
 
     public function workshops()
     {
-        return $this->morphedByMany(Workshop::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(Workshop::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function challenges()
     {
-        return $this->morphedByMany(Challenge::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(Challenge::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function items()
     {
-        return $this->morphedByMany(TrackItem::class, "trackable")->withPivot(
-            "id",
-            "position",
-            "name",
-            "description",
-            "section_id"
+        return $this->morphedByMany(TrackItem::class, 'trackable')->withPivot(
+            'id',
+            'position',
+            'name',
+            'description',
+            'section_id'
         );
     }
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function trackSections()
@@ -113,7 +111,7 @@ class Track extends Model
 
     public function sectionsWithTrackables()
     {
-        $sections = $this->trackSections()->with("tags");
+        $sections = $this->trackSections()->with('tags');
 
         $trackables = $this->trackables();
 
@@ -126,7 +124,7 @@ class Track extends Model
                 })
                 ->filter()
                 ->flatten()
-                ->unique("name")
+                ->unique('name')
                 ->values();
 
             return $section;
