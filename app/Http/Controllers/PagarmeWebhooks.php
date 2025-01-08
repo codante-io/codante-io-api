@@ -175,32 +175,26 @@ class PagarmeWebhooks
             "notificacoes-compras"
         );
 
+
+
         $paymentMethod = $request->post("data")["charges"][0]["payment_method"];
         $boletoBarcode = null;
         $boletoUrl = null;
 
         if ($paymentMethod === "boleto") {
             $boletoBarcode =
-                $request->post("data")["charges"][0]["last_transaction"][
-                    "line"
-                ] ?? null;
+                $request->post("data")["charges"][0]["last_transaction"]["line"] ?? null;
 
             $boletoUrl =
-                $request->post("data")["charges"][0]["last_transaction"][
-                    "url"
-                ] ?? null;
+                $request->post("data")["charges"][0]["last_transaction"]["url"] ?? null;
         }
 
         if ($paymentMethod === "pix") {
             $boletoBarcode =
-                $request->post("data")["charges"][0]["last_transaction"][
-                    "qr_code"
-                ] ?? null;
+                $request->post("data")["charges"][0]["last_transaction"]["qr_code"] ?? null;
 
             $boletoUrl =
-                $request->post("data")["charges"][0]["last_transaction"][
-                    "qr_code_url"
-                ] ?? null;
+                $request->post("data")["charges"][0]["last_transaction"]["qr_code_url"] ?? null;
         }
 
         $subscription->update([
@@ -212,6 +206,14 @@ class PagarmeWebhooks
         // Nesse momento vamos agradecer por se inscrever.
         Mail::to($user->email)->send(
             new UserSubscribedToPlan($user, $subscription)
+        );
+
+        $planName = $subscription->plan->name ?? "Indefinido";
+        $planPrice = $subscription->plan->price ?? 0;
+
+        new Discord(
+            "🔒 Assinatura: " . $planName . " - " . $planPrice,
+            "notificacoes-compras"
         );
     }
 
@@ -228,12 +230,8 @@ class PagarmeWebhooks
         }
 
         $user->mobile_phone =
-            $request->post("data")["customer"]["phones"]["mobile_phone"][
-                "area_code"
-            ] .
-            $request->post("data")["customer"]["phones"]["mobile_phone"][
-                "number"
-            ];
+            $request->post("data")["customer"]["phones"]["mobile_phone"]["area_code"] .
+            $request->post("data")["customer"]["phones"]["mobile_phone"]["number"];
         $user->save();
     }
 
