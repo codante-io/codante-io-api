@@ -32,13 +32,7 @@ class LessonTest extends TestCase
     /** @test */
     public function it_cannot_complete_when_not_logged_in(): void
     {
-        // create lesson and Workshop
-        $workshop = \App\Models\Workshop::factory()->create([
-            'status' => 'published',
-        ]);
-        $lesson = \App\Models\Lesson::factory()->create([
-            'workshop_id' => $workshop->id,
-        ]);
+        $lesson = \App\Models\Lesson::factory()->create();
 
         $response = $this->postJson("/api/lessons/$lesson->id/completed");
         $response->assertStatus(401);
@@ -47,13 +41,7 @@ class LessonTest extends TestCase
     /** @test */
     public function it_cannot_uncomplete_when_not_logged_in()
     {
-        // create lesson and Workshop
-        $workshop = \App\Models\Workshop::factory()->create([
-            'status' => 'published',
-        ]);
-        $lesson = \App\Models\Lesson::factory()->create([
-            'workshop_id' => $workshop->id,
-        ]);
+        $lesson = \App\Models\Lesson::factory()->create();
 
         $response = $this->postJson("/api/lessons/$lesson->id/uncompleted");
         $response->assertStatus(401);
@@ -62,13 +50,7 @@ class LessonTest extends TestCase
     /** @test */
     public function it_can_complete_lesson(): void
     {
-        // create lesson and Workshop
-        $workshop = \App\Models\Workshop::factory()->create([
-            'status' => 'published',
-        ]);
-        $lesson = \App\Models\Lesson::factory()->create([
-            'workshop_id' => $workshop->id,
-        ]);
+        $lesson = \App\Models\Lesson::factory()->create();
 
         $user = \App\Models\User::factory()->create([
             'password' => bcrypt('password'),
@@ -115,13 +97,7 @@ class LessonTest extends TestCase
     /** @test */
     public function it_can_uncomplete_lesson(): void
     {
-        // create lesson and Workshop
-        $workshop = \App\Models\Workshop::factory()->create([
-            'status' => 'published',
-        ]);
-        $lesson = \App\Models\Lesson::factory()->create([
-            'workshop_id' => $workshop->id,
-        ]);
+        $lesson = \App\Models\Lesson::factory()->create();
 
         $user = \App\Models\User::factory()->create([
             'password' => bcrypt('password'),
