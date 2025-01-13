@@ -16,17 +16,17 @@ class ChallengeCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id" => $this->id,
-            "name" => $this->name,
-            "slug" => $this->slug,
-            "type" => $this->pivot->trackable_type,
-            "short_description" => $this->short_description,
-            "image_url" => $this->image_url,
-            "video_url" => $this->video_url,
-            "current_user_is_enrolled" => $this->users->contains(
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'type' => $this->pivot->trackable_type,
+            'short_description' => $this->short_description,
+            'image_url' => $this->image_url,
+            'video_url' => $this->video_url,
+            'current_user_is_enrolled' => $this->users->contains(
                 $this->current_user_id
             ),
-            "lessons" => LessonResource::collection($this->whenLoaded("workshop")->lessons),
+            'lessons' => LessonResource::collection($this->whenLoaded('workshop')->lessons),
         ];
     }
 }

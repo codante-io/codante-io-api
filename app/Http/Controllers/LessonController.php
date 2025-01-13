@@ -10,7 +10,8 @@ class LessonController extends Controller
 {
     public function show(string $slug)
     {
-        $lesson = Lesson::where("slug", $slug)->first();
+        $lesson = Lesson::where('slug', $slug)->first();
+
         return new LessonResource($lesson);
     }
 
@@ -38,6 +39,7 @@ class LessonController extends Controller
         $user = $request->user();
 
         $lesson->markAsCompleted($user, false);
+
         return response()->json([
             'message' => 'Lesson Completed',
             'result' => 'destroy',

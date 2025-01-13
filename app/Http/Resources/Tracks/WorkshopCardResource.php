@@ -17,15 +17,15 @@ class WorkshopCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         $resource = [
-            "id" => $this->id,
-            "name" => $this->name,
-            "slug" => $this->slug,
-            "video_url" => $this->video_url,
-            "instructor" => new InstructorCardResource(
-                $this->whenLoaded("instructor")
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'video_url' => $this->video_url,
+            'instructor' => new InstructorCardResource(
+                $this->whenLoaded('instructor')
             ),
-            "type" => $this->pivot->trackable_type,
-            "lessons" => $this->lessons->groupBy('section')->map(function ($lessons, $section) {
+            'type' => $this->pivot->trackable_type,
+            'lessons' => $this->lessons->groupBy('section')->map(function ($lessons, $section) {
                 return LessonResource::collection($lessons);
             }),
         ];
