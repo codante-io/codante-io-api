@@ -45,14 +45,14 @@ class Lesson extends Model
         );
     }
 
-    public function userCompleted(string|null $userId): bool
+    public function userCompleted(?string $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
 
         return $this->users()
-            ->where("user_id", $userId)
+            ->where('user_id', $userId)
             ->exists();
     }
 

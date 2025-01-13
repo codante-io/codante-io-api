@@ -27,7 +27,7 @@ class Workshop extends Model
         'resources' => 'array',
     ];
 
-    protected $appends = ["type"];
+    protected $appends = ['type'];
 
     public function getTypeAttribute()
     {
@@ -43,30 +43,30 @@ class Workshop extends Model
 
     public function lessons()
     {
-        return $this->morphMany(Lesson::class, "lessonable");
+        return $this->morphMany(Lesson::class, 'lessonable');
     }
 
     public function lessonsSidebarList()
     {
-        return $this->morphMany(Lesson::class, "lessonable")->select([
-            "id",
-            "name",
-            "slug",
-            "available_to",
-            "lessonable_id",
-            "lessonable_type",
-            "duration_in_seconds",
-            "section",
+        return $this->morphMany(Lesson::class, 'lessonable')->select([
+            'id',
+            'name',
+            'slug',
+            'available_to',
+            'lessonable_id',
+            'lessonable_type',
+            'duration_in_seconds',
+            'section',
         ]);
     }
 
     public function lessonsSidebarListWithUserProgress()
     {
         return $this->lessonsSidebarList()->addSelect([
-            "user_completed" => DB::table("lesson_user")
-                ->whereColumn("lesson_user.lesson_id", "lessons.id")
-                ->where("lesson_user.user_id", auth()->id())
-                ->select(DB::raw("COUNT(*) > 0"))
+            'user_completed' => DB::table('lesson_user')
+                ->whereColumn('lesson_user.lesson_id', 'lessons.id')
+                ->where('lesson_user.user_id', auth()->id())
+                ->select(DB::raw('COUNT(*) > 0'))
                 ->limit(1),
         ]);
     }
@@ -151,16 +151,16 @@ class Workshop extends Model
 
         if ($grouped->count() === 1) {
             return [[
-                "name" => "Aulas",
-                "lesson_ids" => $grouped->first()->pluck("id"),
+                'name' => 'Aulas',
+                'lesson_ids' => $grouped->first()->pluck('id'),
             ]];
         }
 
         return $grouped
             ->map(function ($lessons, $section) {
                 return [
-                    "name" => $section,
-                    "lesson_ids" => $lessons->pluck("id"),
+                    'name' => $section,
+                    'lesson_ids' => $lessons->pluck('id'),
                 ];
             })
             ->values();

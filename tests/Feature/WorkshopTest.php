@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class WorkshopTest extends TestCase
@@ -13,14 +12,14 @@ class WorkshopTest extends TestCase
     /** @test */
     public function it_gets_200_to_workshop_post_list(): void
     {
-        $response = $this->getJson("/api/workshops");
+        $response = $this->getJson('/api/workshops');
         $response->assertStatus(200);
     }
 
     /** @test */
     public function it_gets_404_when_workshop_does_not_exist(): void
     {
-        $response = $this->getJson("/api/workshops/does-not-exist");
+        $response = $this->getJson('/api/workshops/does-not-exist');
         $response->assertStatus(404);
     }
 
@@ -29,7 +28,7 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
@@ -42,7 +41,7 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "draft",
+            'status' => 'draft',
         ]);
         $slug = $workshop->slug;
 
@@ -55,7 +54,7 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "unlisted",
+            'status' => 'unlisted',
         ]);
         $slug = $workshop->slug;
 
@@ -68,13 +67,13 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "unlisted",
+            'status' => 'unlisted',
         ]);
         $slug = $workshop->slug;
 
-        $response = $this->getJson("/api/workshops/");
+        $response = $this->getJson('/api/workshops/');
         $jsonResponse = $response->json();
-        $this->assertEquals(0, count($jsonResponse["data"]));
+        $this->assertEquals(0, count($jsonResponse['data']));
     }
 
     /** @test */
@@ -82,51 +81,51 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
 
-        $response = $this->getJson("/api/workshops/");
+        $response = $this->getJson('/api/workshops/');
         $jsonResponse = $response->json();
-        $this->assertEquals(1, count($jsonResponse["data"]));
+        $this->assertEquals(1, count($jsonResponse['data']));
     }
 
     public function it_shows_workshop_in_workshops_list_if_soon()
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "soon",
+            'status' => 'soon',
         ]);
 
-        $response = $this->getJson("/api/workshops/");
+        $response = $this->getJson('/api/workshops/');
         $jsonResponse = $response->json();
-        $this->assertEquals(1, count($jsonResponse["data"]));
+        $this->assertEquals(1, count($jsonResponse['data']));
     }
 
     /** @test */
     public function it_has_the_correct_shape()
     {
-        $this->markTestSkipped("This test is skipped.");
+        $this->markTestSkipped('This test is skipped.');
 
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
         $response = $this->getJson("/api/workshops/$slug");
         $response->assertJsonStructure([
-            "data" => [
-                "id",
-                "title",
-                "content",
-                "image_url",
-                "short_description",
-                "slug",
-                "status",
-                "created_at",
-                "reactions",
-                "instructor",
-                "tags",
+            'data' => [
+                'id',
+                'title',
+                'content',
+                'image_url',
+                'short_description',
+                'slug',
+                'status',
+                'created_at',
+                'reactions',
+                'instructor',
+                'tags',
             ],
         ]);
     }
@@ -136,7 +135,7 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
@@ -145,7 +144,7 @@ class WorkshopTest extends TestCase
 
         $this->assertEquals(
             $workshop->instructor->name,
-            $jsonResponse["data"]["instructor"]["name"]
+            $jsonResponse['data']['instructor']['name']
         );
     }
 
@@ -154,7 +153,7 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
@@ -167,12 +166,12 @@ class WorkshopTest extends TestCase
 
         $this->assertEquals(
             $workshop->tags->count(),
-            count($jsonResponse["data"]["tags"])
+            count($jsonResponse['data']['tags'])
         );
 
         $this->assertEquals(
             $tag->name,
-            $jsonResponse["data"]["tags"][0]["name"]
+            $jsonResponse['data']['tags'][0]['name']
         );
     }
 
@@ -181,14 +180,14 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
         // add lesson
         $lesson = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
         ]);
 
         // dd($lesson);
@@ -197,14 +196,14 @@ class WorkshopTest extends TestCase
 
         $this->assertEquals(
             $workshop->lessons->count(),
-            count($jsonResponse["data"]["lessons"]),
+            count($jsonResponse['data']['lessons']),
             1
         );
 
         // dd($workshop->lessons->count());
         $this->assertEquals(
             $lesson->name,
-            $jsonResponse["data"]["lessons"][0]["name"]
+            $jsonResponse['data']['lessons'][0]['name']
         );
     }
 
@@ -213,55 +212,55 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
         // add lesson
         $lesson = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "all",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'all',
         ]);
         $lesson1 = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "pro",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'pro',
         ]);
         $lesson2 = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "logged_in",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'logged_in',
         ]);
 
         $response = $this->getJson("/api/workshops/$slug");
         $jsonResponse = $response->json();
 
-        $this->assertEquals(true, $jsonResponse["data"]["lessons"][0]["open"]);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['open']);
         $this->assertEquals(
             false,
-            $jsonResponse["data"]["lessons"][1]["open"],
-            $jsonResponse["data"]["lessons"][2]["open"]
+            $jsonResponse['data']['lessons'][1]['open'],
+            $jsonResponse['data']['lessons'][2]['open']
         );
 
         // lesson in workshop has this shape
-        $this->assertArrayHasKey("id", $jsonResponse["data"]["lessons"][0]);
-        $this->assertArrayHasKey("name", $jsonResponse["data"]["lessons"][0]);
-        $this->assertArrayHasKey("slug", $jsonResponse["data"]["lessons"][0]);
-        $this->assertArrayHasKey("url", $jsonResponse["data"]["lessons"][0]);
+        $this->assertArrayHasKey('id', $jsonResponse['data']['lessons'][0]);
+        $this->assertArrayHasKey('name', $jsonResponse['data']['lessons'][0]);
+        $this->assertArrayHasKey('slug', $jsonResponse['data']['lessons'][0]);
+        $this->assertArrayHasKey('url', $jsonResponse['data']['lessons'][0]);
         $this->assertArrayHasKey(
-            "thumbnail_url",
-            $jsonResponse["data"]["lessons"][0]
+            'thumbnail_url',
+            $jsonResponse['data']['lessons'][0]
         );
         $this->assertArrayHasKey(
-            "user_completed",
-            $jsonResponse["data"]["lessons"][0]
+            'user_completed',
+            $jsonResponse['data']['lessons'][0]
         );
         $this->assertArrayHasKey(
-            "duration_in_seconds",
-            $jsonResponse["data"]["lessons"][0]
+            'duration_in_seconds',
+            $jsonResponse['data']['lessons'][0]
         );
-        $this->assertArrayHasKey("open", $jsonResponse["data"]["lessons"][0]);
+        $this->assertArrayHasKey('open', $jsonResponse['data']['lessons'][0]);
     }
 
     /** @test */
@@ -269,38 +268,38 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
         // add lesson
         $lesson = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "all",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'all',
         ]);
         $lesson1 = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "pro",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'pro',
         ]);
         $lesson2 = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "logged_in",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'logged_in',
         ]);
 
         $user = \App\Models\User::factory()->create();
         $token = $this->signInAndReturnToken($user);
 
         $response = $this->getJson("/api/workshops/$slug", [
-            "Authorization" => "Bearer $token",
+            'Authorization' => "Bearer $token",
         ]);
         $jsonResponse = $response->json();
 
-        $this->assertEquals(true, $jsonResponse["data"]["lessons"][0]["open"]);
-        $this->assertEquals(false, $jsonResponse["data"]["lessons"][1]["open"]);
-        $this->assertEquals(true, $jsonResponse["data"]["lessons"][2]["open"]);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['open']);
+        $this->assertEquals(false, $jsonResponse['data']['lessons'][1]['open']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][2]['open']);
     }
 
     /** @test */
@@ -308,37 +307,37 @@ class WorkshopTest extends TestCase
     {
         // add workshop
         $workshop = \App\Models\Workshop::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $workshop->slug;
 
         // add lesson
         $lesson = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "all",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'all',
         ]);
         $lesson1 = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "pro",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'pro',
         ]);
         $lesson2 = \App\Models\Lesson::factory()->create([
-            "lessonable_id" => $workshop->id,
-            "lessonable_type" => get_class($workshop),
-            "available_to" => "logged_in",
+            'lessonable_id' => $workshop->id,
+            'lessonable_type' => get_class($workshop),
+            'available_to' => 'logged_in',
         ]);
 
-        $user = \App\Models\User::factory()->create(["is_pro" => true]);
+        $user = \App\Models\User::factory()->create(['is_pro' => true]);
         $token = $this->signInAndReturnToken($user);
 
         $response = $this->getJson("/api/workshops/$slug", [
-            "Authorization" => "Bearer $token",
+            'Authorization' => "Bearer $token",
         ]);
         $jsonResponse = $response->json();
 
-        $this->assertEquals(true, $jsonResponse["data"]["lessons"][0]["open"]);
-        $this->assertEquals(true, $jsonResponse["data"]["lessons"][1]["open"]);
-        $this->assertEquals(true, $jsonResponse["data"]["lessons"][2]["open"]);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['open']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][1]['open']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][2]['open']);
     }
 }

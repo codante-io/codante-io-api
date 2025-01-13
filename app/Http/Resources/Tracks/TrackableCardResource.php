@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Tracks;
 
-use App\Http\Resources\LessonResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -35,6 +34,5 @@ class TrackableCardResource extends JsonResource
             ],
         };
 
-       
     }
 }
