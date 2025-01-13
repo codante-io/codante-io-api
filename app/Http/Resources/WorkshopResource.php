@@ -34,11 +34,7 @@ class WorkshopResource extends JsonResource
             'image_url' => $this->image_url,
             'video_url' => $this->video_url,
             'difficulty' => $this->difficulty,
-<<<<<<< HEAD
             'duration_in_seconds' => $this->lessons_sum_duration_in_seconds,
-=======
-            'duration_in_minutes' => $this->duration_in_minutes,
->>>>>>> main
             'status' => $this->status,
             'is_standalone' => $this->is_standalone,
             'is_premium' => $this->is_premium,
@@ -46,7 +42,6 @@ class WorkshopResource extends JsonResource
                 'lessons',
                 $this->getLessonSectionsArray()
             ),
-<<<<<<< HEAD
             'lessons' => $this->whenLoaded(
                 'lessons',
                 new SidebarLessonCollection($this->lessons, $baseUrl)
@@ -54,13 +49,6 @@ class WorkshopResource extends JsonResource
 
             'challenge' => $this->challenge,
             'first_unwatched_lesson' => new SidebarLessonResource($this->firstUnwatchedLesson(), $baseUrl),
-=======
-            'lessons' => LessonResource::collection(
-                $this->whenLoaded('lessons')
-            ),
-            'challenge' => $this->challenge,
-            'next_lesson' => $this->next_lesson,
->>>>>>> main
             'instructor' => new InstructorResource(
                 $this->whenLoaded('instructor')
             ),

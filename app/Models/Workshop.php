@@ -20,11 +20,7 @@ class Workshop extends Model
     use HasFactory;
     use SoftDeletes;
 
-<<<<<<< HEAD
-    protected $guarded = ["id"];
-=======
     protected $guarded = ['id'];
->>>>>>> main
 
     protected $casts = [
         'published_at' => 'datetime',
@@ -47,7 +43,6 @@ class Workshop extends Model
 
     public function lessons()
     {
-<<<<<<< HEAD
         return $this->morphMany(Lesson::class, "lessonable");
     }
 
@@ -74,11 +69,6 @@ class Workshop extends Model
                 ->select(DB::raw("COUNT(*) > 0"))
                 ->limit(1),
         ]);
-=======
-        return $this->hasMany(Lesson::class)
-            ->orderBy('position')
-            ->orderBy('id');
->>>>>>> main
     }
 
     public function instructor()
@@ -169,13 +159,8 @@ class Workshop extends Model
         return $grouped
             ->map(function ($lessons, $section) {
                 return [
-<<<<<<< HEAD
                     "name" => $section,
                     "lesson_ids" => $lessons->pluck("id"),
-=======
-                    'name' => $section,
-                    'lessons' => $lessons->pluck('id'),
->>>>>>> main
                 ];
             })
             ->values();

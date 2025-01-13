@@ -15,7 +15,6 @@ class ChallengeCardResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-<<<<<<< HEAD:app/Http/Resources/Tracks/ChallengeCardResource.php
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -28,21 +27,6 @@ class ChallengeCardResource extends JsonResource
                 $this->current_user_id
             ),
             "lessons" => LessonResource::collection($this->whenLoaded("workshop")->lessons),
-=======
-        $resource = [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'short_description' => $this->short_description,
-            'description' => $this->description,
-            'image_url' => $this->image_url,
-            'difficulty' => $this->difficulty,
-            'duration_in_minutes' => $this->duration_in_minutes,
-            'status' => $this->status,
-            'sections' => $this->sectionsWithTrackables(),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
->>>>>>> main:app/Http/Resources/TrackResource.php
         ];
     }
 }

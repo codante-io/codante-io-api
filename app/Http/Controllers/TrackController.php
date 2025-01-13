@@ -26,17 +26,12 @@ class TrackController extends Controller
         return new TrackResource(
             Track::query()
                 ->where('slug', $slug)
-<<<<<<< HEAD
                 ->with([
                     'workshops.tags',
                     'workshops.instructor',
                     'challenges.tags',
                     'challenges.instructor',
                 ])
-=======
-                ->with('tags')
-                ->with('trackSections')
->>>>>>> main
                 ->firstOrFail()
         );
     }

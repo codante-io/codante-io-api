@@ -58,16 +58,10 @@ class WorkshopController extends Controller
             function () use ($slug) {
                 return new WorkshopResource(
                     Workshop::where('slug', $slug)
-<<<<<<< HEAD
                         ->with('lessonsSidebarList')
                         ->with('instructor')
                         ->with('tags')
                         ->withSum('lessons', 'duration_in_seconds')
-=======
-                        ->with('lessons')
-                        ->with('instructor')
-                        ->with('tags')
->>>>>>> main
                         ->visible()
                         ->firstOrFail()
                 );

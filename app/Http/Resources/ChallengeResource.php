@@ -38,7 +38,6 @@ class ChallengeResource extends JsonResource
             'current_user_is_enrolled' => $this->userJoined(),
             'current_user_status' => $this->userStatus(),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
-<<<<<<< HEAD
             // "workshop" => new WorkshopResource($this->whenLoaded("workshop")),
             'solution' => [
                 'lesson_sections' => $this->whenLoaded(
@@ -52,9 +51,6 @@ class ChallengeResource extends JsonResource
                 'first_unwatched_lesson' => new SidebarLessonResource($this->firstUnwatchedLesson(), $baseUrl),
             ],
 
-=======
-            'workshop' => new WorkshopResource($this->whenLoaded('workshop')),
->>>>>>> main
             'weekly_featured_start_date' => $this->weekly_featured_start_date,
             'solution_publish_date' => $this->solution_publish_date,
             'stars' => $this->stars,

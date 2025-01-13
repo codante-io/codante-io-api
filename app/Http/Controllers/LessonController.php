@@ -37,12 +37,7 @@ class LessonController extends Controller
         }
         $user = $request->user();
 
-<<<<<<< HEAD
         $lesson->markAsCompleted($user, false);
-=======
-        $lesson->userCompleted($user, false);
-
->>>>>>> main
         return response()->json([
             'message' => 'Lesson Completed',
             'result' => 'destroy',

@@ -24,7 +24,6 @@ class Track extends Model
      */
     public function trackables(): Collection
     {
-<<<<<<< HEAD
         $allTrackables = $this->workshops
             ->concat($this->challenges()->get())
             ->sortBy('pivot.position');
@@ -36,23 +35,6 @@ class Track extends Model
                 return $trackable;
             });
         }
-=======
-        $workshops = $this->workshops()
-            ->with('lessons')
-            ->with('tags')
-            ->with('instructor')
-            ->get();
-
-        $challenges = $this->challenges()
-            ->withCount('users')
-            ->with('tags')
-            ->with('workshop.instructor')
-            ->get();
-
-        $items = $this->items()
-            ->with('tags')
-            ->get();
->>>>>>> main
 
         $trackableIds = $allTrackables->pluck('pivot.id');
         $completedTrackables = $this->getUserCompletedTrackables($trackableIds);
