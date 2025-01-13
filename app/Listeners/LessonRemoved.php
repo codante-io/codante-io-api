@@ -19,13 +19,21 @@ class LessonRemoved
      */
     public function handle(UserErasedLesson $event): void
     {
+
         $workshop = $event->workshop;
         $user = $event->user;
 
+        // // if there is no workshop - dont do anything.
+        if (! $workshop) {
+            return;
+        }
+
         $lessonCount = $workshop->lessons()->count();
+
         $completedLessons = $user
             ->lessons()
-            ->where('workshop_id', $workshop->id)
+            ->where('lessonable_id', $workshop->id)
+            ->where('lessonable_type', get_class($workshop))
             ->count();
 
         $user->workshops()->updateExistingPivot($workshop->id, [

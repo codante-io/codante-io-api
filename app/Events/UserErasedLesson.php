@@ -19,10 +19,9 @@ class UserErasedLesson
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, $workshop)
+    public function __construct(User $user)
     {
         $this->user = $user;
-        $this->workshop = $workshop;
     }
 
     /**

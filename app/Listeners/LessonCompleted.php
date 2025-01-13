@@ -26,6 +26,10 @@ class LessonCompleted
         $workshop = $event->workshop;
         $user = $event->user;
 
+        if (! $workshop) {
+            return;
+        }
+
         $lessonCount = $workshop->lessons()->count();
         $completedLessons = $user
             ->lessons()

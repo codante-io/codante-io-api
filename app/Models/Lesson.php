@@ -60,7 +60,7 @@ class Lesson extends Model
     {
         if (! $setComplete) {
             $this->users()->detach($user->id);
-            event(new \App\Events\UserErasedLesson($user, $this->workshop));
+            event(new \App\Events\UserErasedLesson($user));
 
             return;
         }
@@ -70,7 +70,7 @@ class Lesson extends Model
             ],
         ]);
 
-        event(new \App\Events\UserCompletedLesson($user, $this->workshop));
+        event(new \App\Events\UserCompletedLesson($user));
     }
 
     public static function getUnusedSlug(string $lessonName): string
