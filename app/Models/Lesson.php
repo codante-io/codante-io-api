@@ -12,12 +12,12 @@ use Illuminate\Support\Str;
 
 class Lesson extends Model
 {
+    use Commentable;
     use CrudTrait;
     use HasFactory;
     use SoftDeletes;
-    use Commentable;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function workshop()
     {
@@ -31,16 +31,16 @@ class Lesson extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->withPivot(["completed_at"]);
+        return $this->belongsToMany(User::class)->withPivot(['completed_at']);
     }
 
     // Gets the Vimeo ID from the video URL
     protected function vimeoId(): Attribute
     {
         return Attribute::make(
-            get: fn() => substr(
+            get: fn () => substr(
                 $this->video_url,
-                strrpos($this->video_url, "/") + 1
+                strrpos($this->video_url, '/') + 1
             )
         );
     }
@@ -58,14 +58,15 @@ class Lesson extends Model
 
     public function markAsCompleted(User $user, bool $setComplete = true)
     {
-        if (!$setComplete) {
+        if (! $setComplete) {
             $this->users()->detach($user->id);
             event(new \App\Events\UserErasedLesson($user, $this->workshop));
+
             return;
         }
         $this->users()->syncWithoutDetaching([
             $user->id => [
-                "completed_at" => now(),
+                'completed_at' => now(),
             ],
         ]);
 
@@ -80,11 +81,11 @@ class Lesson extends Model
         do {
             $newSlug = $slug;
             if ($count > 0) {
-                $newSlug .= "-" . $count;
+                $newSlug .= '-'.$count;
             }
 
             $count++;
-        } while (Lesson::where("slug", $newSlug)->exists());
+        } while (Lesson::where('slug', $newSlug)->exists());
 
         return $newSlug;
     }

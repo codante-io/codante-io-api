@@ -24,6 +24,7 @@ class Track extends Model
      */
     public function trackables(): Collection
     {
+<<<<<<< HEAD
         $allTrackables = $this->workshops
             ->concat($this->challenges()->get())
             ->sortBy('pivot.position');
@@ -35,19 +36,57 @@ class Track extends Model
                 return $trackable;
             });
         }
+=======
+        $workshops = $this->workshops()
+            ->with('lessons')
+            ->with('tags')
+            ->with('instructor')
+            ->get();
+
+        $challenges = $this->challenges()
+            ->withCount('users')
+            ->with('tags')
+            ->with('workshop.instructor')
+            ->get();
+
+        $items = $this->items()
+            ->with('tags')
+            ->get();
+>>>>>>> main
 
         $trackableIds = $allTrackables->pluck('pivot.id');
         $completedTrackables = $this->getUserCompletedTrackables($trackableIds);
 
+<<<<<<< HEAD
         return $allTrackables->map(function ($trackable) use ($completedTrackables) {
             $trackable->completed = $completedTrackables
                 ->contains('trackable_id', $trackable->pivot->id);
             $trackable->track_slug = $this->slug;
+=======
+        $trackableIds = $trackables->pluck('pivot.id');
+
+        $userTrackables = Auth::user()
+            ? DB::table('trackable_user')
+                ->whereIn('trackable_id', $trackableIds)
+                ->where('user_id', Auth::user()->id)
+                ->where('completed', true)
+                ->get()
+            : new Collection();
+
+        $trackables = $trackables->map(function ($trackable) use (
+            $userTrackables
+        ) {
+            $trackable->completed =
+                (bool) $userTrackables
+                    ->where('trackable_id', $trackable->pivot->id)
+                    ->first()?->completed ?? false;
+>>>>>>> main
 
             return $trackable;
         });
     }
 
+<<<<<<< HEAD
     private function getUserCompletedTrackables($trackableIds)
     {
         if (! Auth::check()) {
@@ -59,6 +98,13 @@ class Track extends Model
             ->where('user_id', Auth::user()->id)
             ->where('completed', true)
             ->get();
+=======
+        return $trackables
+            ->sortBy(function ($trackable) {
+                return $trackable->pivot->position;
+            })
+            ->groupBy('pivot.section_id');
+>>>>>>> main
     }
 
     public function workshops()
@@ -104,15 +150,22 @@ class Track extends Model
         return $this->hasMany(TrackSection::class);
     }
 
+<<<<<<< HEAD
     // public function sectionsWithTrackables()
     // {
     //     $sections = $this->trackSections()->with("tags");
+=======
+    public function sectionsWithTrackables()
+    {
+        $sections = $this->trackSections()->with('tags');
+>>>>>>> main
 
     //     $trackables = $this->trackables();
 
     //     return $sections->get()->map(function ($section) use ($trackables) {
     //         $section->trackables = $trackables->get($section->id);
 
+<<<<<<< HEAD
     //         $section->instructors = $section->trackables
     //             ->map(function ($trackable) {
     //                 return $trackable->instructor;
@@ -121,6 +174,16 @@ class Track extends Model
     //             ->flatten()
     //             ->unique("name")
     //             ->values();
+=======
+            $section->instructors = $section->trackables
+                ->map(function ($trackable) {
+                    return $trackable->instructor;
+                })
+                ->filter()
+                ->flatten()
+                ->unique('name')
+                ->values();
+>>>>>>> main
 
     //         return $section;
     //     });

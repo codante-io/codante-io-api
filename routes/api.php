@@ -39,238 +39,250 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get("/user", function (Request $request) {
+Route::get('/user', function (Request $request) {
     if ($request->user()) {
         // o json deve estar aqui para retirar o wrapper "data": https://stackoverflow.com/a/66464348
         return response()->json(new UserResource($request->user()));
     }
 
-    return ["message" => "Não autenticado"];
-})->middleware("auth:sanctum");
+    return ['message' => 'Não autenticado'];
+})->middleware('auth:sanctum');
 
-Route::post("/user/discord", [
+Route::post('/user/discord', [
     DiscordController::class,
-    "handleDiscordLoginButton",
-])->middleware("auth:sanctum");
+    'handleDiscordLoginButton',
+])->middleware('auth:sanctum');
 
-Route::get("/user/subscriptions", function (Request $request) {
+Route::get('/user/subscriptions', function (Request $request) {
     return response()->json(new UserResource($request->user()));
-})->middleware("auth:sanctum");
+})->middleware('auth:sanctum');
 
+<<<<<<< HEAD
 Route::post("/workshops/{slug}/joined", [
+=======
+Route::get('/workshops/{slug}', function ($slug) {
+    return \App\Models\Workshop::where('slug', $slug)->firstOrFail();
+});
+
+Route::post('/workshops/{slug}/joined', [
+>>>>>>> main
     WorkshopController::class,
-    "userJoined",
+    'userJoined',
 ]);
 
 //BugsnagWebhook
-Route::post("bugsnag/notification", [
+Route::post('bugsnag/notification', [
     BugsnagWebhookController::class,
-    "notify",
+    'notify',
 ]);
 
 // Pagarme Webhook
-Route::post("pagarme/notification", [PagarmeWebhooks::class, "handleWebhook"]);
+Route::post('pagarme/notification', [PagarmeWebhooks::class, 'handleWebhook']);
 
-Route::get("/pagarme/get-link", [
+Route::get('/pagarme/get-link', [
     PagarmeController::class,
-    "createOrderAndGetCheckoutLink",
-])->middleware("auth:sanctum");
+    'createOrderAndGetCheckoutLink',
+])->middleware('auth:sanctum');
 
-Route::get("/pagarme/get-subscription-by-order-id/{pagarmeOrderID}", [
+Route::get('/pagarme/get-subscription-by-order-id/{pagarmeOrderID}', [
     PagarmeController::class,
-    "getSubscriptionByPagarmeOrderId",
-])->middleware("auth:sanctum");
+    'getSubscriptionByPagarmeOrderId',
+])->middleware('auth:sanctum');
 
-Route::get("/workshops", [WorkshopController::class, "index"])->middleware(
-    "cache.headers:public;max_age=120;etag"
+Route::get('/workshops', [WorkshopController::class, 'index'])->middleware(
+    'cache.headers:public;max_age=120;etag'
 );
 
+<<<<<<< HEAD
 Route::get("/workshops/{slug}", [WorkshopController::class, "show"]);
 Route::get("/lessons/{slug}", [LessonController::class, "show"]);
+=======
+Route::get('/workshops/{slug}', [WorkshopController::class, 'show']);
+>>>>>>> main
 
-Route::get("/instructors", [InstructorController::class, "index"]);
-Route::get("/instructors/{slug}", [InstructorController::class, "show"]);
+Route::get('/instructors', [InstructorController::class, 'index']);
+Route::get('/instructors/{slug}', [InstructorController::class, 'show']);
 
-Route::get("/reactions", [ReactionController::class, "getReactions"]);
-Route::post("/reactions", [ReactionController::class, "toggle"])->middleware(
-    "auth:sanctum"
+Route::get('/reactions', [ReactionController::class, 'getReactions']);
+Route::post('/reactions', [ReactionController::class, 'toggle'])->middleware(
+    'auth:sanctum'
 );
 
-Route::post("/certificates", [
+Route::post('/certificates', [
     CertificateController::class,
-    "create",
-])->middleware("auth:sanctum");
-Route::get("/certificates/{id}", [CertificateController::class, "showById"]);
-Route::get("/challenges/{slug}/certificate", [
+    'create',
+])->middleware('auth:sanctum');
+Route::get('/certificates/{id}', [CertificateController::class, 'showById']);
+Route::get('/challenges/{slug}/certificate', [
     CertificateController::class,
-    "show",
-])->middleware("auth:sanctum");
+    'show',
+])->middleware('auth:sanctum');
 
-Route::get("/challenges", [ChallengeController::class, "index"]);
-Route::get("/challenges/featured", [
+Route::get('/challenges', [ChallengeController::class, 'index']);
+Route::get('/challenges/featured', [
     ChallengeController::class,
-    "getFeaturedChallenge",
+    'getFeaturedChallenge',
 ]);
 
-Route::get("/challenges/{slug}", [ChallengeController::class, "show"]);
+Route::get('/challenges/{slug}', [ChallengeController::class, 'show']);
 
 // Submit with Deploy URL
-Route::post("/challenges/{slug}/submit", [
+Route::post('/challenges/{slug}/submit', [
     ChallengeController::class,
-    "submit",
-])->middleware("auth:sanctum");
+    'submit',
+])->middleware('auth:sanctum');
 
 // Submit with Image
-Route::post("/challenges/{slug}/submit-without-deploy", [
+Route::post('/challenges/{slug}/submit-without-deploy', [
     ChallengeController::class,
-    "submitWithoutDeploy",
-])->middleware("auth:sanctum");
+    'submitWithoutDeploy',
+])->middleware('auth:sanctum');
 
-Route::put("/challenges/{slug}/submit", [
+Route::put('/challenges/{slug}/submit', [
     ChallengeController::class,
-    "updateSubmission",
-])->middleware("auth:sanctum");
+    'updateSubmission',
+])->middleware('auth:sanctum');
 
-Route::get("/challenges/{slug}/submissions", [
+Route::get('/challenges/{slug}/submissions', [
     ChallengeController::class,
-    "getSubmissions",
+    'getSubmissions',
 ]);
 
-Route::get("/challenges/{slug}/submissions/{github_user}", [
+Route::get('/challenges/{slug}/submissions/{github_user}', [
     ChallengeController::class,
-    "getSubmissionFromGithubUser",
+    'getSubmissionFromGithubUser',
 ]);
 
-Route::get("/challenges/{slug}/joined", [
+Route::get('/challenges/{slug}/joined', [
     ChallengeController::class,
-    "userJoined",
-])->middleware("auth:sanctum");
-Route::get("/challenges/{slug}/forked", [
+    'userJoined',
+])->middleware('auth:sanctum');
+Route::get('/challenges/{slug}/forked', [
     ChallengeController::class,
-    "hasForkedRepo",
-])->middleware("auth:sanctum");
-Route::get("/challenges/{slug}/participants", [
+    'hasForkedRepo',
+])->middleware('auth:sanctum');
+Route::get('/challenges/{slug}/participants', [
     ChallengeController::class,
-    "getChallengeParticipantsBanner",
+    'getChallengeParticipantsBanner',
 ]);
-Route::post("/challenges/{slug}/join", [
+Route::post('/challenges/{slug}/join', [
     ChallengeController::class,
-    "join",
-])->middleware("auth:sanctum");
-Route::put("/challenges/{slug}", [
+    'join',
+])->middleware('auth:sanctum');
+Route::put('/challenges/{slug}', [
     ChallengeController::class,
-    "updateChallengeUser",
-])->middleware("auth:sanctum");
+    'updateChallengeUser',
+])->middleware('auth:sanctum');
 
-Route::get("/tracks", [TrackController::class, "index"]);
-Route::get("/tracks/{slug}", [TrackController::class, "show"]);
+Route::get('/tracks', [TrackController::class, 'index']);
+Route::get('/tracks/{slug}', [TrackController::class, 'show']);
 
-Route::get("/track-items", [TrackItemController::class, "index"]);
-Route::get("/track-items/{slug}", [TrackItemController::class, "show"]);
+Route::get('/track-items', [TrackItemController::class, 'index']);
+Route::get('/track-items/{slug}', [TrackItemController::class, 'show']);
 
-Route::post("/trackables/{trackableId}/complete", [
+Route::post('/trackables/{trackableId}/complete', [
     TrackableController::class,
-    "markAsCompleted",
-])->middleware("auth:sanctum");
+    'markAsCompleted',
+])->middleware('auth:sanctum');
 
-Route::get("/home", [HomeController::class, "index"]);
+Route::get('/home', [HomeController::class, 'index']);
 
-Route::post("/dashboard/change-name", [
+Route::post('/dashboard/change-name', [
     DashboardController::class,
-    "changeUserName",
+    'changeUserName',
 ]);
-Route::post("/dashboard/change-password", [
+Route::post('/dashboard/change-password', [
     DashboardController::class,
-    "changePassword",
+    'changePassword',
 ]);
-Route::post("/dashboard/change-linkedin-url", [
+Route::post('/dashboard/change-linkedin-url', [
     DashboardController::class,
-    "changeLinkedinUser",
+    'changeLinkedinUser',
 ]);
-Route::post("/dashboard/update-settings", [
+Route::post('/dashboard/update-settings', [
     DashboardController::class,
-    "updateSettings",
-]);
-
-Route::get("/dashboard/show-data", [
-    DashboardController::class,
-    "getDashboardData",
-])->middleware("auth:sanctum");
-
-Route::get("/dashboard/workshops", [
-    DashboardController::class,
-    "getWorkshops",
+    'updateSettings',
 ]);
 
-Route::post("/dashboard/change-avatar", [
+Route::get('/dashboard/show-data', [
     DashboardController::class,
-    "changeAvatar",
+    'getDashboardData',
+])->middleware('auth:sanctum');
+
+Route::get('/dashboard/workshops', [
+    DashboardController::class,
+    'getWorkshops',
 ]);
 
-Route::post("/lessons/{lesson}/completed", [
+Route::post('/dashboard/change-avatar', [
+    DashboardController::class,
+    'changeAvatar',
+]);
+
+Route::post('/lessons/{lesson}/completed', [
     LessonController::class,
-    "setCompleted",
-])->middleware("auth:sanctum");
-Route::post("/lessons/{lesson}/uncompleted", [
+    'setCompleted',
+])->middleware('auth:sanctum');
+Route::post('/lessons/{lesson}/uncompleted', [
     LessonController::class,
-    "setUncompleted",
-])->middleware("auth:sanctum");
+    'setUncompleted',
+])->middleware('auth:sanctum');
 
-Route::get("/upcoming", [CalendarController::class, "showCalendar"]);
-Route::get("/custom-test", [CustomTestController::class, "handle"]);
+Route::get('/upcoming', [CalendarController::class, 'showCalendar']);
+Route::get('/custom-test', [CustomTestController::class, 'handle']);
 
-Route::get("/blog-posts", [BlogPostController::class, "index"]);
-Route::get("/blog-posts/{slug}", [BlogPostController::class, "show"]);
-Route::get("/pages/{slug}", [BlogPostController::class, "showPage"]);
+Route::get('/blog-posts', [BlogPostController::class, 'index']);
+Route::get('/blog-posts/{slug}', [BlogPostController::class, 'show']);
+Route::get('/pages/{slug}', [BlogPostController::class, 'showPage']);
 
-Route::get("/technical-assessments", [
+Route::get('/technical-assessments', [
     TechnicalAssessmentController::class,
-    "index",
+    'index',
 ]);
-Route::get("/technical-assessments/{slug}", [
+Route::get('/technical-assessments/{slug}', [
     TechnicalAssessmentController::class,
-    "show",
+    'show',
 ]);
 
-Route::get("/ranking", [RankingController::class, "getRanking"]);
+Route::get('/ranking', [RankingController::class, 'getRanking']);
 
-Route::post("/subscribe", [SubscriptionController::class, "subscribe"]);
-Route::get("/my-subscription", [
+Route::post('/subscribe', [SubscriptionController::class, 'subscribe']);
+Route::get('/my-subscription', [
     SubscriptionController::class,
-    "showSubscription",
+    'showSubscription',
 ]);
 
-Route::get("plan-details", [SubscriptionController::class, "getPlanDetails"]);
+Route::get('plan-details', [SubscriptionController::class, 'getPlanDetails']);
 
-Route::post("/comments", [CommentController::class, "create"])->middleware(
-    "auth:sanctum"
+Route::post('/comments', [CommentController::class, 'create'])->middleware(
+    'auth:sanctum'
 );
-Route::put("/comments", [CommentController::class, "update"])->middleware(
-    "auth:sanctum"
+Route::put('/comments', [CommentController::class, 'update'])->middleware(
+    'auth:sanctum'
 );
-Route::delete("/comments", [CommentController::class, "delete"])->middleware(
-    "auth:sanctum"
+Route::delete('/comments', [CommentController::class, 'delete'])->middleware(
+    'auth:sanctum'
 );
 
-Route::post("/leads", [LeadsController::class, "create"]);
+Route::post('/leads', [LeadsController::class, 'create']);
 
-Route::get("/sitemap", [HomeController::class, "sitemap"]);
+Route::get('/sitemap', [HomeController::class, 'sitemap']);
 
 // Rotas de admin
-Route::post("/get-unused-slug", [LessonController::class, "getUnusedSlug"]);
-Route::post("/get-admin-api-token", []);
-Route::put("/custom-admin/workshops/{id}", [
+Route::post('/get-unused-slug', [LessonController::class, 'getUnusedSlug']);
+Route::post('/get-admin-api-token', []);
+Route::put('/custom-admin/workshops/{id}', [
     WorkshopAdminController::class,
-    "editWorkshop",
+    'editWorkshop',
 ]);
 
-require __DIR__ . "/auth.php";
+require __DIR__.'/auth.php';
 
 Route::fallback(function () {
-    return response()->json(["message" => "Not Found"], 404);
+    return response()->json(['message' => 'Not Found'], 404);
 });
 
-Route::post("/send-discord-notification", [
+Route::post('/send-discord-notification', [
     DiscordController::class,
-    "sendMessage",
+    'sendMessage',
 ]);

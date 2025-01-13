@@ -16,33 +16,32 @@ class GithubLoginController extends AuthenticatedSessionController
 {
     public function githubLogin(Request $request)
     {
-        Auth::shouldUse("web");
+        Auth::shouldUse('web');
 
         $token = $request->validate([
-            "github_token" => "required",
+            'github_token' => 'required',
         ]);
 
         try {
-            $githubUserData = Socialite::driver("github")->userFromToken(
-                $token["github_token"]
+            $githubUserData = Socialite::driver('github')->userFromToken(
+                $token['github_token']
             );
 
             $user =
-                User::where("email", $githubUserData->getEmail())->first() ??
-                User::where("github_id", $githubUserData->getId())->first();
+                User::where('email', $githubUserData->getEmail())->first() ??
+                User::where('github_id', $githubUserData->getId())->first();
             $isNewSignup = false;
 
-            if (!$user) {
+            if (! $user) {
                 $user = User::create([
-                    "name" =>
-                        $githubUserData->getName() ??
+                    'name' => $githubUserData->getName() ??
                         $githubUserData->getNickname(),
-                    "email" => $githubUserData->getEmail(),
-                    "password" => Hash::make(Str::random(10)),
-                    "github_id" => $githubUserData->getId(),
-                    "github_user" => $githubUserData->getNickname(),
-                    "avatar_url" => $githubUserData->getAvatar(),
-                    "email_verified_at" => now(),
+                    'email' => $githubUserData->getEmail(),
+                    'password' => Hash::make(Str::random(10)),
+                    'github_id' => $githubUserData->getId(),
+                    'github_user' => $githubUserData->getNickname(),
+                    'avatar_url' => $githubUserData->getAvatar(),
+                    'email_verified_at' => now(),
                 ]);
 
                 $isNewSignup = true;
@@ -55,7 +54,7 @@ class GithubLoginController extends AuthenticatedSessionController
             // só vamos mudar o avatar se o usuário não tiver avatar ou se o usuário não tiver trocado o avatar
             if (
                 $user->avatar_url === null ||
-                !isset($user->settings["changed_avatar"])
+                ! isset($user->settings['changed_avatar'])
             ) {
                 $user->avatar_url = $githubUserData->getAvatar();
             }
@@ -72,11 +71,11 @@ class GithubLoginController extends AuthenticatedSessionController
             $token = $this->createUserToken($request);
 
             return response()->json([
-                "token" => $token,
-                "is_new_signup" => $isNewSignup,
+                'token' => $token,
+                'is_new_signup' => $isNewSignup,
             ]);
         } catch (\Exception $e) {
-            return response()->json(["error" => $e->getMessage()], 401);
+            return response()->json(['error' => $e->getMessage()], 401);
         }
     }
 }

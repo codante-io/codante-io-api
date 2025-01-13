@@ -15,10 +15,10 @@ class UserAvatarResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "avatar_url" => $this->avatar_url,
-            "name" => $this->whenNotNull($this->name),
-            "badge" => $this->getBadgeName(),
-            "github_user" => $this->whenNotNull($this->github_user),
+            'avatar_url' => $this->avatar_url,
+            'name' => $this->whenNotNull($this->name),
+            'badge' => $this->getBadgeName(),
+            'github_user' => $this->whenNotNull($this->github_user),
         ];
     }
 
@@ -27,18 +27,18 @@ class UserAvatarResource extends JsonResource
         // if user dont want to show badge
         if (
             $this->settings &&
-            isset($this->settings["show_badge"]) &&
-            $this->settings["show_badge"] === false
+            isset($this->settings['show_badge']) &&
+            $this->settings['show_badge'] === false
         ) {
             return null;
         }
 
         if ($this->is_admin) {
-            return "admin";
+            return 'admin';
         }
 
         if ($this->is_pro) {
-            return "pro";
+            return 'pro';
         }
 
         return null;

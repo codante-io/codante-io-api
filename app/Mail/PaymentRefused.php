@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -23,11 +22,11 @@ class PaymentRefused extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Codante | Pagamento Recusado");
+        return new Envelope(subject: 'Codante | Pagamento Recusado');
     }
 
     public function content(): Content
     {
-        return new Content(markdown: "emails.payment-refused");
+        return new Content(markdown: 'emails.payment-refused');
     }
 }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\TechnicalAssessmentCardResource;
 use App\Http\Resources\TechnicalAssessmentResource;
 use App\Models\TechnicalAssessment;
-use Illuminate\Http\Request;
 
 class TechnicalAssessmentController extends Controller
 {
@@ -14,15 +13,15 @@ class TechnicalAssessmentController extends Controller
         return TechnicalAssessmentCardResource::collection(
             TechnicalAssessment::where(function ($query) {
                 $query
-                    ->where("status", "published")
-                    ->orWhere("status", "outdated");
+                    ->where('status', 'published')
+                    ->orWhere('status', 'outdated');
             })
                 ->with([
-                    "tags" => function ($query) {
-                        $query->select("name");
+                    'tags' => function ($query) {
+                        $query->select('name');
                     },
                 ])
-                ->orderBy("status", "desc")
+                ->orderBy('status', 'desc')
                 ->get()
         );
     }
@@ -30,15 +29,15 @@ class TechnicalAssessmentController extends Controller
     public function show($slug)
     {
         return new TechnicalAssessmentResource(
-            TechnicalAssessment::where("slug", $slug)
+            TechnicalAssessment::where('slug', $slug)
                 ->where(function ($query) {
                     $query
-                        ->where("status", "published")
-                        ->orWhere("status", "outdated");
+                        ->where('status', 'published')
+                        ->orWhere('status', 'outdated');
                 })
                 ->with([
-                    "tags" => function ($query) {
-                        $query->select("name");
+                    'tags' => function ($query) {
+                        $query->select('name');
                     },
                 ])
                 ->firstOrFail()

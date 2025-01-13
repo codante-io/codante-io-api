@@ -23,7 +23,7 @@ class TechnicalAssessmentResource extends JsonResource
             'slug' => $this->slug,
             'type' => $this->type,
             'status' => $this->status,
-            'tags' => $this->tags->pluck("name"),
+            'tags' => $this->tags->pluck('name'),
             'company_name' => $this->company_name,
             'company_website' => $this->company_website,
             'company_headquarters' => $this->company_headquarters,
@@ -37,9 +37,9 @@ class TechnicalAssessmentResource extends JsonResource
             'assessment_instructions_url' => $this->assessment_instructions_url,
             'assessment_instructions_text' => $this->assessment_instructions_text,
             'job_position' => $this->job_position,
-            'has_challenge' => !is_null($this->challenge_id),
+            'has_challenge' => ! is_null($this->challenge_id),
             'zipped_files_url' => $this->zipped_files_url,
-            'outdated_details' => $this->outdated_details
+            'outdated_details' => $this->outdated_details,
         ];
 
         return $resource;

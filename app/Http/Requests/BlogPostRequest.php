@@ -29,7 +29,7 @@ class BlogPostRequest extends FormRequest
             'content' => 'required',
             'instructor_id' => 'required',
             'short_description' => 'required|min:5|max:400',
-            'slug' => 'required|unique:blog_posts,slug,' . $this->id,
+            'slug' => 'required|unique:blog_posts,slug,'.$this->id,
             'status' => 'required',
         ];
     }

@@ -13,10 +13,10 @@ class Instructor extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     protected $casts = [
-        "links" => "array",
+        'links' => 'array',
     ];
 
     public function workshops()

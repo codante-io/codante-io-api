@@ -12,7 +12,7 @@ class TrackSection extends Model
     use CrudTrait;
     use HasFactory;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function track()
     {
@@ -21,6 +21,6 @@ class TrackSection extends Model
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 }

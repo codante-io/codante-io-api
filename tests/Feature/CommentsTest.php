@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Events\UserCommented;
 use App\Listeners\CommentCreated;
 use App\Notifications\Discord;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
@@ -33,7 +32,7 @@ class CommentsTest extends TestCase
     /** @test */
     public function it_cannot_comment_if_not_logged_in(): void
     {
-        $response = $this->postJson("/api/comments");
+        $response = $this->postJson('/api/comments');
         $response->assertStatus(401);
     }
 
@@ -43,18 +42,18 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("commentable_type");
-        $response->assertJsonValidationErrors("commentable_id");
-        $response->assertJsonValidationErrors("comment");
+        $response->assertJsonValidationErrors('commentable_type');
+        $response->assertJsonValidationErrors('commentable_id');
+        $response->assertJsonValidationErrors('comment');
     }
 
     /** @test */
@@ -63,19 +62,19 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_type" => "ChallengeUser",
-                "comment" => "Very good!",
+                'commentable_type' => 'ChallengeUser',
+                'comment' => 'Very good!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("commentable_id");
+        $response->assertJsonValidationErrors('commentable_id');
     }
 
     /** @test */
@@ -84,14 +83,14 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_type" => "ChallengeUser",
-                "comment" => "Very good!",
-                "commentable_id" => "1",
+                'commentable_type' => 'ChallengeUser',
+                'comment' => 'Very good!',
+                'commentable_id' => '1',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(404);
@@ -103,19 +102,19 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => "1",
-                "comment" => "Very good!",
+                'commentable_id' => '1',
+                'comment' => 'Very good!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("commentable_type");
+        $response->assertJsonValidationErrors('commentable_type');
     }
 
     /** @test */
@@ -124,21 +123,21 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => "1",
-                "commentable_type" => "InvalidModel",
-                "comment" => "Very good!",
+                'commentable_id' => '1',
+                'commentable_type' => 'InvalidModel',
+                'comment' => 'Very good!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors("commentable_type");
+        $response->assertJsonValidationErrors('commentable_type');
         $response->assertJsonFragment([
-            "commentable_type" => [
-                "O campo commentable type selecionado é inválido.",
+            'commentable_type' => [
+                'O campo commentable type selecionado é inválido.',
             ],
         ]);
     }
@@ -149,23 +148,23 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => "1",
-                "commentable_type" => "User",
-                "comment" => "Very good!",
+                'commentable_id' => '1',
+                'commentable_type' => 'User',
+                'comment' => 'Very good!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors("commentable_type");
+        $response->assertJsonValidationErrors('commentable_type');
 
         // message should be Model is not commentable
         $response->assertJsonFragment([
-            "commentable_type" => [
-                "O campo commentable type selecionado é inválido.",
+            'commentable_type' => [
+                'O campo commentable type selecionado é inválido.',
             ],
         ]);
     }
@@ -176,48 +175,48 @@ class CommentsTest extends TestCase
         $token = $this->signInAndReturnToken();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => "1",
-                "commentable_type" => "App\Models\BlogPost",
+                'commentable_id' => '1',
+                'commentable_type' => "App\Models\BlogPost",
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(422);
 
         // assert message
-        $response->assertJsonValidationErrors("comment");
+        $response->assertJsonValidationErrors('comment');
     }
 
     /** @test */
     public function it_can_comment(): void
     {
         //skip this test
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
         $token = $this->signInAndReturnToken();
 
         $challengeUser = \App\Models\ChallengeUser::factory()->create();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => $challengeUser->id,
-                "commentable_type" => "ChallengeUser",
-                "comment" => "Very good!",
+                'commentable_id' => $challengeUser->id,
+                'commentable_type' => 'ChallengeUser',
+                'comment' => 'Very good!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(201);
 
         // assert comment
-        $this->assertDatabaseHas("comments", [
-            "commentable_id" => $challengeUser->id,
-            "commentable_type" => "App\Models\ChallengeUser",
-            "comment" => "Very good!",
+        $this->assertDatabaseHas('comments', [
+            'commentable_id' => $challengeUser->id,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'comment' => 'Very good!',
         ]);
     }
 
@@ -229,13 +228,13 @@ class CommentsTest extends TestCase
         $comment = \App\Models\Comment::factory()->create();
 
         $response = $this->putJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "comment_id" => $comment->id,
-                "comment" => "Nice! I like it!",
+                'comment_id' => $comment->id,
+                'comment' => 'Nice! I like it!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(403);
@@ -244,29 +243,29 @@ class CommentsTest extends TestCase
     public function it_can_update_a_comment(): void
     {
         $auth = $this->signInAndReturnUserAndToken();
-        $user = $auth["user"];
-        $token = $auth["token"];
+        $user = $auth['user'];
+        $token = $auth['token'];
 
         $comment = \App\Models\Comment::factory()->create([
-            "user_id" => $user->id,
+            'user_id' => $user->id,
         ]);
 
         $response = $this->putJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "comment_id" => $comment->id,
-                "comment" => "Nice! I like it!",
+                'comment_id' => $comment->id,
+                'comment' => 'Nice! I like it!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(200);
 
         // assert comment
-        $this->assertDatabaseHas("comments", [
-            "id" => $comment->id,
-            "comment" => "Nice! I like it!",
+        $this->assertDatabaseHas('comments', [
+            'id' => $comment->id,
+            'comment' => 'Nice! I like it!',
         ]);
     }
 
@@ -278,12 +277,12 @@ class CommentsTest extends TestCase
         $comment = \App\Models\Comment::factory()->create();
 
         $response = $this->deleteJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "comment_id" => $comment->id,
+                'comment_id' => $comment->id,
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(403);
@@ -293,27 +292,27 @@ class CommentsTest extends TestCase
     public function it_can_delete_a_comment(): void
     {
         $auth = $this->signInAndReturnUserAndToken();
-        $user = $auth["user"];
-        $token = $auth["token"];
+        $user = $auth['user'];
+        $token = $auth['token'];
 
         $comment = \App\Models\Comment::factory()->create([
-            "user_id" => $user->id,
+            'user_id' => $user->id,
         ]);
 
         $response = $this->deleteJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "comment_id" => $comment->id,
+                'comment_id' => $comment->id,
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
         $response->assertStatus(200);
 
         // assert comment
-        $this->assertSoftDeleted("comments", [
-            "id" => $comment->id,
+        $this->assertSoftDeleted('comments', [
+            'id' => $comment->id,
         ]);
     }
 
@@ -321,8 +320,8 @@ class CommentsTest extends TestCase
     public function it_can_reply_to_a_comment(): void
     {
         $auth = $this->signInAndReturnUserAndToken();
-        $user = $auth["user"];
-        $token = $auth["token"];
+        $user = $auth['user'];
+        $token = $auth['token'];
         $challengeUser = \App\Models\ChallengeUser::factory()->create();
 
         Event::fake();
@@ -330,32 +329,32 @@ class CommentsTest extends TestCase
         Event::assertListening(UserCommented::class, CommentCreated::class);
 
         $comment = \App\Models\Comment::factory()->create([
-            "user_id" => $user->id,
-            "commentable_id" => $challengeUser->id,
+            'user_id' => $user->id,
+            'commentable_id' => $challengeUser->id,
         ]);
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => $challengeUser->id,
-                "commentable_type" => "ChallengeUser",
-                "comment" => "Hey! This is a response.",
-                "replying_to" => $comment->id,
+                'commentable_id' => $challengeUser->id,
+                'commentable_type' => 'ChallengeUser',
+                'comment' => 'Hey! This is a response.',
+                'replying_to' => $comment->id,
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
 
         $response->assertStatus(201);
 
         // assert comment
-        $this->assertDatabaseHas("comments", [
-            "id" => $response->json("id"),
-            "commentable_id" => $comment->id,
-            "commentable_type" => "App\Models\ChallengeUser",
-            "comment" => "Hey! This is a response.",
-            "replying_to" => $comment->id,
+        $this->assertDatabaseHas('comments', [
+            'id' => $response->json('id'),
+            'commentable_id' => $comment->id,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'comment' => 'Hey! This is a response.',
+            'replying_to' => $comment->id,
         ]);
         Event::assertDispatched(UserCommented::class);
     }
@@ -365,19 +364,19 @@ class CommentsTest extends TestCase
     {
         Event::fake([UserCommented::class]);
         $auth = $this->signInAndReturnUserAndToken();
-        $user = $auth["user"];
-        $token = $auth["token"];
+        $user = $auth['user'];
+        $token = $auth['token'];
         $challengeUser = \App\Models\ChallengeUser::factory()->create();
 
         $response = $this->postJson(
-            "/api/comments",
+            '/api/comments',
             [
-                "commentable_id" => $challengeUser->id,
-                "commentable_type" => "ChallengeUser",
-                "comment" => "Adorei sua submissão!",
+                'commentable_id' => $challengeUser->id,
+                'commentable_type' => 'ChallengeUser',
+                'comment' => 'Adorei sua submissão!',
             ],
             [
-                "Authorization" => "Bearer $token",
+                'Authorization' => "Bearer $token",
             ]
         );
 
@@ -389,21 +388,21 @@ class CommentsTest extends TestCase
     /** @test */
     public function it_sends_email_when_comment_event_is_dispatched(): void
     {
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
 
         $ChallengeUserUser = \App\Models\User::factory()->create([
-            "id" => 2,
+            'id' => 2,
         ]);
         $CommenterUser = \App\Models\User::factory()->create([
-            "id" => 5,
+            'id' => 5,
         ]);
         $challengeUser = \App\Models\ChallengeUser::factory()->create([
-            "user_id" => $ChallengeUserUser->id,
+            'user_id' => $ChallengeUserUser->id,
         ]);
         $comment = \App\Models\Comment::factory()->create([
-            "commentable_type" => "App\Models\ChallengeUser",
-            "commentable_id" => $challengeUser->id,
-            "user_id" => $CommenterUser->id,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'commentable_id' => $challengeUser->id,
+            'user_id' => $CommenterUser->id,
         ]);
 
         Notification::fake();
@@ -428,50 +427,50 @@ class CommentsTest extends TestCase
     /** @test */
     public function it_sends_emails_to_users_when_there_was_a_reply(): void
     {
-        $this->markTestSkipped("Falhando no CI/CD - precisa alterar o mock");
+        $this->markTestSkipped('Falhando no CI/CD - precisa alterar o mock');
 
         $parentCommentUser = \App\Models\User::factory()->create([
-            "id" => 20,
-            "email" => "comentariopai@email.com",
+            'id' => 20,
+            'email' => 'comentariopai@email.com',
         ]);
 
         $CommenterUser1 = \App\Models\User::factory()->create([
-            "id" => 5,
+            'id' => 5,
         ]);
         $CommenterUser2 = \App\Models\User::factory()->create([
-            "id" => 6,
+            'id' => 6,
         ]);
         $challengeUserUser = \App\Models\User::factory()->create([
-            "id" => 7,
+            'id' => 7,
         ]);
         $challengeUser = \App\Models\ChallengeUser::factory()->create([
-            "user_id" => $challengeUserUser->id,
+            'user_id' => $challengeUserUser->id,
         ]);
 
         // Comentário pai é criado
         $parentComment = \App\Models\Comment::factory()->create([
-            "commentable_type" => "App\Models\ChallengeUser",
-            "comment" => "Gostei do Projeto!",
-            "commentable_id" => $challengeUser->id,
-            "user_id" => $parentCommentUser->id,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'comment' => 'Gostei do Projeto!',
+            'commentable_id' => $challengeUser->id,
+            'user_id' => $parentCommentUser->id,
         ]);
 
         // Primeira resposta é criada
         $relatedComment = \App\Models\Comment::factory()->create([
-            "commentable_type" => "App\Models\ChallengeUser",
-            "comment" => "Legal",
-            "commentable_id" => $challengeUser->id,
-            "user_id" => $CommenterUser1->id,
-            "replying_to" => $parentComment->id,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'comment' => 'Legal',
+            'commentable_id' => $challengeUser->id,
+            'user_id' => $CommenterUser1->id,
+            'replying_to' => $parentComment->id,
         ]);
 
         // Segunda resposta é criada
         $relatedComment2 = \App\Models\Comment::factory()->create([
-            "commentable_type" => "App\Models\ChallengeUser",
-            "comment" => "Massa",
-            "commentable_id" => $challengeUser->id,
-            "user_id" => $CommenterUser2->id,
-            "replying_to" => $parentComment->id,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'comment' => 'Massa',
+            'commentable_id' => $challengeUser->id,
+            'user_id' => $CommenterUser2->id,
+            'replying_to' => $parentComment->id,
         ]);
 
         Notification::fake();

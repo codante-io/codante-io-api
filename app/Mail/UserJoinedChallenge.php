@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Challenge;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -30,7 +29,7 @@ class UserJoinedChallenge extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Você está participando do mini projeto ' . $this->challenge->name,
+            subject: 'Você está participando do mini projeto '.$this->challenge->name,
         );
     }
 

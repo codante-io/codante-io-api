@@ -4,17 +4,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table("workshops", function (Blueprint $table) {
+        Schema::table('workshops', function (Blueprint $table) {
             $table
-                ->json("resources")
+                ->json('resources')
                 ->nullable()
-                ->after("featured");
+                ->after('featured');
         });
     }
 
@@ -23,8 +24,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("workshops", function (Blueprint $table) {
-            $table->dropColumn("resources");
+        Schema::table('workshops', function (Blueprint $table) {
+            $table->dropColumn('resources');
         });
     }
 };

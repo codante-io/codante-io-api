@@ -26,61 +26,61 @@ class DatabaseSeeder extends Seeder
         \App\Models\Workshop::factory(10)
             ->has(Lesson::factory()->count(4))
             ->has(Tag::factory()->count(3))
-            ->set("is_standalone", true)
-            ->set("featured", null)
+            ->set('is_standalone', true)
+            ->set('featured', null)
             ->create();
         \App\Models\Workshop::factory(2)
             ->has(Lesson::factory()->count(4))
             ->has(Tag::factory()->count(3))
-            ->set("is_standalone", true)
-            ->set("featured", "landing")
-            ->set("status", "published")
+            ->set('is_standalone', true)
+            ->set('featured', 'landing')
+            ->set('status', 'published')
             ->create();
 
         \App\Models\Challenge::factory(4)
             ->has(
                 Workshop::factory()
-                    ->set("is_standalone", false)
-                    ->set("featured", null)
+                    ->set('is_standalone', false)
+                    ->set('featured', null)
                     ->count(1)
                     ->has(Lesson::factory()->count(4))
             )
             ->hasAttached(
                 \App\Models\User::factory(23)->set(
-                    "avatar_url",
-                    "https://i.pravatar.cc/300"
+                    'avatar_url',
+                    'https://i.pravatar.cc/300'
                 ),
-                fn() => [
-                    "completed" => fake()->boolean(),
-                    "joined_discord" => fake()->boolean(),
+                fn () => [
+                    'completed' => fake()->boolean(),
+                    'joined_discord' => fake()->boolean(),
                 ]
             )
             ->has(Tag::factory()->count(3))
-            ->set("featured", null)
-            ->set("position", fake()->randomFloat(4, 1, 10))
+            ->set('featured', null)
+            ->set('position', fake()->randomFloat(4, 1, 10))
             ->create();
 
         \App\Models\Challenge::factory(12)
             ->has(
                 Workshop::factory()
-                    ->set("is_standalone", false)
-                    ->set("featured", null)
+                    ->set('is_standalone', false)
+                    ->set('featured', null)
                     ->count(1)
                     ->has(Lesson::factory()->count(4))
             )
             ->hasAttached(
                 \App\Models\User::factory(23)->set(
-                    "avatar_url",
-                    "https://i.pravatar.cc/300"
+                    'avatar_url',
+                    'https://i.pravatar.cc/300'
                 ),
-                fn() => [
-                    "completed" => fake()->boolean(),
-                    "joined_discord" => fake()->boolean(),
+                fn () => [
+                    'completed' => fake()->boolean(),
+                    'joined_discord' => fake()->boolean(),
                 ]
             )
             ->has(Tag::factory()->count(3))
-            ->set("featured", "landing")
-            ->set("position", fake()->randomFloat(4, 1, 10))
+            ->set('featured', 'landing')
+            ->set('position', fake()->randomFloat(4, 1, 10))
             ->create();
 
         \App\Models\Track::factory(3)
@@ -89,25 +89,25 @@ class DatabaseSeeder extends Seeder
                     ->count(3)
                     ->has(Lesson::factory()->count(4))
                     ->has(Tag::factory()->count(3))
-                    ->set("featured", null)
-                    ->set("is_standalone", true),
-                fn() => ["position" => fake()->randomFloat(4, 1, 10)]
+                    ->set('featured', null)
+                    ->set('is_standalone', true),
+                fn () => ['position' => fake()->randomFloat(4, 1, 10)]
             )
             ->hasAttached(
                 Challenge::factory()
                     ->count(3)
-                    ->set("featured", null)
+                    ->set('featured', null)
                     ->has(
                         Workshop::factory()
-                            ->set("is_standalone", false)
-                            ->set("featured", null)
+                            ->set('is_standalone', false)
+                            ->set('featured', null)
                             ->count(1)
                             ->has(Lesson::factory()->count(4))
                     )
                     ->has(Tag::factory()->count(3))
-                    ->set("position", fake()->randomFloat(4, 1, 10)),
+                    ->set('position', fake()->randomFloat(4, 1, 10)),
 
-                fn() => ["position" => fake()->randomFloat(4, 1, 10)]
+                fn () => ['position' => fake()->randomFloat(4, 1, 10)]
             )
             ->create();
 
@@ -124,17 +124,17 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $user = new User([
-            "name" => "Roberto Cestari",
-            "email" => "robertotcestari@gmail.com",
-            "password" => bcrypt("19881988"),
+            'name' => 'Roberto Cestari',
+            'email' => 'robertotcestari@gmail.com',
+            'password' => bcrypt('19881988'),
         ]);
 
         $user->save();
 
         $user2 = new User([
-            "name" => "Icaro Harry",
-            "email" => "icaropc17@gmail.com",
-            "password" => bcrypt("Codante2023"),
+            'name' => 'Icaro Harry',
+            'email' => 'icaropc17@gmail.com',
+            'password' => bcrypt('Codante2023'),
         ]);
 
         $user2->save();

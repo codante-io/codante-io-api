@@ -11,27 +11,28 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ChallengeUser extends Model
 {
+    use Commentable;
+    use CrudTrait;
     use HasFactory;
     use Reactable;
     use SoftDeletes;
-    use Commentable;
-    use CrudTrait;
 
-    protected $table = "challenge_user";
-    protected $fillable = ["listed"];
+    protected $table = 'challenge_user';
 
-    function User()
+    protected $fillable = ['listed'];
+
+    public function User()
     {
         return $this->belongsTo(User::class);
     }
 
-    function Challenge()
+    public function Challenge()
     {
         return $this->belongsTo(Challenge::class);
     }
 
-    function Certificate()
+    public function Certificate()
     {
-        return $this->morphOne(Certificate::class, "certifiable");
+        return $this->morphOne(Certificate::class, 'certifiable');
     }
 }

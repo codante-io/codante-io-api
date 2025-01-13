@@ -15,14 +15,14 @@ class CertificateResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id" => $this->id,
-            "metadata" => $this->metadata,
-            "certifiable_type" => $this->certifiable_type,
-            "certifiable_id" => $this->certifiable_id,
-            "status" => $this->status,
-            "user" => new UserResource($this->whenLoaded("user")),
-            "certifiable" => $this->whenLoaded("certifiable"),
-            "created_at" => $this->created_at,
+            'id' => $this->id,
+            'metadata' => $this->metadata,
+            'certifiable_type' => $this->certifiable_type,
+            'certifiable_id' => $this->certifiable_id,
+            'status' => $this->status,
+            'user' => new UserResource($this->whenLoaded('user')),
+            'certifiable' => $this->whenLoaded('certifiable'),
+            'created_at' => $this->created_at,
         ];
     }
 }

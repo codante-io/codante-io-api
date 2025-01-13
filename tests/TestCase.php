@@ -13,17 +13,17 @@ abstract class TestCase extends BaseTestCase
         $user =
             $user ?:
             \App\Models\User::factory()->create([
-                "password" => bcrypt("password"),
+                'password' => bcrypt('password'),
             ]);
         // $this->actingAs($user);
 
         // get api key
-        $response = $this->postJson("/api/login", [
-            "email" => $user->email,
-            "password" => "password",
+        $response = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
         ]);
 
-        $token = $response->json()["token"];
+        $token = $response->json()['token'];
 
         return $token;
     }
@@ -33,16 +33,16 @@ abstract class TestCase extends BaseTestCase
         $user =
             $user ?:
             \App\Models\User::factory()->create([
-                "password" => bcrypt("password"),
+                'password' => bcrypt('password'),
             ]);
 
-        $response = $this->postJson("/api/login", [
-            "email" => $user->email,
-            "password" => "password",
+        $response = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
         ]);
 
-        $token = $response->json()["token"];
+        $token = $response->json()['token'];
 
-        return ["user" => $user, "token" => $token];
+        return ['user' => $user, 'token' => $token];
     }
 }

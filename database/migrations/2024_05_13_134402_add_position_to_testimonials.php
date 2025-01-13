@@ -4,22 +4,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table("testimonials", function (Blueprint $table) {
+        Schema::table('testimonials', function (Blueprint $table) {
             $table
-                ->integer("position")
+                ->integer('position')
                 ->nullable()
-                ->after("featured");
+                ->after('featured');
 
             $table
-                ->string("role")
+                ->string('role')
                 ->nullable()
-                ->after("avatar_url");
+                ->after('avatar_url');
         });
     }
 
@@ -28,10 +29,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("testimonials", function (Blueprint $table) {
-            $table->dropColumn("position");
+        Schema::table('testimonials', function (Blueprint $table) {
+            $table->dropColumn('position');
 
-            $table->dropColumn("role");
+            $table->dropColumn('role');
         });
     }
 };

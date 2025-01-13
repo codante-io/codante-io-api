@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table("challenges", function (Blueprint $table) {
+        Schema::table('challenges', function (Blueprint $table) {
             $table
-                ->float("position", 8, 4)
-                ->after("featured")
+                ->float('position', 8, 4)
+                ->after('featured')
                 ->autoIncrement();
         });
     }
@@ -24,8 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table("challenges", function (Blueprint $table) {
-            $table->dropColumn("position");
+        Schema::table('challenges', function (Blueprint $table) {
+            $table->dropColumn('position');
         });
     }
 };

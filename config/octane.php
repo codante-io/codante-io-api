@@ -37,7 +37,7 @@ return [
     |
     */
 
-    "server" => env("OCTANE_SERVER", "swoole"),
+    'server' => env('OCTANE_SERVER', 'swoole'),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,7 +50,7 @@ return [
     |
     */
 
-    "https" => env("OCTANE_HTTPS", true),
+    'https' => env('OCTANE_HTTPS', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -63,7 +63,7 @@ return [
     |
     */
 
-    "listeners" => [
+    'listeners' => [
         WorkerStarting::class => [
             EnsureUploadedFilesAreValid::class,
             EnsureUploadedFilesCanBeMoved::class,
@@ -127,9 +127,9 @@ return [
     |
     */
 
-    "warm" => [...Octane::defaultServicesToWarm()],
+    'warm' => [...Octane::defaultServicesToWarm()],
 
-    "flush" => [
+    'flush' => [
         //
     ],
 
@@ -144,10 +144,10 @@ return [
     |
     */
 
-    "tables" => [
-        "example:1000" => [
-            "name" => "string:1000",
-            "votes" => "int",
+    'tables' => [
+        'example:1000' => [
+            'name' => 'string:1000',
+            'votes' => 'int',
         ],
     ],
 
@@ -162,9 +162,9 @@ return [
     |
     */
 
-    "cache" => [
-        "rows" => 1000,
-        "bytes" => 10000,
+    'cache' => [
+        'rows' => 1000,
+        'bytes' => 10000,
     ],
 
     /*
@@ -178,16 +178,16 @@ return [
     |
     */
 
-    "watch" => [
-        "app",
-        "bootstrap",
-        "config/**/*.php",
-        "database/**/*.php",
-        "public/**/*.php",
-        "resources/**/*.php",
-        "routes",
-        "composer.lock",
-        ".env",
+    'watch' => [
+        'app',
+        'bootstrap',
+        'config/**/*.php',
+        'database/**/*.php',
+        'public/**/*.php',
+        'resources/**/*.php',
+        'routes',
+        'composer.lock',
+        '.env',
     ],
 
     /*
@@ -201,7 +201,7 @@ return [
     |
     */
 
-    "garbage" => 50,
+    'garbage' => 50,
 
     /*
     |--------------------------------------------------------------------------
@@ -214,5 +214,5 @@ return [
     |
     */
 
-    "max_execution_time" => 30,
+    'max_execution_time' => 30,
 ];

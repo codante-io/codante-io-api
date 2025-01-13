@@ -9,13 +9,14 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
-class CertificatePublishedNotification extends Notification implements
-    ShouldQueue
+class CertificatePublishedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     private $certificate;
+
     private $certifiable;
+
     // private $challenge;
     /**
      * Create a new notification instance.
@@ -34,7 +35,7 @@ class CertificatePublishedNotification extends Notification implements
      */
     public function via(object $notifiable): array
     {
-        return ["mail"];
+        return ['mail'];
     }
 
     /**
@@ -42,8 +43,8 @@ class CertificatePublishedNotification extends Notification implements
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $firstName = Str::title(explode(" ", $notifiable->name)[0]);
-        $frontUrl = config("app.frontend_url");
+        $firstName = Str::title(explode(' ', $notifiable->name)[0]);
+        $frontUrl = config('app.frontend_url');
 
         if (
             $this->certificate->certifiable_type === "App\Models\ChallengeUser"
@@ -58,15 +59,15 @@ class CertificatePublishedNotification extends Notification implements
         }
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Codante")
-            ->subject("[Codante] Seu certificado foi publicado!")
+            ->from('contato@codante.io', 'Codante')
+            ->subject('[Codante] Seu certificado foi publicado!')
             ->greeting("Olá $firstName")
             ->line($message)
             ->action(
-                "Ver certificado",
-                $frontUrl . "/certificados/{$this->certificate->id}"
+                'Ver certificado',
+                $frontUrl."/certificados/{$this->certificate->id}"
             )
-            ->line("Clique no botão acima para acessá-lo.");
+            ->line('Clique no botão acima para acessá-lo.');
     }
 
     /**
@@ -77,7 +78,7 @@ class CertificatePublishedNotification extends Notification implements
     public function toArray(object $notifiable): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

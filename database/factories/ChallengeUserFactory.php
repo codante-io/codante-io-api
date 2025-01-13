@@ -19,15 +19,15 @@ class ChallengeUserFactory extends Factory
     public function definition(): array
     {
         return [
-            "challenge_id" => Challenge::factory(),
-            "user_id" => User::factory(),
-            "completed" => fake()->boolean(),
-            "fork_url" => fake()->url(),
-            "joined_discord" => fake()->boolean(),
-            "submission_url" => fake()->url(),
-            "submission_image_url" => fake()->imageUrl(640, 480),
-            "is_solution" => fake()->boolean(),
-            "featured" => fake()->randomElement(["landing", null, "new"]),
+            'challenge_id' => Challenge::factory(),
+            'user_id' => User::factory(),
+            'completed' => fake()->boolean(),
+            'fork_url' => fake()->url(),
+            'joined_discord' => fake()->boolean(),
+            'submission_url' => fake()->url(),
+            'submission_image_url' => fake()->imageUrl(640, 480),
+            'is_solution' => fake()->boolean(),
+            'featured' => fake()->randomElement(['landing', null, 'new']),
         ];
     }
 }

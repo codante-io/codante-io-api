@@ -14,8 +14,11 @@ class UserRequestedCertificate
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
+
     public $certificate;
+
     public $certifiable;
+
     /**
      * Create a new event instance.
      */
@@ -36,6 +39,6 @@ class UserRequestedCertificate
      */
     public function broadcastOn(): array
     {
-        return [new PrivateChannel("channel-name")];
+        return [new PrivateChannel('channel-name')];
     }
 }

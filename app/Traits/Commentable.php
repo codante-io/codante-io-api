@@ -9,13 +9,14 @@ use Backpack\CRUD\app\Models\Traits\CrudTrait;
 trait Commentable
 {
     use CrudTrait;
+
     public function comments()
     {
         return $this->morphMany(
             Comment::class,
-            "comments",
-            "commentable_type",
-            "commentable_id"
+            'comments',
+            'commentable_type',
+            'commentable_id'
         );
     }
 
@@ -25,9 +26,9 @@ trait Commentable
         $replying_to = null
     ) {
         return $this->comments()->create([
-            "comment" => $comment,
-            "user_id" => $user->id,
-            "replying_to" => $replying_to,
+            'comment' => $comment,
+            'user_id' => $user->id,
+            'replying_to' => $replying_to,
         ]);
     }
 }

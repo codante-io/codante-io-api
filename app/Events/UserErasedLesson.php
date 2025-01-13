@@ -13,7 +13,9 @@ class UserErasedLesson
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
+
     public $workshop;
+
     /**
      * Create a new event instance.
      */
@@ -30,6 +32,6 @@ class UserErasedLesson
      */
     public function broadcastOn(): array
     {
-        return [new PrivateChannel("channel-name")];
+        return [new PrivateChannel('channel-name')];
     }
 }

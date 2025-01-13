@@ -34,8 +34,8 @@ jobs:
       - name: Composer install
         run: composer install --prefer-dist --no-interaction --no-suggest
 
-      # - name: Check code style (Laravel Pint)
-      #   run: ./vendor/bin/pint --test
+      - name: Check code style (Laravel Pint)
+        run: ./vendor/bin/pint --test
 
       - name: Boot Laravel application
         run: |

@@ -31,11 +31,11 @@ class AuthServiceProvider extends ServiceProvider
             object $notifiable,
             string $token
         ) {
-            return config("app.frontend_url") .
+            return config('app.frontend_url').
                 "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
 
-        Gate::define("viewPulse", function (User $user) {
+        Gate::define('viewPulse', function (User $user) {
             return $user->isAdmin();
         });
 

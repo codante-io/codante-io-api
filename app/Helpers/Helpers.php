@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Str;
 
-if (!function_exists("first_name")) {
+if (! function_exists('first_name')) {
     function firstName($name)
     {
-        return Str::title(explode(" ", $name)[0]);
+        return Str::title(explode(' ', $name)[0]);
     }
 }

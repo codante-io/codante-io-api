@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Services\CompareChallengeReadmes;
-use Str;
 
 class CompareReadmeController
 {

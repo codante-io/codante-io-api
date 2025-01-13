@@ -25,10 +25,10 @@ class ChallengeUserRequest extends FormRequest
     public function rules()
     {
         return [
-            "id" => "required",
-            "user_id" => "required",
-            "challenge_id" => "required",
-            "listed" => "required",
+            'id' => 'required',
+            'user_id' => 'required',
+            'challenge_id' => 'required',
+            'listed' => 'required',
         ];
     }
 
@@ -40,8 +40,8 @@ class ChallengeUserRequest extends FormRequest
     public function attributes()
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     /**
@@ -52,7 +52,7 @@ class ChallengeUserRequest extends FormRequest
     public function messages()
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

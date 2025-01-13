@@ -25,7 +25,7 @@ class CertificateRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            "user_id" => "required",
+            'user_id' => 'required',
         ];
 
         return $rules;
@@ -39,8 +39,8 @@ class CertificateRequest extends FormRequest
     public function attributes()
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 
     /**
@@ -51,7 +51,7 @@ class CertificateRequest extends FormRequest
     public function messages()
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

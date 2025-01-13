@@ -12,32 +12,32 @@ class ReactionController extends Controller
     public function toggle()
     {
         $data = request()->validate([
-            "reactable_id" => "required",
-            "reactable_type" => "required",
-            "reaction" =>
-                "required|in:" . implode(",", Reaction::$allowedReactionTypes),
+            'reactable_id' => 'required',
+            'reactable_type' => 'required',
+            'reaction' => 'required|in:'.implode(',', Reaction::$allowedReactionTypes),
         ]);
 
-        $reactableClass = Reaction::validateReactable($data["reactable_type"]);
+        $reactableClass = Reaction::validateReactable($data['reactable_type']);
 
         // find if the reactable model exists
-        $reactable = $reactableClass::findOrFail($data["reactable_id"]);
+        $reactable = $reactableClass::findOrFail($data['reactable_id']);
 
         // if the user has already reacted, delete the reaction
         if (
-            $reactable->isReactedBy($data["reaction"], auth("sanctum")->user())
+            $reactable->isReactedBy($data['reaction'], auth('sanctum')->user())
         ) {
             $reactionId = $reactable->removeReaction(
-                $data["reaction"],
-                auth("sanctum")->user()
+                $data['reaction'],
+                auth('sanctum')->user()
             );
 
             event(new ReactionDeleted($reactionId, $reactable));
+
             return response()->json(
                 [
-                    "message" => "Reaction removed successfully",
-                    "result" => "destroy",
-                    "reaction" => $data["reaction"],
+                    'message' => 'Reaction removed successfully',
+                    'result' => 'destroy',
+                    'reaction' => $data['reaction'],
                 ],
                 204
             );
@@ -45,19 +45,19 @@ class ReactionController extends Controller
 
         // create the reaction
         $reaction = $reactable->react(
-            $data["reaction"],
-            auth("sanctum")->user()
+            $data['reaction'],
+            auth('sanctum')->user()
         );
 
-        if ($reactableClass == "App\\Models\\ChallengeUser") {
+        if ($reactableClass == 'App\\Models\\ChallengeUser') {
             event(new ReactionCreated($reaction->id, $reactable));
         }
 
         return response()->json(
             [
-                "message" => "Reaction created successfully",
-                "result" => "create",
-                "reaction" => $data["reaction"],
+                'message' => 'Reaction created successfully',
+                'result' => 'create',
+                'reaction' => $data['reaction'],
             ],
             201
         );
@@ -67,12 +67,12 @@ class ReactionController extends Controller
     {
         // validate request
         $data = $request->validate([
-            "reactable_id" => "required",
-            "reactable_type" => "required",
+            'reactable_id' => 'required',
+            'reactable_type' => 'required',
         ]);
 
-        $reactableClass = Reaction::validateReactable($data["reactable_type"]);
+        $reactableClass = Reaction::validateReactable($data['reactable_type']);
 
-        return Reaction::getReactions($reactableClass, $data["reactable_id"]);
+        return Reaction::getReactions($reactableClass, $data['reactable_id']);
     }
 }

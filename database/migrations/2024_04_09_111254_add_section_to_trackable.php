@@ -4,29 +4,30 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table("trackables", function (Blueprint $table) {
+        Schema::table('trackables', function (Blueprint $table) {
             $table
-                ->string("name")
+                ->string('name')
                 ->nullable()
-                ->after("position");
+                ->after('position');
 
             $table
-                ->text("description")
+                ->text('description')
                 ->nullable()
-                ->after("name");
+                ->after('name');
 
             $table
-                ->foreignId("section_id")
+                ->foreignId('section_id')
                 ->nullable()
-                ->after("description")
-                ->constrained("track_sections")
-                ->onDelete("set null");
+                ->after('description')
+                ->constrained('track_sections')
+                ->onDelete('set null');
         });
     }
 
@@ -35,11 +36,11 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("trackables", function (Blueprint $table) {
-            $table->dropColumn("name");
-            $table->dropColumn("description");
-            $table->dropForeign(["section_id"]);
-            $table->dropColumn("section_id");
+        Schema::table('trackables', function (Blueprint $table) {
+            $table->dropColumn('name');
+            $table->dropColumn('description');
+            $table->dropForeign(['section_id']);
+            $table->dropColumn('section_id');
         });
     }
 };

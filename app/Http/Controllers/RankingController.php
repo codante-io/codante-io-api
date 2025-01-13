@@ -13,6 +13,7 @@ class RankingController extends Controller
         $monthly = $request->monthly;
 
         $ranking = UserActionPoints::calculateRanking($monthly);
+
         return UserActionPointsResource::collection($ranking);
     }
 }

@@ -58,10 +58,16 @@ class WorkshopController extends Controller
             function () use ($slug) {
                 return new WorkshopResource(
                     Workshop::where('slug', $slug)
+<<<<<<< HEAD
                         ->with('lessonsSidebarList')
                         ->with('instructor')
                         ->with('tags')
                         ->withSum('lessons', 'duration_in_seconds')
+=======
+                        ->with('lessons')
+                        ->with('instructor')
+                        ->with('tags')
+>>>>>>> main
                         ->visible()
                         ->firstOrFail()
                 );
@@ -72,14 +78,39 @@ class WorkshopController extends Controller
     private function showWorkshopWithCompletedLessons($slug)
     {
         $workshop = Workshop::where('slug', $slug)
+<<<<<<< HEAD
             ->with('lessonsSidebarListWithUserProgress')
             ->withSum('lessons', 'duration_in_seconds')
+=======
+            ->with([
+                'lessons',
+                'lessons.users' => function ($query) {
+                    $query
+                        ->select('users.id')
+                        ->where('user_id', Auth::guard('sanctum')->id());
+                },
+            ])
+>>>>>>> main
             ->with('instructor')
             ->with('tags')
             ->with('challenge')
             ->visible()
             ->firstOrFail();
 
+<<<<<<< HEAD
+=======
+        $workshop->lessons->each(function ($lesson) {
+            $lesson->user_completed = $lesson->users->count() > 0;
+            unset($lesson->users);
+        });
+
+        $workshop->next_lesson = new LessonResource(
+            $workshop->lessons->first(function ($lesson) {
+                return ! $lesson->user_completed;
+            })
+        );
+
+>>>>>>> main
         return new WorkshopResource($workshop);
     }
 

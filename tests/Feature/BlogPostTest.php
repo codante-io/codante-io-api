@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BlogPostTest extends TestCase
@@ -13,14 +12,14 @@ class BlogPostTest extends TestCase
     /** @test */
     public function it_gets_200_to_blog_post_list(): void
     {
-        $response = $this->getJson("/api/blog-posts");
+        $response = $this->getJson('/api/blog-posts');
         $response->assertStatus(200);
     }
 
     /** @test */
     public function it_gets_404_when_blog_post_does_not_exist(): void
     {
-        $response = $this->getJson("/api/blog-posts/does-not-exist");
+        $response = $this->getJson('/api/blog-posts/does-not-exist');
         $response->assertStatus(404);
     }
 
@@ -29,7 +28,7 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
@@ -42,7 +41,7 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "draft",
+            'status' => 'draft',
         ]);
         $slug = $blogPost->slug;
 
@@ -55,7 +54,7 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "unlisted",
+            'status' => 'unlisted',
         ]);
         $slug = $blogPost->slug;
 
@@ -68,13 +67,13 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "unlisted",
+            'status' => 'unlisted',
         ]);
         $slug = $blogPost->slug;
 
-        $response = $this->getJson("/api/blog-posts/");
+        $response = $this->getJson('/api/blog-posts/');
         $jsonResponse = $response->json();
-        $this->assertEquals(0, count($jsonResponse["data"]));
+        $this->assertEquals(0, count($jsonResponse['data']));
     }
 
     /** @test */
@@ -82,13 +81,13 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
-        $response = $this->getJson("/api/blog-posts/");
+        $response = $this->getJson('/api/blog-posts/');
         $jsonResponse = $response->json();
-        $this->assertEquals(1, count($jsonResponse["data"]));
+        $this->assertEquals(1, count($jsonResponse['data']));
     }
 
     /** @test */
@@ -96,24 +95,24 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
         $response = $this->getJson("/api/blog-posts/$slug");
         $response->assertJsonStructure([
-            "data" => [
-                "id",
-                "title",
-                "content",
-                "image_url",
-                "short_description",
-                "slug",
-                "status",
-                "created_at",
-                "reactions",
-                "instructor",
-                "tags",
+            'data' => [
+                'id',
+                'title',
+                'content',
+                'image_url',
+                'short_description',
+                'slug',
+                'status',
+                'created_at',
+                'reactions',
+                'instructor',
+                'tags',
             ],
         ]);
     }
@@ -123,7 +122,7 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
@@ -132,7 +131,7 @@ class BlogPostTest extends TestCase
 
         $this->assertEquals(
             $blogPost->instructor->name,
-            $jsonResponse["data"]["instructor"]["name"]
+            $jsonResponse['data']['instructor']['name']
         );
     }
 
@@ -141,7 +140,7 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
@@ -154,12 +153,12 @@ class BlogPostTest extends TestCase
 
         $this->assertEquals(
             $blogPost->tags->count(),
-            count($jsonResponse["data"]["tags"])
+            count($jsonResponse['data']['tags'])
         );
 
         $this->assertEquals(
             $tag->name,
-            $jsonResponse["data"]["tags"][0]["name"]
+            $jsonResponse['data']['tags'][0]['name']
         );
     }
 
@@ -168,7 +167,7 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
@@ -177,7 +176,7 @@ class BlogPostTest extends TestCase
 
         $this->assertEquals(
             0,
-            count($jsonResponse["data"]["reactions"]["reaction_counts"])
+            count($jsonResponse['data']['reactions']['reaction_counts'])
         );
     }
 
@@ -186,15 +185,15 @@ class BlogPostTest extends TestCase
     {
         // add blog post
         $blogPost = \App\Models\BlogPost::factory()->create([
-            "status" => "published",
+            'status' => 'published',
         ]);
         $slug = $blogPost->slug;
 
         // add reaction
         $reaction = \App\Models\Reaction::factory()->create([
-            "reactable_id" => $blogPost->id,
-            "reactable_type" => "App\Models\BlogPost",
-            "reaction" => "like",
+            'reactable_id' => $blogPost->id,
+            'reactable_type' => "App\Models\BlogPost",
+            'reaction' => 'like',
         ]);
 
         $response = $this->getJson("/api/blog-posts/$slug");
@@ -202,12 +201,12 @@ class BlogPostTest extends TestCase
 
         $this->assertEquals(
             1,
-            count($jsonResponse["data"]["reactions"]["reaction_counts"])
+            count($jsonResponse['data']['reactions']['reaction_counts'])
         );
 
         $this->assertEquals(
-            "like",
-            $jsonResponse["data"]["reactions"]["reaction_counts"][0]["reaction"]
+            'like',
+            $jsonResponse['data']['reactions']['reaction_counts'][0]['reaction']
         );
     }
 }

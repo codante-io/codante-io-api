@@ -4,27 +4,28 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table("users", function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table
-                ->string("discord_user")
+                ->string('discord_user')
                 ->nullable()
-                ->after("github_user");
+                ->after('github_user');
 
             $table
-                ->json("discord_data")
+                ->json('discord_data')
                 ->nullable()
-                ->after("discord_user");
+                ->after('discord_user');
 
             $table
-                ->json("github_data")
+                ->json('github_data')
                 ->nullable()
-                ->after("github_user");
+                ->after('github_user');
         });
     }
 
@@ -33,10 +34,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table("users", function (Blueprint $table) {
-            $table->dropColumn("discord_user");
-            $table->dropColumn("discord_data");
-            $table->dropColumn("github_data");
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('discord_user');
+            $table->dropColumn('discord_data');
+            $table->dropColumn('github_data');
         });
     }
 };

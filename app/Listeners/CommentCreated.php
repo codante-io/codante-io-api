@@ -2,13 +2,11 @@
 
 namespace App\Listeners;
 
-use App\Events\CommentCreated as EventsCommentCreated;
 use App\Events\UserCommented;
 use App\Models\Comment;
 use App\Models\User;
 use App\Notifications\Discord;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Notification;
 
 class CommentCreated implements ShouldQueue
@@ -32,10 +30,10 @@ class CommentCreated implements ShouldQueue
 
         // Send Discord notification
         new Discord(
-            "💬 Um novo comentário foi feito por {$event->user->name} em {$event->comment->commentable_type} {$event->comment->commentable_id} {replying to - $replyingTo}: {$event->comment->comment}\n🔗<" .
-                $event->comment->commentable_url .
-                ">",
-            "notificacoes-comentarios"
+            "💬 Um novo comentário foi feito por {$event->user->name} em {$event->comment->commentable_type} {$event->comment->commentable_id} {replying to - $replyingTo}: {$event->comment->comment}\n🔗<".
+                $event->comment->commentable_url.
+                '>',
+            'notificacoes-comentarios'
         );
 
         // Send Email notification to the author of Submission. If the comment is a reply, don't send anything.
@@ -56,12 +54,12 @@ class CommentCreated implements ShouldQueue
         if ($replyingTo) {
             $parentComment = Comment::findOrFail($replyingTo);
             $relatedComments = Comment::where(
-                "replying_to",
+                'replying_to',
                 $replyingTo
             )->get();
 
             $parentCommentUserID = $parentComment->user_id;
-            $relatedCommentsUserIDs = $relatedComments->pluck("user_id");
+            $relatedCommentsUserIDs = $relatedComments->pluck('user_id');
 
             $uniqueUserIDs = $relatedCommentsUserIDs
                 ->push($parentCommentUserID)
@@ -74,7 +72,7 @@ class CommentCreated implements ShouldQueue
                 return $userID === $comment->user_id;
             });
 
-            $users = User::whereIn("id", $uniqueUserIDs)->get();
+            $users = User::whereIn('id', $uniqueUserIDs)->get();
 
             foreach ($users as $user) {
                 // Send Email notification to the author of the parent comment and all other users who commented on the same parent comment.
