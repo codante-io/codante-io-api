@@ -21,7 +21,7 @@ class ChallengeCardResource extends JsonResource
             'image_url' => $this->image_url,
             'status' => $this->status,
             'difficulty' => $this->difficulty,
-            'has_solution' => $this->whenLoaded('workshop') ? true : false,
+            'has_solution' => $this->hasSolution(),
             'estimated_effort' => $this->estimated_effort,
             'category' => $this->category,
             'is_premium' => $this->is_premium,

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
@@ -26,6 +27,8 @@ class Workshop extends Model
         'resources' => 'array',
     ];
 
+    protected $appends = ["type"];
+
     public function getTypeAttribute()
     {
         return 'workshop';
@@ -40,9 +43,32 @@ class Workshop extends Model
 
     public function lessons()
     {
-        return $this->hasMany(Lesson::class)
-            ->orderBy('position')
-            ->orderBy('id');
+        return $this->morphMany(Lesson::class, "lessonable");
+    }
+
+    public function lessonsSidebarList()
+    {
+        return $this->morphMany(Lesson::class, "lessonable")->select([
+            "id",
+            "name",
+            "slug",
+            "available_to",
+            "lessonable_id",
+            "lessonable_type",
+            "duration_in_seconds",
+            "section",
+        ]);
+    }
+
+    public function lessonsSidebarListWithUserProgress()
+    {
+        return $this->lessonsSidebarList()->addSelect([
+            "user_completed" => DB::table("lesson_user")
+                ->whereColumn("lesson_user.lesson_id", "lessons.id")
+                ->where("lesson_user.user_id", auth()->id())
+                ->select(DB::raw("COUNT(*) > 0"))
+                ->limit(1),
+        ]);
     }
 
     public function instructor()
@@ -124,14 +150,17 @@ class Workshop extends Model
         $grouped = $this->lessons->groupBy('section');
 
         if ($grouped->count() === 1) {
-            return null;
+            return [[
+                "name" => "Aulas",
+                "lesson_ids" => $grouped->first()->pluck("id"),
+            ]];
         }
 
         return $grouped
             ->map(function ($lessons, $section) {
                 return [
-                    'name' => $section,
-                    'lessons' => $lessons->pluck('id'),
+                    "name" => $section,
+                    "lesson_ids" => $lessons->pluck("id"),
                 ];
             })
             ->values();

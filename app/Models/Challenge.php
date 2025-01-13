@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Reactable;
+use Auth;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -42,6 +43,11 @@ class Challenge extends Model
         return $this->workshop
             ? $this->workshop->instructor()
             : $this->morphTo();
+    }
+
+    public function lessons()
+    {
+        return $this->morphMany(Lesson::class, 'lessonable');
     }
 
     public function tags()
@@ -167,15 +173,73 @@ class Challenge extends Model
 
     public function hasSolution(): bool
     {
-        if (
-            ! $this->workshop ||
-            $this->workshop->status !== 'published' ||
-            $this->workshop->lessons->count() < 1
-        ) {
-            return false;
+        // if there is at least one lesson with type solution, the challenge has a solution
+        return $this->lessons->contains('type', 'solution');
+    }
+
+    public function getLessonSectionsArray()
+    {
+        $grouped = $this->lessons->groupBy('section');
+
+        if ($grouped->count() === 1) {
+            return [
+                [
+                    'name' => '',
+                    'lesson_ids' => $grouped->first()->pluck('id'),
+                ],
+            ];
         }
 
-        return true;
+        return $grouped
+            ->map(function ($lessons, $section) {
+                return [
+                    'name' => $section,
+                    'lesson_ids' => $lessons->pluck('id'),
+                ];
+            })
+            ->values();
+    }
+
+    // Esse método irá trazer um array de lessons que é usado no track
+    // A princípio são 2 aulas: informações do projeto, submeta sua resolução.
+    // 'id' => $this->id,
+    // 'name' => $this->name,
+    // 'slug' => $this->slug,
+    // 'url' => $url,
+    // 'thumbnail_url' => $this->thumbnail_url,
+    // 'user_completed' => $this->userCompleted(Auth::id()),
+    // 'duration_in_seconds' => $this->duration_in_seconds,
+    // 'open' => $this->canViewVideo(),
+    public function getTrackLessons($trackSlug)
+    {
+
+        $userSubmitted = $this->users()
+            ->where('user_id', Auth::id())
+            ->where('completed', 1)
+            ->exists();
+
+        return collect([
+            [
+                'id' => 990,
+                'name' => 'Informações do Projeto',
+                'slug' => '01-informacoes-do-projeto',
+                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/01-informacoes-do-projeto",
+                'thumbnail_url' => null,
+                'user_completed' => $userSubmitted,
+                'duration_in_seconds' => null,
+                'open' => true,
+            ],
+            [
+                'id' => 991,
+                'name' => 'Submeta sua Resolução',
+                'slug' => '02-submeta-sua-resolucao',
+                'url' => "/trilhas/$trackSlug/projeto/{$this->slug}/02-submeta-sua-resolucao",
+                'thumbnail_url' => null,
+                'user_completed' => $userSubmitted,
+                'duration_in_seconds' => null,
+                'open' => true,
+            ],
+        ]);
     }
 
     public function isWeeklyFeatured()

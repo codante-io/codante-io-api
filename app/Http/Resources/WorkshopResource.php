@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\WorkshopUser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class WorkshopResource extends JsonResource
 {
@@ -15,6 +16,9 @@ class WorkshopResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $baseUrl = config('app.frontend_url')."/workshops/{$this->slug}";
+
         $workshopUser = $request->user()
             ? WorkshopUser::where('user_id', $request->user()->id)
                 ->where('workshop_id', $this->id)
@@ -30,7 +34,7 @@ class WorkshopResource extends JsonResource
             'image_url' => $this->image_url,
             'video_url' => $this->video_url,
             'difficulty' => $this->difficulty,
-            'duration_in_minutes' => $this->duration_in_minutes,
+            'duration_in_seconds' => $this->lessons_sum_duration_in_seconds,
             'status' => $this->status,
             'is_standalone' => $this->is_standalone,
             'is_premium' => $this->is_premium,
@@ -38,11 +42,13 @@ class WorkshopResource extends JsonResource
                 'lessons',
                 $this->getLessonSectionsArray()
             ),
-            'lessons' => LessonResource::collection(
-                $this->whenLoaded('lessons')
+            'lessons' => $this->whenLoaded(
+                'lessons',
+                new SidebarLessonCollection($this->lessons, $baseUrl)
             ),
+
             'challenge' => $this->challenge,
-            'next_lesson' => $this->next_lesson,
+            'first_unwatched_lesson' => new SidebarLessonResource($this->firstUnwatchedLesson(), $baseUrl),
             'instructor' => new InstructorResource(
                 $this->whenLoaded('instructor')
             ),
@@ -62,6 +68,24 @@ class WorkshopResource extends JsonResource
         }
 
         return $resource;
-        // return parent::toArray($request);
+    }
+
+    public function firstUnwatchedLesson()
+    {
+        $lessons = $this->lessons;
+
+        if (! Auth::check()) {
+            return $lessons->first();
+        }
+
+        foreach ($lessons as $lesson) {
+            $watched = $lesson->userCompleted(Auth::id());
+
+            if (! $watched) {
+                return $lesson;
+            }
+        }
+
+        return $lessons->first();
     }
 }

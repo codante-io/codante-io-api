@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TrackResource;
+use App\Http\Resources\Tracks\TrackResource;
 use App\Models\Track;
 
 class TrackController extends Controller
@@ -26,8 +26,12 @@ class TrackController extends Controller
         return new TrackResource(
             Track::query()
                 ->where('slug', $slug)
-                ->with('tags')
-                ->with('trackSections')
+                ->with([
+                    'workshops.tags',
+                    'workshops.instructor',
+                    'challenges.tags',
+                    'challenges.instructor',
+                ])
                 ->firstOrFail()
         );
     }

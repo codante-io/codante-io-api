@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\LessonResource;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
+    public function show(string $slug)
+    {
+        $lesson = Lesson::where("slug", $slug)->first();
+        return new LessonResource($lesson);
+    }
+
     public function setCompleted(Request $request, Lesson $lesson)
     {
         if (! $lesson) {
@@ -14,7 +21,7 @@ class LessonController extends Controller
         }
         $user = $request->user();
 
-        $lesson->userCompleted($user);
+        $lesson->markAsCompleted($user);
 
         return response()->json([
             'message' => 'Lesson Completed',
@@ -30,8 +37,7 @@ class LessonController extends Controller
         }
         $user = $request->user();
 
-        $lesson->userCompleted($user, false);
-
+        $lesson->markAsCompleted($user, false);
         return response()->json([
             'message' => 'Lesson Completed',
             'result' => 'destroy',
