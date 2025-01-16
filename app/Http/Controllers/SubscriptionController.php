@@ -9,6 +9,7 @@ use App\Models\Coupon;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionController extends Controller
 {
@@ -59,7 +60,7 @@ class SubscriptionController extends Controller
 
         $couponInfo = null;
         if ($couponCode) {
-            $coupon = (new Coupon())->getValidCoupon($couponCode, 1);
+            $coupon = (new Coupon())->getValidCoupon($couponCode, $planId);
 
             $couponInfo = $coupon
                 ? new CouponResource($coupon)
