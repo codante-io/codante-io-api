@@ -125,7 +125,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug('cdnt', '_') . '_db_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug('cdnt', '_').'_db_'),
         ],
 
         'default' => [

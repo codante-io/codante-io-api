@@ -10,43 +10,43 @@ class TrackableController extends Controller
 {
     public function markAsCompleted($trackableId, Request $request)
     {
-        Auth::shouldUse("sanctum");
+        Auth::shouldUse('sanctum');
 
         $user = Auth::user();
 
         $trackableExists = Trackable::query()->find($trackableId);
 
-        if (!$trackableExists) {
+        if (! $trackableExists) {
             return response()->json(
-                ["ok" => false, "message" => "Trackable não encontrado."],
+                ['ok' => false, 'message' => 'Trackable não encontrado.'],
                 404
             );
         }
 
         $trackable = $user
             ->trackables()
-            ->where("trackable_user.trackable_id", $trackableId)
-            ->withPivot(["completed"])
+            ->where('trackable_user.trackable_id', $trackableId)
+            ->withPivot(['completed'])
             ->first();
 
         if ($trackable) {
             $currentCompletedStatus = $trackable->pivot->completed;
             $user->trackables()->updateExistingPivot($trackableId, [
-                "completed" => !$currentCompletedStatus,
+                'completed' => ! $currentCompletedStatus,
             ]);
 
             return response()->json(
-                ["ok" => true, "completed" => !$currentCompletedStatus],
+                ['ok' => true, 'completed' => ! $currentCompletedStatus],
                 200
             );
         }
 
         $user->trackables()->attach($trackableId, [
-            "completed" => true,
-            "created_at" => now(),
-            "updated_at" => now(),
+            'completed' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        return response()->json(["ok" => true, "completed" => true], 200);
+        return response()->json(['ok' => true, 'completed' => true], 200);
     }
 }

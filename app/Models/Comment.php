@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Validator;
 
 class Comment extends Model
 {
+    use CrudTrait;
     use HasFactory;
     use SoftDeletes;
-    use CrudTrait;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function User()
     {
@@ -29,7 +29,7 @@ class Comment extends Model
 
     public function Replies()
     {
-        return $this->hasMany(Comment::class, "replying_to");
+        return $this->hasMany(Comment::class, 'replying_to');
     }
 
     public static function getComments($commentableClass, $commentableId)
@@ -42,22 +42,22 @@ class Comment extends Model
 
     public static function validateCommentable($commentableType)
     {
-        $commentableClass = "App\\Models\\" . $commentableType;
+        $commentableClass = 'App\\Models\\'.$commentableType;
 
         $validator = Validator::make(
-            ["commentable_type" => $commentableClass],
+            ['commentable_type' => $commentableClass],
             [
-                "commentable_type" => [
+                'commentable_type' => [
                     function ($attribute, $value, $fail) {
-                        if (!class_exists($value)) {
-                            $fail("Commentable model does not exist.");
+                        if (! class_exists($value)) {
+                            $fail('Commentable model does not exist.');
                         } elseif (
-                            !in_array(
-                                "App\\Traits\\Commentable",
+                            ! in_array(
+                                'App\\Traits\\Commentable',
                                 class_uses($value)
                             )
                         ) {
-                            $fail("Model is not commentable.");
+                            $fail('Model is not commentable.');
                         }
                     },
                 ],
@@ -65,6 +65,7 @@ class Comment extends Model
         );
 
         $validator->validate();
+
         return $commentableClass;
     }
 
@@ -72,13 +73,14 @@ class Comment extends Model
     {
         // if replying a reply, the comment will be replying to the father comment
         if ($replyingTo) {
-            $comment = Comment::where("id", $replyingTo)->first();
+            $comment = Comment::where('id', $replyingTo)->first();
             if ($comment) {
                 return $comment->replying_to !== null
                     ? $comment->replying_to
                     : $replyingTo;
             }
         }
+
         return $replyingTo;
     }
 
@@ -88,9 +90,9 @@ class Comment extends Model
             $challengeName = $this->commentable->challenge->slug;
             $githubUser = $this->commentable->user->github_user;
 
-            return "/mini-projetos/" .
-                $challengeName .
-                "/submissoes/" .
+            return '/mini-projetos/'.
+                $challengeName.
+                '/submissoes/'.
                 $githubUser;
         }
 
@@ -100,16 +102,16 @@ class Comment extends Model
 
             if ($workshop->is_standalone == 0) {
 
-                return "/workshops/" .
-                    $workshop->slug .
-                    "/" .
+                return '/workshops/'.
+                    $workshop->slug.
+                    '/'.
                     $lessonSlug;
             }
 
             if ($workshop->is_standalone == 1) {
                 $workshopSlug = $workshop->slug;
 
-                return "/workshops/" . $workshopSlug . "/" . $lessonSlug;
+                return '/workshops/'.$workshopSlug.'/'.$lessonSlug;
             }
         }
     }
@@ -127,6 +129,6 @@ class Comment extends Model
 
     public function getCommentableUrlAttribute($value)
     {
-        return config("app.frontend_url") . $value;
+        return config('app.frontend_url').$value;
     }
 }

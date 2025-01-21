@@ -25,10 +25,10 @@ class CertificateRequested implements ShouldQueue
         $certifiable_type = $event->certificate->certifiable_type;
 
         // Send Discord notification
-        if ($certifiable_type === "App\\Models\\ChallengeUser") {
+        if ($certifiable_type === 'App\\Models\\ChallengeUser') {
             new Discord(
                 "💻 {$event->certifiable->challenge->name}\n👤 {$event->user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$event->certifiable->challenge->slug}/submissoes/{$event->user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>\nID: $certificate->id",
-                "pedidos-certificados"
+                'pedidos-certificados'
             );
         }
 

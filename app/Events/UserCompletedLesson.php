@@ -13,14 +13,16 @@ class UserCompletedLesson
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user;
+
     public $workshop;
+
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, $workshop)
+    public function __construct(User $user)
     {
         $this->user = $user;
-        $this->workshop = $workshop;
+        // $this->workshop = $workshop;
     }
 
     /**
@@ -30,6 +32,6 @@ class UserCompletedLesson
      */
     public function broadcastOn(): array
     {
-        return [new PrivateChannel("channel-name")];
+        return [new PrivateChannel('channel-name')];
     }
 }

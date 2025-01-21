@@ -19,11 +19,11 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            "user_id" => User::factory(),
-            "comment" => fake()->sentence(),
-            "replying_to" => null,
-            "commentable_type" => "App\Models\ChallengeUser",
-            "commentable_id" => ChallengeUser::factory(),
+            'user_id' => User::factory(),
+            'comment' => fake()->sentence(),
+            'replying_to' => null,
+            'commentable_type' => "App\Models\ChallengeUser",
+            'commentable_id' => ChallengeUser::factory(),
         ];
     }
 }

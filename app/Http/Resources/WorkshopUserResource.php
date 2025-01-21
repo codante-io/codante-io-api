@@ -15,14 +15,14 @@ class WorkshopUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         $resource = [
-            "id" => $this->id,
-            "user_id" => $this->user_id,
-            "workshop_id" => $this->workshop_id,
-            "status" => $this->status,
-            "completed_at" => $this->completed_at,
-            "created_at" => $this->created_at,
-            "updated_at" => $this->updated_at,
-            "certificate" => $this->whenLoaded("certificate")
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'workshop_id' => $this->workshop_id,
+            'status' => $this->status,
+            'completed_at' => $this->completed_at,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'certificate' => $this->whenLoaded('certificate')
                 ? new CertificateResource($this->certificate)
                 : null,
         ];

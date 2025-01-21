@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\ChallengeUser;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
@@ -14,8 +13,11 @@ class UnlistedChallengeUserNotification extends Notification
     use Queueable;
 
     private $challengeUser;
+
     private $challenge;
+
     private $user;
+
     /**
      * Create a new notification instance.
      */
@@ -33,7 +35,7 @@ class UnlistedChallengeUserNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ["mail"];
+        return ['mail'];
     }
 
     /**
@@ -42,27 +44,27 @@ class UnlistedChallengeUserNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         $firstName = Str::title(
-            explode(" ", $this->challengeUser->user->name)[0]
+            explode(' ', $this->challengeUser->user->name)[0]
         );
 
-        $frontUrl = config("app.frontend_url");
+        $frontUrl = config('app.frontend_url');
 
         return (new MailMessage())
-            ->from("contato@codante.io", "Codante")
-            ->subject("[Codante] Encontramos um problema na sua submissão!")
+            ->from('contato@codante.io', 'Codante')
+            ->subject('[Codante] Encontramos um problema na sua submissão!')
             ->greeting("Olá $firstName")
             ->line(
                 "Encontramos um problema na sua submissão do projeto {$this->challengeUser->challenge->name} e ela deixou de ser listada na nossa plataforma."
             )
             ->line(
-                "Para que o seu projeto seja listado novamente, basta editar a sua submissão com o link atualizado do seu deploy. Em caso de dúvidas, entre em contato com a nossa equipe!"
+                'Para que o seu projeto seja listado novamente, basta editar a sua submissão com o link atualizado do seu deploy. Em caso de dúvidas, entre em contato com a nossa equipe!'
             )
             ->action(
-                "Ver submissão",
-                $frontUrl .
+                'Ver submissão',
+                $frontUrl.
                     "/mini-projetos/{$this->challengeUser->challenge->slug}/submissoes/{$this->challengeUser->user->github_user}"
             )
-            ->line("Clique no botão acima para ver e editar a sua submissão.");
+            ->line('Clique no botão acima para ver e editar a sua submissão.');
     }
 
     /**
@@ -73,7 +75,7 @@ class UnlistedChallengeUserNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-                //
-            ];
+            //
+        ];
     }
 }

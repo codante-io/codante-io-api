@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
 
 class Workshop extends Model
 {
@@ -19,29 +20,55 @@ class Workshop extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
+
     protected $casts = [
-        "published_at" => "datetime",
-        "resources" => "array",
+        'published_at' => 'datetime',
+        'resources' => 'array',
     ];
+
+    protected $appends = ['type'];
 
     public function getTypeAttribute()
     {
-        return "workshop";
+        return 'workshop';
     }
 
     public function users()
     {
-        return $this->belongsToMany(User::class, "workshop_user")->withPivot([
-            "status",
+        return $this->belongsToMany(User::class, 'workshop_user')->withPivot([
+            'status',
         ]);
     }
 
     public function lessons()
     {
-        return $this->hasMany(Lesson::class)
-            ->orderBy("position")
-            ->orderBy("id");
+        return $this->morphMany(Lesson::class, 'lessonable');
+    }
+
+    public function lessonsSidebarList()
+    {
+        return $this->morphMany(Lesson::class, 'lessonable')->select([
+            'id',
+            'name',
+            'slug',
+            'available_to',
+            'lessonable_id',
+            'lessonable_type',
+            'duration_in_seconds',
+            'section',
+        ]);
+    }
+
+    public function lessonsSidebarListWithUserProgress()
+    {
+        return $this->lessonsSidebarList()->addSelect([
+            'user_completed' => DB::table('lesson_user')
+                ->whereColumn('lesson_user.lesson_id', 'lessons.id')
+                ->where('lesson_user.user_id', auth()->id())
+                ->select(DB::raw('COUNT(*) > 0'))
+                ->limit(1),
+        ]);
     }
 
     public function instructor()
@@ -51,12 +78,12 @@ class Workshop extends Model
 
     public function tags(): MorphToMany
     {
-        return $this->morphToMany(Tag::class, "taggable");
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function tracks(): MorphToMany
     {
-        return $this->morphToMany(Track::class, "trackable");
+        return $this->morphToMany(Track::class, 'trackable');
     }
 
     public function challenge(): BelongsTo
@@ -66,19 +93,19 @@ class Workshop extends Model
 
     public function mainTechnology()
     {
-        return $this->belongsTo(Tag::class, "main_technology_id");
+        return $this->belongsTo(Tag::class, 'main_technology_id');
     }
 
-    function certificate()
+    public function certificate()
     {
-        return $this->morphOne(Certificate::class, "certifiable");
+        return $this->morphOne(Certificate::class, 'certifiable');
     }
 
     public function scopeVisible($query)
     {
         return $query
-            ->where("status", "!=", "draft")
-            ->where("status", "!=", "archived");
+            ->where('status', '!=', 'draft')
+            ->where('status', '!=', 'archived');
     }
 
     /**
@@ -91,46 +118,49 @@ class Workshop extends Model
     {
         return $query
             ->select(
-                "workshops.id",
-                "workshops.name",
-                "workshops.slug",
-                "workshops.image_url",
-                "workshops.status",
-                "workshops.video_url",
-                "workshops.is_standalone",
-                "workshops.is_premium",
-                "workshops.streaming_url",
-                "workshops.created_at",
-                "workshops.updated_at",
-                "workshops.published_at",
-                "workshops.instructor_id"
+                'workshops.id',
+                'workshops.name',
+                'workshops.slug',
+                'workshops.image_url',
+                'workshops.status',
+                'workshops.video_url',
+                'workshops.is_standalone',
+                'workshops.is_premium',
+                'workshops.streaming_url',
+                'workshops.created_at',
+                'workshops.updated_at',
+                'workshops.published_at',
+                'workshops.instructor_id'
             )
-            ->with("instructor")
-            ->withCount("lessons")
-            ->withSum("lessons", "duration_in_seconds");
+            ->with('instructor')
+            ->withCount('lessons')
+            ->withSum('lessons', 'duration_in_seconds');
     }
 
     public function scopeListed($query)
     {
         return $query
-            ->where("status", "!=", "draft")
-            ->where("status", "!=", "archived")
-            ->where("status", "!=", "unlisted");
+            ->where('status', '!=', 'draft')
+            ->where('status', '!=', 'archived')
+            ->where('status', '!=', 'unlisted');
     }
 
     public function getLessonSectionsArray()
     {
-        $grouped = $this->lessons->groupBy("section");
+        $grouped = $this->lessons->groupBy('section');
 
         if ($grouped->count() === 1) {
-            return null;
+            return [[
+                'name' => 'Aulas',
+                'lesson_ids' => $grouped->first()->pluck('id'),
+            ]];
         }
 
         return $grouped
             ->map(function ($lessons, $section) {
                 return [
-                    "name" => $section,
-                    "lessons" => $lessons->pluck("id"),
+                    'name' => $section,
+                    'lesson_ids' => $lessons->pluck('id'),
                 ];
             })
             ->values();
@@ -138,18 +168,18 @@ class Workshop extends Model
 
     public function setImageUrlAttribute($value)
     {
-        $attribute_name = "image_url";
+        $attribute_name = 'image_url';
         // or use your own disk, defined in config/filesystems.php
-        $disk = "s3";
+        $disk = 's3';
         // destination path relative to the disk above
-        $destination_path = "workshops/cover-images";
+        $destination_path = 'workshops/cover-images';
 
         // if the image was erased
         if (empty($value)) {
             // delete the image from disk
             if (
                 isset($this->{$attribute_name}) &&
-                !empty($this->{$attribute_name})
+                ! empty($this->{$attribute_name})
             ) {
                 \Storage::disk($disk)->delete($this->{$attribute_name});
             }
@@ -158,7 +188,7 @@ class Workshop extends Model
         }
 
         // if a base64 was sent, store it in the db
-        if (Str::startsWith($value, "data:image")) {
+        if (Str::startsWith($value, 'data:image')) {
             // 0. Make the image
             $manager = new ImageManager(Driver::class);
             $image = $manager->read($value);
@@ -172,18 +202,18 @@ class Workshop extends Model
             // });
 
             // 1. Generate a filename.
-            $filename = md5($value . time()) . ".webp";
+            $filename = md5($value.time()).'.webp';
 
             // 2. Store the image on disk.
             \Storage::disk($disk)->put(
-                $destination_path . "/" . $filename,
+                $destination_path.'/'.$filename,
                 $image->toFilePointer()
             );
 
             // 3. Delete the previous image, if there was one.
             if (
                 isset($this->{$attribute_name}) &&
-                !empty($this->{$attribute_name})
+                ! empty($this->{$attribute_name})
             ) {
                 \Storage::disk($disk)->delete($this->{$attribute_name});
             }
@@ -195,9 +225,9 @@ class Workshop extends Model
             // $public_destination_path = Str::replaceFirst('public/', '', $destination_path);
             // $this->attributes[$attribute_name] = $public_destination_path . '/' . $filename;
             $this->attributes[$attribute_name] = \Storage::url(
-                $destination_path . "/" . $filename
+                $destination_path.'/'.$filename
             );
-        } elseif (!empty($value)) {
+        } elseif (! empty($value)) {
             // if value isn't empty, but it's not an image, assume it's the model value for that attribute.
             $this->attributes[$attribute_name] = $this->{$attribute_name};
         }

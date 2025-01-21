@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\UserEnteredWorkshop;
 use App\Events\UserJoinedWorkshop as UserJoinedWorkshopEvent;
 use App\Events\UsersFirstWorkshop;
-use App\Http\Resources\LessonResource;
 use App\Http\Resources\WorkshopCardResource;
 use App\Http\Resources\WorkshopResource;
 use App\Models\Workshop;
@@ -20,7 +18,7 @@ class WorkshopController extends Controller
     {
         $query = Workshop::query();
         $query = $this->workshopQueryWithFilters($request, $query);
-        $filterName = $request->input("tecnologia");
+        $filterName = $request->input('tecnologia');
 
         $workshops = Cache::remember(
             "workshops-tech-$filterName",
@@ -31,8 +29,8 @@ class WorkshopController extends Controller
                     ->orderByRaw(
                         "CASE WHEN status = 'streaming' THEN 1 WHEN status = 'published' THEN 2 WHEN status = 'soon' THEN 3 ELSE 4 END"
                     )
-                    ->orderBy("is_standalone", "desc")
-                    ->orderBy("published_at", "desc")
+                    ->orderBy('is_standalone', 'desc')
+                    ->orderBy('published_at', 'desc')
                     ->listed()
                     ->get();
             }
@@ -44,7 +42,7 @@ class WorkshopController extends Controller
     public function show($slug)
     {
         // if not logged in, we show cached version
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return $this->showCachedWorkshop($slug);
         }
 
@@ -59,10 +57,11 @@ class WorkshopController extends Controller
             60 * 5,
             function () use ($slug) {
                 return new WorkshopResource(
-                    Workshop::where("slug", $slug)
-                        ->with("lessons")
-                        ->with("instructor")
-                        ->with("tags")
+                    Workshop::where('slug', $slug)
+                        ->with('lessonsSidebarList')
+                        ->with('instructor')
+                        ->with('tags')
+                        ->withSum('lessons', 'duration_in_seconds')
                         ->visible()
                         ->firstOrFail()
                 );
@@ -72,31 +71,14 @@ class WorkshopController extends Controller
 
     private function showWorkshopWithCompletedLessons($slug)
     {
-        $workshop = Workshop::where("slug", $slug)
-            ->with([
-                "lessons",
-                "lessons.users" => function ($query) {
-                    $query
-                        ->select("users.id")
-                        ->where("user_id", Auth::guard("sanctum")->id());
-                },
-            ])
-            ->with("instructor")
-            ->with("tags")
-            ->with("challenge")
+        $workshop = Workshop::where('slug', $slug)
+            ->with('lessonsSidebarListWithUserProgress')
+            ->withSum('lessons', 'duration_in_seconds')
+            ->with('instructor')
+            ->with('tags')
+            ->with('challenge')
             ->visible()
             ->firstOrFail();
-
-        $workshop->lessons->each(function ($lesson) {
-            $lesson->user_completed = $lesson->users->count() > 0;
-            unset($lesson->users);
-        });
-
-        $workshop->next_lesson = new LessonResource(
-            $workshop->lessons->first(function ($lesson) {
-                return !$lesson->user_completed;
-            })
-        );
 
         return new WorkshopResource($workshop);
     }
@@ -105,17 +87,17 @@ class WorkshopController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json(["message" => "Unauthorized"], 401);
+        if (! $user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $workshop = Workshop::where("slug", $slug)->firstOrFail();
+        $workshop = Workshop::where('slug', $slug)->firstOrFail();
         $userWorkshops = $user->workshops;
 
         $isFirstWorkshop = $userWorkshops->count() === 0;
 
         // checks if user is joining the workshop for the first time
-        if (!$user->workshops->contains($workshop)) {
+        if (! $user->workshops->contains($workshop)) {
             event(new UserJoinedWorkshopEvent($user, $workshop));
         }
 
@@ -123,50 +105,51 @@ class WorkshopController extends Controller
 
         if ($isFirstWorkshop) {
             event(new UsersFirstWorkshop($user, $workshop));
+
             return response()->json([
-                "message" => "User entered first workshop",
+                'message' => 'User entered first workshop',
             ]);
         }
 
-        return response()->json(["message" => "User entered workshop"]);
+        return response()->json(['message' => 'User entered workshop']);
     }
 
     protected function workshopQueryWithFilters(
         Request $request,
         Builder $query
     ) {
-        $query->with("tags:id,name")->with("mainTechnology:id,name");
+        $query->with('tags:id,name')->with('mainTechnology:id,name');
 
         // Filtro de Tecnologia (tags)
-        if ($request->has("tecnologia")) {
-            $technologies = explode(",", $request->input("tecnologia"));
+        if ($request->has('tecnologia')) {
+            $technologies = explode(',', $request->input('tecnologia'));
 
             $query
-                ->whereHas("mainTechnology", function ($subquery) use (
+                ->whereHas('mainTechnology', function ($subquery) use (
                     $technologies
                 ) {
-                    $subquery->whereIn("slug", $technologies);
+                    $subquery->whereIn('slug', $technologies);
                 })
                 ->orWhere(function ($query) {
                     $query
-                        ->where("status", "soon")
-                        ->where("published_at", ">", now());
+                        ->where('status', 'soon')
+                        ->where('published_at', '>', now());
                 });
         }
 
         // Filtro de Tipo
-        if ($request->has("tipo")) {
-            $isStandalone = $request->input("tipo") === "workshop" ? 1 : 0;
-            $query->where("is_standalone", $isStandalone);
+        if ($request->has('tipo')) {
+            $isStandalone = $request->input('tipo') === 'workshop' ? 1 : 0;
+            $query->where('is_standalone', $isStandalone);
         }
 
         // Busca por Texto
-        if ($request->has("busca")) {
-            $busca = $request->input("busca");
+        if ($request->has('busca')) {
+            $busca = $request->input('busca');
             $query->where(function ($subquery) use ($busca) {
                 $subquery
-                    ->where("name", "like", "%$busca%")
-                    ->orWhere("short_description", "like", "%$busca%");
+                    ->where('name', 'like', "%$busca%")
+                    ->orWhere('short_description', 'like', "%$busca%");
             });
         }
 

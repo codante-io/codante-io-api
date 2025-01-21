@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\TrackResource;
+use App\Http\Resources\Tracks\TrackResource;
 use App\Models\Track;
 
 class TrackController extends Controller
@@ -11,12 +11,12 @@ class TrackController extends Controller
     {
         return TrackResource::collection(
             Track::query()
-                ->where("status", "published")
-                ->orWhere("status", "soon")
-                ->with("workshops")
-                ->with("challenges")
-                ->with("tags")
-                ->orderBy("position", "asc")
+                ->where('status', 'published')
+                ->orWhere('status', 'soon')
+                ->with('workshops')
+                ->with('challenges')
+                ->with('tags')
+                ->orderBy('position', 'asc')
                 ->get()
         );
     }
@@ -25,9 +25,13 @@ class TrackController extends Controller
     {
         return new TrackResource(
             Track::query()
-                ->where("slug", $slug)
-                ->with("tags")
-                ->with("trackSections")
+                ->where('slug', $slug)
+                ->with([
+                    'workshops.tags',
+                    'workshops.instructor',
+                    'challenges.tags',
+                    'challenges.instructor',
+                ])
                 ->firstOrFail()
         );
     }

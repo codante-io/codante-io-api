@@ -6,8 +6,6 @@ use App\Http\Resources\CertificateResource;
 use App\Models\Certificate;
 use App\Models\Challenge;
 use App\Models\ChallengeUser;
-use App\Models\User;
-use App\Models\WorkshopUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,21 +13,21 @@ class CertificateController extends Controller
 {
     public function show($slug)
     {
-        Auth::shouldUse("sanctum");
+        Auth::shouldUse('sanctum');
 
         $challengeUser = ChallengeUser::query()
-            ->where("user_id", auth()->id())
+            ->where('user_id', auth()->id())
             ->where(
-                "challenge_id",
-                Challenge::where("slug", $slug)->first()->id
+                'challenge_id',
+                Challenge::where('slug', $slug)->first()->id
             )
-            ->with("challenge")
+            ->with('challenge')
             ->firstOrFail();
 
         $certificate = $challengeUser
             ->certificate()
-            ->with("user")
-            ->with("certifiable")
+            ->with('user')
+            ->with('certifiable')
             ->firstOrFail();
 
         return new CertificateResource($certificate);
@@ -38,12 +36,12 @@ class CertificateController extends Controller
     public function showById($id)
     {
         $certificate = Certificate::query()
-            ->where("id", $id)
-            ->with("user")
-            ->with("certifiable")
+            ->where('id', $id)
+            ->with('user')
+            ->with('certifiable')
             ->firstOrFail();
 
-        if (!$certificate->user->is_pro) {
+        if (! $certificate->user->is_pro) {
             return null;
         }
 
@@ -52,25 +50,25 @@ class CertificateController extends Controller
 
     public function create(Request $request)
     {
-        Auth::shouldUse("sanctum");
+        Auth::shouldUse('sanctum');
 
         $request->validate([
-            "certifiable_type" => "required|in:ChallengeUser,WorkshopUser",
-            "certifiable_id" => "required|string",
+            'certifiable_type' => 'required|in:ChallengeUser,WorkshopUser',
+            'certifiable_id' => 'required|string',
         ]);
 
         $user = Auth::user();
 
         $exists = Certificate::where([
-            "certifiable_type" => Certificate::validateCertifiable(
+            'certifiable_type' => Certificate::validateCertifiable(
                 $request->certifiable_type
             ),
-            "certifiable_id" => $request->certifiable_id,
-            "user_id" => $user->id,
+            'certifiable_id' => $request->certifiable_id,
+            'user_id' => $user->id,
         ])->exists();
 
         if ($exists) {
-            throw new \Exception("Já existe um certificado.");
+            throw new \Exception('Já existe um certificado.');
         }
 
         $certificate = new Certificate();
@@ -81,21 +79,19 @@ class CertificateController extends Controller
         $certificate->certifiable_id = $request->certifiable_id;
         $certifiable = $certifiableClass::findOrFail($request->certifiable_id);
 
-        if ($request->certifiable_type === "ChallengeUser") {
-            $challengeUser = ChallengeUser::with("challenge")->findOrFail(
+        if ($request->certifiable_type === 'ChallengeUser') {
+            $challengeUser = ChallengeUser::with('challenge')->findOrFail(
                 $request->certifiable_id
             );
             $challenge = $challengeUser->challenge;
-            $certificate->status = "pending";
+            $certificate->status = 'pending';
             $certificate->metadata = [
-                "certifiable_source_name" => $challenge->name,
-                "end_date" =>
-                    $challengeUser->submitted_at ??
-                    now()->format("Y-m-d H:i:s"),
-                "start_date" =>
-                    $challengeUser->created_at ?? now()->format("Y-m-d H:i:s"),
-                "tags" => $challenge->tags->pluck("name"),
-                "certifiable_slug" => $challenge->slug,
+                'certifiable_source_name' => $challenge->name,
+                'end_date' => $challengeUser->submitted_at ??
+                    now()->format('Y-m-d H:i:s'),
+                'start_date' => $challengeUser->created_at ?? now()->format('Y-m-d H:i:s'),
+                'tags' => $challenge->tags->pluck('name'),
+                'certifiable_slug' => $challenge->slug,
             ];
         }
 

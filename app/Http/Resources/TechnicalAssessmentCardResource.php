@@ -23,8 +23,8 @@ class TechnicalAssessmentCardResource extends JsonResource
             'slug' => $this->slug,
             'type' => $this->type,
             'status' => $this->status,
-            'tags' => $this->tags->pluck("name"),
-            'has_challenge' => !is_null($this->challenge_id),
+            'tags' => $this->tags->pluck('name'),
+            'has_challenge' => ! is_null($this->challenge_id),
         ];
 
         return $resource;

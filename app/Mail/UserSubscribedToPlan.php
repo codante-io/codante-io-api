@@ -22,23 +22,23 @@ class UserSubscribedToPlan extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Codante | Assinatura Realizada");
+        return new Envelope(subject: 'Codante | Assinatura Realizada');
     }
 
     public function content(): Content
     {
         // se for boleto bancário, a view com o botão de pagamento é diferente
-        if (strtolower($this->subscription->payment_method) === "boleto") {
+        if (strtolower($this->subscription->payment_method) === 'boleto') {
             return new Content(
-                markdown: "emails.user-subscribed-to-plan-boleto"
+                markdown: 'emails.user-subscribed-to-plan-boleto'
             );
         }
 
         // se for boleto bancário, a view com o botão de pagamento é diferente
-        if (strtolower($this->subscription->payment_method) === "pix") {
-            return new Content(markdown: "emails.user-subscribed-to-plan-pix");
+        if (strtolower($this->subscription->payment_method) === 'pix') {
+            return new Content(markdown: 'emails.user-subscribed-to-plan-pix');
         }
 
-        return new Content(markdown: "emails.user-subscribed-to-plan");
+        return new Content(markdown: 'emails.user-subscribed-to-plan');
     }
 }

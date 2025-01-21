@@ -4,8 +4,6 @@ namespace App\Listeners;
 
 use App\Events\ChallengeCompleted;
 use App\Notifications\Discord;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class SendDiscordNotificationChallengeSubmitted
 {
@@ -25,16 +23,15 @@ class SendDiscordNotificationChallengeSubmitted
         // Discord Message
         new Discord(
             "{$this->getRandomMessageGreeting()}O Mini Projeto **{$event->challenge->name}** foi concluído por **{$event->user->name}**\n ​ \n",
-            "submissoes",
+            'submissoes',
             [
                 [
-                    "title" => "Submissão de {$event->user->name}",
-                    "description" => "Mini Projeto: {$event->challenge->name}",
-                    "url" => "https://codante.io/mini-projetos/{$event->challenge->slug}/submissoes/{$event->user->github_user}",
-                    "color" => 0x0099ff,
-                    "image" => [
-                        "url" =>
-                            $event->challengeUser->pivot->submission_image_url,
+                    'title' => "Submissão de {$event->user->name}",
+                    'description' => "Mini Projeto: {$event->challenge->name}",
+                    'url' => "https://codante.io/mini-projetos/{$event->challenge->slug}/submissoes/{$event->user->github_user}",
+                    'color' => 0x0099FF,
+                    'image' => [
+                        'url' => $event->challengeUser->pivot->submission_image_url,
                     ],
                 ],
             ]
@@ -48,6 +45,7 @@ class SendDiscordNotificationChallengeSubmitted
             "👉🏽 __Mais um projeto concluído com sucesso__!\n ​ \n",
             "🧑🏽‍💻 __Praticando é que se  evolui__!\n ​ \n",
         ];
+
         return $messages[array_rand($messages)];
     }
 }

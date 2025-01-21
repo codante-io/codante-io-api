@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Events\AdminPublishedCertificate;
 use App\Notifications\Discord;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Notification;
 
 class CertificatePublished
@@ -28,11 +27,11 @@ class CertificatePublished
 
         if (
             $certifiable_type === "App\Models\ChallengeUser" &&
-            $event->certificate->status === "published"
+            $event->certificate->status === 'published'
         ) {
             new Discord(
                 "Certificado ID: {$certificate->id}\nStatus atualizado. Projeto aprovado ✅",
-                "pedidos-certificados"
+                'pedidos-certificados'
             );
 
             Notification::send(
@@ -43,12 +42,12 @@ class CertificatePublished
                 )
             );
         } elseif (
-            $certifiable_type === "App\\Models\\ChallengeUser" &&
-            $event->certificate->status !== "published"
+            $certifiable_type === 'App\\Models\\ChallengeUser' &&
+            $event->certificate->status !== 'published'
         ) {
             new Discord(
                 "Certificado ID: {$certificate->id}\nStatus atualizado para {$event->certificate->status} ❌",
-                "pedidos-certificados"
+                'pedidos-certificados'
             );
         }
     }

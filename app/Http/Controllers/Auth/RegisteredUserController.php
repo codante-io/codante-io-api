@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Auth\Events\Registered;
 use App\Http\Controllers\Controller;
 use App\Mail\UserRegistered;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -22,24 +22,24 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): Response
     {
-        Auth::shouldUse("web");
+        Auth::shouldUse('web');
 
         $request->validate([
-            "name" => ["required", "string", "max:255"],
-            "email" => [
-                "required",
-                "string",
-                "email",
-                "max:255",
-                "unique:" . User::class,
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                'unique:'.User::class,
             ],
-            "password" => ["required", "confirmed", Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            "name" => $request->name,
-            "email" => $request->email,
-            "password" => Hash::make($request->password),
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
         ]);
 
         event(new Registered($user));

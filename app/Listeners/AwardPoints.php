@@ -26,7 +26,7 @@ class AwardPoints
         if ($event instanceof ChallengeCompleted) {
             UserActionPoints::awardPoints(
                 $event->user->id,
-                "challenge_completed",
+                'challenge_completed',
                 10,
                 $event->challenge->id,
                 "App\Models\ChallengeUser"
@@ -34,7 +34,7 @@ class AwardPoints
         } elseif ($event instanceof ChallengeJoined) {
             UserActionPoints::awardPoints(
                 $event->user->id,
-                "challenge_joined",
+                'challenge_joined',
                 1,
                 $event->challenge->id,
                 "App\Models\ChallengeUser"
@@ -42,7 +42,7 @@ class AwardPoints
         } elseif ($event instanceof ChallengeForked) {
             UserActionPoints::awardPoints(
                 $event->user->id,
-                "challenge_forked",
+                'challenge_forked',
                 3,
                 $event->challenge->id,
                 "App\Models\ChallengeUser"
@@ -50,7 +50,7 @@ class AwardPoints
         } elseif ($event instanceof ReactionCreated) {
             UserActionPoints::awardPoints(
                 $event->reactable->user_id,
-                "reaction_received",
+                'reaction_received',
                 1,
                 $event->reactionId,
                 "App\Models\Reaction"
@@ -58,7 +58,7 @@ class AwardPoints
         } elseif ($event instanceof ReactionDeleted) {
             UserActionPoints::removePoints(
                 $event->reactable->user_id,
-                "reaction_received",
+                'reaction_received',
                 $event->reactionId,
                 "App\Models\Reaction"
             );

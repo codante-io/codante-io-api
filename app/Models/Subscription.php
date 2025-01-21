@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Subscription extends Model
 {
-    use HasFactory, CrudTrait, SoftDeletes;
+    use CrudTrait, HasFactory, SoftDeletes;
 
-    protected $guarded = ["id"];
+    protected $guarded = ['id'];
 
     public function user()
     {
@@ -26,37 +26,37 @@ class Subscription extends Model
     public function translatedStatus()
     {
         switch ($this->status) {
-            case "pending":
-                return "Pendente";
-            case "active":
-                return "Ativa";
-            case "canceled":
-            case "refused":
-                return "Cancelada";
-            case "expired":
-                return "Vencida";
-            case "refunded":
-                return "Reembolsada";
+            case 'pending':
+                return 'Pendente';
+            case 'active':
+                return 'Ativa';
+            case 'canceled':
+            case 'refused':
+                return 'Cancelada';
+            case 'expired':
+                return 'Vencida';
+            case 'refunded':
+                return 'Reembolsada';
             default:
-                return "Pendente";
+                return 'Pendente';
         }
     }
 
     public function translatedPaymentMethod()
     {
         switch ($this->payment_method) {
-            case "credit_card":
-                return "Cartão de Crédito";
-            case "boleto":
-                return "Boleto Bancário";
-            case "pix":
-                return "Pix";
+            case 'credit_card':
+                return 'Cartão de Crédito';
+            case 'boleto':
+                return 'Boleto Bancário';
+            case 'pix':
+                return 'Pix';
         }
     }
 
     public function changeStatus(string $newStatus)
     {
-        if ($newStatus === "active") {
+        if ($newStatus === 'active') {
             $this->user->upgradeUserToPro();
         } else {
             $this->user->downgradeUserFromPro();

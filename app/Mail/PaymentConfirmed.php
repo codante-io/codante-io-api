@@ -5,7 +5,6 @@ namespace App\Mail;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -23,11 +22,11 @@ class PaymentConfirmed extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: "Codante | Pagamento Confirmado");
+        return new Envelope(subject: 'Codante | Pagamento Confirmado');
     }
 
     public function content(): Content
     {
-        return new Content(markdown: "emails.payment-confirmed");
+        return new Content(markdown: 'emails.payment-confirmed');
     }
 }

@@ -17,15 +17,15 @@ class LessonPolicy
 
     public function view(User $user, Lesson $lesson): bool
     {
-        if ($lesson->available_to === "all") {
+        if ($lesson->available_to === 'all') {
             return true;
         }
 
-        if ($lesson->available_to === "logged_in" && $user) {
+        if ($lesson->available_to === 'logged_in' && $user) {
             return true;
         }
 
-        if ($lesson->available_to === "pro" && $user && $user->is_pro) {
+        if ($lesson->available_to === 'pro' && $user && $user->is_pro) {
             return true;
         }
 

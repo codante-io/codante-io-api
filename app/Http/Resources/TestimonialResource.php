@@ -15,14 +15,14 @@ class TestimonialResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "name" => $this->name,
-            "body" => $this->body,
-            "avatar_url" => $this->avatar_url,
-            "social_media_link" => $this->social_media_link,
-            "social_media_nickname" => $this->social_media_nickname,
+            'name' => $this->name,
+            'body' => $this->body,
+            'avatar_url' => $this->avatar_url,
+            'social_media_link' => $this->social_media_link,
+            'social_media_nickname' => $this->social_media_nickname,
             // "company" => $this->company,
             // "source" => $this->source,
-            "featured" => $this->featured,
+            'featured' => $this->featured,
         ];
     }
 }

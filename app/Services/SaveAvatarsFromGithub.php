@@ -11,9 +11,9 @@ class SaveAvatarsFromGithub
     {
         // pega todos os usuários que têm avatar do github
         $users = User::where(
-            "avatar_url",
-            "like",
-            "https://avatars.githubusercontent.com%"
+            'avatar_url',
+            'like',
+            'https://avatars.githubusercontent.com%'
         )->get();
 
         // // para cada usuário, pega o avatar do github e salva no banco
@@ -25,13 +25,12 @@ class SaveAvatarsFromGithub
             }
 
             $res = Http::withHeaders([
-                "Authorization" =>
-                    "Bearer " . config("services.screenshot.token"),
+                'Authorization' => 'Bearer '.config('services.screenshot.token'),
             ])->post(
-                config("services.screenshot.base_url") . "/upload-avatar-image",
+                config('services.screenshot.base_url').'/upload-avatar-image',
                 [
-                    "avatar_url" => $user->avatar_url,
-                    "email" => $user->email,
+                    'avatar_url' => $user->avatar_url,
+                    'email' => $user->email,
                 ]
             );
 
@@ -39,7 +38,7 @@ class SaveAvatarsFromGithub
                 continue;
             }
 
-            $user->avatar_url = $res->json()["smImageUrl"];
+            $user->avatar_url = $res->json()['smImageUrl'];
             $user->save();
         }
     }
