@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\File;
+use App\Helpers\CacheKeyBuilder;
 
 class ChallengeController extends Controller
 {
@@ -44,6 +45,13 @@ class ChallengeController extends Controller
         $challengeRepository = new ChallengeRepository();
         $query = $challengeRepository->challengeCardsQuery($user);
         $techFilter = $request->input('tecnologia');
+        $textQuery = $request->input('q');
+        $difficultyFilter = $request->input('dificuldade');
+        $freeFilter = $request->input('gratuito');
+
+        $orderBy = $request->input('ordenacao');
+
+        $totalChallenges = $query->count();
 
         // Filtro de Tecnologia (tags)
         if ($techFilter) {
@@ -53,6 +61,22 @@ class ChallengeController extends Controller
                 $subquery->where('slug', $techFilter);
             });
         }
+        if ($textQuery) {
+            $query->where('name', 'like', '%'.$textQuery.'%');
+        }
+        
+        if ($difficultyFilter) {
+            $query->where('difficulty', $difficultyFilter);
+        }
+        
+        if ($freeFilter) {
+            $query->where('is_premium', $freeFilter == 'true' ? false : true);
+        }
+        
+        if ($orderBy) {
+            $query->orderByCustom($orderBy);
+        }
+
 
         // se há user logado, não vamos pegar cachear e vamos adicionar o
         // current_user_id (para evitar muitas chamadas ao banco de dados)
@@ -63,14 +87,14 @@ class ChallengeController extends Controller
             });
         } else {
             $challenges = Cache::remember(
-                "challenges-tech-$techFilter",
-                1800,
-                function () use ($query) {
-                    return $query->get();
-                }
-            );
+                CacheKeyBuilder::buildCacheKey("challenges", [$techFilter, $textQuery, $difficultyFilter, $freeFilter, $orderBy]),
+            1800,
+            function () use ($query) {
+                return $query->get();
+            }
+        );
         }
-
+        
         $featuredChallenge = $challengeRepository->getFeaturedChallenge($user);
 
         return [
@@ -79,6 +103,7 @@ class ChallengeController extends Controller
                 'featuredChallenge' => $featuredChallenge
                     ? new ChallengeCardResource($featuredChallenge)
                     : null,
+                'totalChallenges' => $totalChallenges,
             ],
         ];
     }
