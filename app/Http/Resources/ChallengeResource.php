@@ -53,6 +53,7 @@ class ChallengeResource extends JsonResource
 
             'weekly_featured_start_date' => $this->weekly_featured_start_date,
             'solution_publish_date' => $this->solution_publish_date,
+            'is_weekly_featured' => $this->isWeeklyFeatured(),
             'stars' => $this->stars,
             'forks' => $this->forks,
         ];

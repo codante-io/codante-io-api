@@ -363,7 +363,7 @@ class Challenge extends Model
         $isPro = auth()->check() && auth()->user()->is_pro;
         $isPremiumChallenge = $this->is_premium;
 
-        if ($isPro || !$isPremiumChallenge) {
+        if ($isPro || !$isPremiumChallenge || $this->isWeeklyFeatured()) {
             return $this->description;
         }
 
