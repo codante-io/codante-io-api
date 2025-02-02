@@ -30,7 +30,7 @@ class ChallengeResource extends JsonResource
             'repository_name' => $this->repository_name,
             'featured' => $this->featured,
             'short_description' => $this->short_description,
-            'description' => $this->description,
+            'description' => $this->getDescription(),
             'has_solution' => $this->hasSolution(),
             'is_premium' => $this->is_premium,
             'resources' => $this->resources,
@@ -53,6 +53,7 @@ class ChallengeResource extends JsonResource
 
             'weekly_featured_start_date' => $this->weekly_featured_start_date,
             'solution_publish_date' => $this->solution_publish_date,
+            'is_weekly_featured' => $this->isWeeklyFeatured(),
             'stars' => $this->stars,
             'forks' => $this->forks,
         ];
