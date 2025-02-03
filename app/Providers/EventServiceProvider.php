@@ -13,6 +13,7 @@ use App\Events\ReactionCreated;
 use App\Events\ReactionDeleted;
 use App\Events\UserCommented;
 use App\Events\UserCompletedLesson;
+use App\Events\UserCompletedWorkshop;
 use App\Events\UserErasedLesson;
 use App\Events\UserJoinedWorkshop;
 use App\Events\UserRequestedCertificate;
@@ -56,11 +57,12 @@ class EventServiceProvider extends ServiceProvider
         ChallengeForked::class => [AwardPoints::class],
         ReactionCreated::class => [AwardPoints::class],
         ReactionDeleted::class => [AwardPoints::class],
+        UserCompletedWorkshop::class => [AwardPoints::class],
         UserStatusUpdated::class => [UserStatusUpdatedListener::class],
         UserCommented::class => [CommentCreated::class],
         UserRequestedCertificate::class => [CertificateRequested::class],
         AdminPublishedCertificate::class => [CertificatePublished::class],
-        UserCompletedLesson::class => [LessonCompleted::class],
+        UserCompletedLesson::class => [LessonCompleted::class, AwardPoints::class],
         UserErasedLesson::class => [LessonRemoved::class],
         PurchaseCompleted::class => [SendEventToMetaPixel::class],
         PurchaseStarted::class => [
@@ -71,6 +73,7 @@ class EventServiceProvider extends ServiceProvider
         UserJoinedWorkshop::class => [
             ListenersUserJoinedWorkshop::class,
             EmailOctopus::class,
+            AwardPoints::class,
         ],
     ];
 

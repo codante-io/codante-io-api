@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UserCompletedLesson;
+use App\Events\UserCompletedWorkshop;
 use App\Models\Certificate;
 use App\Models\WorkshopUser;
 use App\Notifications\Discord;
@@ -51,6 +52,7 @@ class LessonCompleted
         $durationInSeconds = $workshop->lessons()->sum('duration_in_seconds');
 
         if ($completedLessons >= $lessonCount) {
+            event(new UserCompletedWorkshop($user, $workshop));
             $workshopUser = WorkshopUser::where('user_id', $user->id)
                 ->where('workshop_id', $workshop->id)
                 ->first();
