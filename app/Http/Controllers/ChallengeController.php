@@ -154,13 +154,7 @@ class ChallengeController extends Controller
 
     public function show($slug)
     {
-        // if not logged in, we show cached version
-        if (! Auth::check()) {
-            $challenge = $this->getChallenge($slug);
-        } else {
-            $challenge = $this->getChallengeWithCompletedLessons($slug);
-        }
-        // $challenge->current_user_is_enrolled = $challenge->userJoined();
+        $challenge = $this->getChallenge($slug);
 
         $cacheKey = 'challenge_'.$challenge->slug;
         $cacheTime = 60 * 60; // 1 hour
@@ -564,38 +558,4 @@ class ChallengeController extends Controller
         return $challenge;
     }
 
-    private function getChallengeWithCompletedLessons($slug)
-    {
-        $challenge = Challenge::where('slug', $slug)
-            ->visible()
-            ->with('workshop')
-            ->with('workshop.lessons')
-            ->with('workshop.instructor')
-            ->with([
-                'workshop',
-                'workshop.lessons',
-                'workshop.lessons.users' => function ($query) {
-                    $query
-                        ->select('users.id')
-                        ->where('user_id', Auth::guard('sanctum')->id());
-                },
-            ])
-            ->withCount('users')
-            ->with('tags')
-            ->firstOrFail();
-
-        if (
-            ! $challenge->workshop ||
-            $challenge->workshop->lessons->count() === 0
-        ) {
-            return $challenge;
-        }
-
-        $challenge->workshop->lessons->each(function ($lesson) {
-            $lesson->user_completed = $lesson->users->count() > 0;
-            unset($lesson->users);
-        });
-
-        return $challenge;
-    }
 }

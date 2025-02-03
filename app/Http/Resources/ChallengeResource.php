@@ -38,7 +38,6 @@ class ChallengeResource extends JsonResource
             'current_user_is_enrolled' => $this->userJoined(),
             'current_user_status' => $this->userStatus(),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
-            // "workshop" => new WorkshopResource($this->whenLoaded("workshop")),
             'solution' => [
                 'lesson_sections' => $this->whenLoaded(
                     'lessons',
