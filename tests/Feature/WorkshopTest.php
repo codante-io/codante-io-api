@@ -236,11 +236,11 @@ class WorkshopTest extends TestCase
         $response = $this->getJson("/api/workshops/$slug");
         $jsonResponse = $response->json();
 
-        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['open']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['user_can_view']);
         $this->assertEquals(
             false,
-            $jsonResponse['data']['lessons'][1]['open'],
-            $jsonResponse['data']['lessons'][2]['open']
+            $jsonResponse['data']['lessons'][1]['user_can_view'],
+            $jsonResponse['data']['lessons'][2]['user_can_view']
         );
 
         // lesson in workshop has this shape
@@ -260,7 +260,7 @@ class WorkshopTest extends TestCase
             'duration_in_seconds',
             $jsonResponse['data']['lessons'][0]
         );
-        $this->assertArrayHasKey('open', $jsonResponse['data']['lessons'][0]);
+        $this->assertArrayHasKey('user', $jsonResponse['data']['lessons'][0]);
     }
 
     /** @test */
@@ -297,9 +297,9 @@ class WorkshopTest extends TestCase
         ]);
         $jsonResponse = $response->json();
 
-        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['open']);
-        $this->assertEquals(false, $jsonResponse['data']['lessons'][1]['open']);
-        $this->assertEquals(true, $jsonResponse['data']['lessons'][2]['open']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['user_can_view']);
+        $this->assertEquals(false, $jsonResponse['data']['lessons'][1]['user_can_view']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][2]['user_can_view']);
     }
 
     /** @test */
@@ -336,8 +336,8 @@ class WorkshopTest extends TestCase
         ]);
         $jsonResponse = $response->json();
 
-        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['open']);
-        $this->assertEquals(true, $jsonResponse['data']['lessons'][1]['open']);
-        $this->assertEquals(true, $jsonResponse['data']['lessons'][2]['open']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][0]['user_can_view']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][1]['user_can_view']);
+        $this->assertEquals(true, $jsonResponse['data']['lessons'][2]['user_can_view']);
     }
 }
