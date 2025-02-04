@@ -260,7 +260,7 @@ class WorkshopTest extends TestCase
             'duration_in_seconds',
             $jsonResponse['data']['lessons'][0]
         );
-        $this->assertArrayHasKey('user', $jsonResponse['data']['lessons'][0]);
+        $this->assertArrayHasKey('user_can_view', $jsonResponse['data']['lessons'][0]);
     }
 
     /** @test */
