@@ -129,6 +129,7 @@ class HomeController extends Controller
                         ->inRandomOrder()
                         ->get()
                 ),
+                'submission_count' => ChallengeUser::where('submission_url', '!=', null)->count(),
                 'plan_info' => new PlanResource(Plan::find(1)),
             ];
         });
