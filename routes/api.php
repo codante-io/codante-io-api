@@ -216,7 +216,8 @@ Route::post('/lessons/{lesson}/uncompleted', [
     'setUncompleted',
 ])->middleware('auth:sanctum');
 
-Route::get('/upcoming', [CalendarController::class, 'showCalendar']);
+Route::get('/calendar', [CalendarController::class, 'getEventsByDate']);
+
 Route::get('/custom-test', [CustomTestController::class, 'handle']);
 
 Route::get('/blog-posts', [BlogPostController::class, 'index']);

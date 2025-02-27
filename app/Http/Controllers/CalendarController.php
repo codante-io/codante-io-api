@@ -4,83 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\Challenge;
 use App\Models\Workshop;
-use Illuminate\Support\Facades\Schema;
-
+use Carbon\Carbon;
+use App\Http\Resources\Calendar\NewChallengeEventResource;
+use App\Http\Resources\Calendar\NewChallengeResolutionEventResource;
+use App\Http\Resources\Calendar\NewWorkshopEventResource;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 class CalendarController extends Controller
 {
-    public function showCalendar()
+
+    public function getEventsByDate(Request $request)
     {
-        // remover colunas desnecessárias
-        $workshopColumns = Schema::getColumnListing('workshops');
-        $workshopColumns = array_diff($workshopColumns, [
-            'description',
-            'video_url',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-        ]);
-
-        $challengeColumns = Schema::getColumnListing('challenges');
-        $challengeColumns = array_diff($challengeColumns, [
-            'description',
-            'video_url',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-        ]);
-
-        // pegar os próximos workshops (soon + data)
-        $workshops = Workshop::query()
-            ->listed()
-            ->where('is_standalone', true)
-            ->with(
-                'instructor',
-                fn ($query) => $query->select(
-                    'id',
-                    'name',
-                    'company',
-                    'avatar_url'
-                )
-            )
-            ->with('tags', fn ($query) => $query->select('name'))
-            ->where(
-                fn ($query) => $query
-                    ->whereDate('published_at', '>=', now())
-                    ->orWhere('published_at', null)
-            )
-            ->select($workshopColumns)
-            ->get();
-
-        $challenges = Challenge::query()
-            ->listed()
-            ->with('tags', fn ($query) => $query->select('name'))
-            ->where(
-                fn ($query) => $query
-                    ->whereDate('solution_publish_date', '>=', now())
-                    ->orWhere('solution_publish_date', null)
-            )
-            ->select($challengeColumns)
-            ->get();
-
-        $challenges->append('type');
-        $workshops->append('type');
-
-        $merged = $workshops->merge($challenges)->sortBy('published_at');
-
-        $result = [];
-
-        foreach ($merged as $item) {
-
-            if ($item->published_at == null) {
-                $result['soon'][] = $item;
-
-                continue;
-            }
-
-            $date = $item->published_at->format('Y-m-d');
-            $result[$date][] = $item;
+        if (!$request->input('start_date')) {
+            $startDate = Carbon::parse('2022-01-01')->toIso8601String();
+        } else {
+            $startDate = Carbon::parse($request->input('start_date'))->toIso8601String();
         }
 
-        return $result;
+        if (!$request->input('end_date')) {
+            $endDate = Carbon::parse('2122-12-31')->toIso8601String();
+        } else {
+            $endDate = Carbon::parse($request->input('end_date'))->toIso8601String();
+        }
+
+        $cacheKey = 'events_' . $startDate . '_' . $endDate;
+
+        $events = Cache::remember($cacheKey, 3600 * 4, function () use ($request, $startDate, $endDate) {
+            $challenges = Challenge::query()
+                ->listed()
+                ->where('weekly_featured_start_date', '>=', $startDate)
+                ->where('weekly_featured_start_date', '<=', $endDate)
+                ->get();
+
+            $workshops = Workshop::query()
+                ->listed()
+                ->where('is_standalone', true)
+                ->where('published_at', '>=', $startDate)
+                ->where('published_at', '<=', $endDate)
+                ->get();
+
+            $challengeResolutions = Challenge::query()
+                ->listed()
+                ->where('solution_publish_date', '>=', $startDate)
+                ->where('solution_publish_date', '<=', $endDate)
+                ->get();
+
+            $events = collect([
+                ...NewChallengeEventResource::collection($challenges)->toArray($request),
+                ...NewWorkshopEventResource::collection($workshops)->toArray($request),
+                ...NewChallengeResolutionEventResource::collection($challengeResolutions)->toArray($request),
+            ]);
+
+            return $events->sortByDesc('datetime')->values();
+        });
+
+        return $events;
     }
 }
