@@ -28,7 +28,7 @@ class SidebarLessonResource extends JsonResource
             'thumbnail_url' => $this->thumbnail_url,
             'user_completed' => $this->userCompleted(Auth::id()),
             'duration_in_seconds' => $this->duration_in_seconds,
-            'open' => $this->canViewVideo(),
+            'user_can_view' => $this->canViewVideo(),
         ];
     }
 

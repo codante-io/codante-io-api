@@ -55,15 +55,6 @@ class ChallengeRepository
     {
         $query = Challenge::query();
         $query = $this->challengeCardsBaseQuery($query, $currentUser);
-
-        $query = $query
-            ->orderByRaw(
-                '-EXISTS (SELECT 1 FROM workshops WHERE workshops.challenge_id = challenges.id)'
-            )
-            ->orderBy('status', 'asc')
-            ->orderBy('position', 'asc')
-            ->orderBy('created_at', 'desc');
-
         return $query;
     }
 

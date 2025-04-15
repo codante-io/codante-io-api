@@ -324,4 +324,50 @@ class Challenge extends Model
             $this->attributes[$attribute_name] = \Storage::url($file_path);
         }
     }
+
+    public function scopeOrderByCustom($query, $orderBy) {
+        switch ($orderBy) {
+            case 'facil':
+                $query->orderBy('difficulty', 'asc');
+                break;
+            case 'dificil':
+                $query->orderBy('difficulty', 'desc');
+                break;
+            case 'recente':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'antigo':
+                $query->orderBy('created_at');
+                break;
+            case 'popular':
+                $query->orderBy('users_count', 'desc');
+                break;
+            case 'menos-popular':
+                $query->orderBy('users_count', 'asc');
+                break;
+            default:
+                $query;
+                break;
+        }
+
+        return $query;
+    }
+
+    private function hideDescription($description) {
+        $description = substr($description, 0, 400);
+        $description = substr($description, 0, strrpos($description, "\n") + 1);
+        return $description;
+    }
+
+    public function getDescription() {
+        $isPro = auth()->check() && auth()->user()->is_pro;
+        $isPremiumChallenge = $this->is_premium;
+
+        if ($isPro || !$isPremiumChallenge || $this->isWeeklyFeatured()) {
+            return $this->description;
+        }
+
+        return $this->hideDescription($this->description);
+    }
 }
+
