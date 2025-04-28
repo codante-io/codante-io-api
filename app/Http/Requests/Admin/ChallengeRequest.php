@@ -29,7 +29,7 @@ class ChallengeRequest extends FormRequest
             'status' => 'required',
             'difficulty' => 'required',
             'slug' => 'required|unique:challenges,slug,'.$this->id,
-
+            'main_technology_id' => 'required',
         ];
     }
 
