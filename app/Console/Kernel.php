@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
 
         $schedule
             ->call(function () {
-                \App\Services\OpenClosedChallengeLessonsRobot::handle();
+                (new \App\Services\OpenClosedChallengeLessonsRobot(new \App\Services\Discord()))->handle();
             })
             ->weeklyOn(1, '05:00');
     }

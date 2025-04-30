@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\UserResource;
-use App\Notifications\Discord;
+use App\Services\Discord;
 use Http;
 use Illuminate\Http\Request;
 
@@ -79,6 +79,6 @@ class DiscordController extends Controller
         $message = $request->message;
         $channel = $request->channel;
 
-        new Discord($message, $channel);
+        Discord::sendMessage($message, $channel);
     }
 }

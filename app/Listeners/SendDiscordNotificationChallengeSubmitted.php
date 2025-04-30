@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ChallengeCompleted;
-use App\Notifications\Discord;
+use App\Services\Discord;
 
 class SendDiscordNotificationChallengeSubmitted
 {
@@ -21,7 +21,7 @@ class SendDiscordNotificationChallengeSubmitted
     public function handle(ChallengeCompleted $event): void
     {
         // Discord Message
-        new Discord(
+        Discord::sendMessage(
             "{$this->getRandomMessageGreeting()}O Mini Projeto **{$event->challenge->name}** foi concluído por **{$event->user->name}**\n ​ \n",
             'submissoes',
             [

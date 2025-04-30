@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Events\UserCommented;
 use App\Listeners\CommentCreated;
-use App\Notifications\Discord;
+use App\Services\Discord;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;

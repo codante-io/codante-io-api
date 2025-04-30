@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\UserCompletedLesson;
 use App\Models\Certificate;
 use App\Models\WorkshopUser;
-use App\Notifications\Discord;
+use App\Services\Discord;
 use Notification;
 
 class LessonCompleted
@@ -75,7 +75,7 @@ class LessonCompleted
 
             if ($user->is_pro) {
                 if ($certificate->wasRecentlyCreated) {
-                    new Discord(
+                    Discord::sendMessage(
                         "📔 Workshop: {$workshop->name}\n🗣️ O usuário {$user->name} completou o workshop e recebeu um certificado.\nID: {$certificate->id}",
                         'pedidos-certificados'
                     );

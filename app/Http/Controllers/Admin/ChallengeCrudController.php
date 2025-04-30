@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Requests\Admin\ChallengeRequest;
 use App\Models\Challenge;
-use App\Notifications\Discord;
+use App\Services\Discord;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
@@ -278,40 +278,14 @@ class ChallengeCrudController extends CrudController
     protected function notifyDiscordChallengeLaunched($challengeId)
     {
         $challenge = Challenge::findOrFail($challengeId);
-        new Discord(
-            "Fala pessoal (@here)! Acabamos de lançar mais um Mini Projeto no Codante:\n ​ \n**{$challenge->name}!** 🚀\n ​ \nAcesse o link abaixo para acessar o Mini-Projeto e para participar! 👇 \n ​ \n",
-            'comunicados',
-            [
-                [
-                    'title' => $challenge->name,
-                    'description' => 'Mini Projeto do Codante',
-                    'url' => "https://codante.io/mini-projetos/$challenge->slug",
-                    'color' => 0x0099FF,
-                    'image' => [
-                        'url' => $challenge->image_url,
-                    ],
-                ],
-            ]
-        );
+        $message = "Fala pessoal (@here)! Acabamos de lançar mais um Mini Projeto no Codante:\n ​ \n**{$challenge->name}!** 🚀\n ​ \nAcesse o link abaixo para acessar o Mini-Projeto e para participar! 👇 \n ​ \n";
+        Discord::sendMessage($message);
     }
 
     protected function notifyDiscordChallengeSolutionLaunched($challengeId)
     {
         $challenge = Challenge::findOrFail($challengeId);
-        new Discord(
-            "Fala pessoal (@here)! Acabamos de disponibilizar no Codante:\n ​ \nResolução do Mini Projeto: **{$challenge->name}!**\n ​ \nNo link abaixo você encontra tanto a resolução em vídeo como o código da resolução! 👇 \n ​ \n",
-            'comunicados',
-            [
-                [
-                    'title' => "Resolução de: $challenge->name",
-                    'description' => 'Resolução em Vídeo e Código do Mini Projeto',
-                    'url' => "https://codante.io/mini-projetos/$challenge->slug/resolucao",
-                    'color' => 0x0099FF,
-                    'image' => [
-                        'url' => $challenge->image_url,
-                    ],
-                ],
-            ]
-        );
+        $message = "Fala pessoal (@here)! Acabamos de disponibilizar no Codante:\n ​ \nResolução do Mini Projeto: **{$challenge->name}!**\n ​ \nNo link abaixo você encontra tanto a resolução em vídeo como o código da resolução! 👇 \n ​ \n";
+        Discord::sendMessage($message);
     }
 }

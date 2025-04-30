@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Notifications\Discord;
 use Http;
 
 class VimeoThumbnailService
@@ -19,7 +18,7 @@ class VimeoThumbnailService
 
     public function CheckAllVideoThumbnails()
     {
-        new Discord('-- Início do Saneamento de Thumbnails do Vimeo `(Este robô pega todas as lessons sem thumbnail e pega a url das thumbnails e salva na base de dados.`)', 'notificacoes-site');
+        Discord::sendMessage('-- Início do Saneamento de Thumbnails do Vimeo `(Este robô pega todas as lessons sem thumbnail e pega a url das thumbnails e salva na base de dados.`)', 'notificacoes-site');
 
         $lessons = \App\Models\Lesson::whereNull('thumbnail_url')->get();
 
@@ -28,10 +27,10 @@ class VimeoThumbnailService
             $thumbnail = $this->getVideoThumbnail($this->videoId);
             $lesson->thumbnail_url = $thumbnail;
             $lesson->save();
-            new Discord("Atualizada a lesson id: $lesson->id", 'notificacoes-site');
+            Discord::sendMessage("Atualizada a lesson id: $lesson->id", 'notificacoes-site');
         }
 
-        new Discord('-- Fim do Saneamento de Thumbnails do Vimeo', 'notificacoes-site');
+        Discord::sendMessage('-- Fim do Saneamento de Thumbnails do Vimeo', 'notificacoes-site');
     }
 
     private function getVideoThumbnail(int $videoId)

@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\UserRequestedCertificate;
 use App\Notifications\Discord;
+use App\Services\Discord as DiscordService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Notification;
 
@@ -26,7 +27,7 @@ class CertificateRequested implements ShouldQueue
 
         // Send Discord notification
         if ($certifiable_type === 'App\\Models\\ChallengeUser') {
-            new Discord(
+            DiscordService::sendMessage(
                 "💻 {$event->certifiable->challenge->name}\n👤 {$event->user->name}\n🔗 Submissão: <https://codante.io/mini-projetos/{$event->certifiable->challenge->slug}/submissoes/{$event->user->github_user}>\nPara aprovar, substitua o status para published: <https://api.codante.io/admin/certificate/{$certificate->id}/edit>\nID: $certificate->id",
                 'pedidos-certificados'
             );
