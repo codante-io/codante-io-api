@@ -18,11 +18,6 @@ Route::get('/', function () {
     return ['name' => 'Codante API', 'version' => '1.0.0'];
 });
 
-Route::get('/open-closed-challenge-lessons', function () {
-    $a = OpenClosedChallengeLessonsRobot::handle();
-    // return $a;
-});
-
 Route::fallback(function () {
     return response()->json(['message' => 'Not Found'], 404);
 });
