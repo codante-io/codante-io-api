@@ -97,22 +97,11 @@ class Comment extends Model
         }
 
         if ($this->commentable_type == "App\Models\Lesson") {
-            $workshop = $this->commentable->workshop;
-            $lessonSlug = $this->commentable->slug;
+            $lesson = $this->commentable;
+            $workshop = $lesson->lessonable;
+            $lessonSlug = $lesson->slug;
 
-            if ($workshop->is_standalone == 0) {
-
-                return '/workshops/'.
-                    $workshop->slug.
-                    '/'.
-                    $lessonSlug;
-            }
-
-            if ($workshop->is_standalone == 1) {
-                $workshopSlug = $workshop->slug;
-
-                return '/workshops/'.$workshopSlug.'/'.$lessonSlug;
-            }
+            return '/workshops/'.$workshop->slug.'/'.$lessonSlug;
         }
     }
 

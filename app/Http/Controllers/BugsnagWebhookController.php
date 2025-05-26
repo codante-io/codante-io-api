@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Notifications\Discord;
+use App\Services\Discord;
 use Illuminate\Http\Request;
 
 class BugsnagWebhookController extends Controller
@@ -13,6 +13,6 @@ class BugsnagWebhookController extends Controller
         $errorMessage = $error['message'] ?? '';
         $errorExceptionClass = $error['exceptionClass'] ?? '';
 
-        new Discord("Erro não tratado na aplicação! \n".$errorExceptionClass."\n".$errorMessage, 'bugs');
+        Discord::sendMessage("Erro não tratado na aplicação! \n".$errorExceptionClass."\n".$errorMessage, 'bugs');
     }
 }

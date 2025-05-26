@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Models\Leads;
-use App\Notifications\Discord;
+use App\Services\Discord;
 use App\Services\Mail\EmailOctopusService;
 use Illuminate\Auth\Events\Registered as RegisteredEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,7 +40,7 @@ class Registered implements ShouldQueue
             $event->user->name.
             ' | '.
             $event->user->email;
-        new Discord($message);
+        Discord::sendMessage($message);
     }
 
     private function addToEmailList($user): void

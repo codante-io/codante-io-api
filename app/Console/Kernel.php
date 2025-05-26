@@ -49,6 +49,12 @@ class Kernel extends ConsoleKernel
                 (new \App\Services\SaveAvatarsFromGithub())->handle();
             })
             ->dailyAt('04:45');
+
+        $schedule
+            ->call(function () {
+                (new \App\Services\OpenClosedChallengeLessonsRobot(new \App\Services\Discord()))->handle();
+            })
+            ->weeklyOn(1, '05:00');
     }
 
     /**

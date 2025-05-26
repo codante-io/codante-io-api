@@ -1,9 +1,5 @@
 {
-  "devDependencies": {
-    "@prettier/plugin-php": "^0.19.4",
-    "prettier": "^2.8.8"
-  },
-  "dependencies": {
-    "puppeteer": "^20.5.0"
-  }
+    "dependencies": {
+        "puppeteer": "^20.5.0"
+    }
 }

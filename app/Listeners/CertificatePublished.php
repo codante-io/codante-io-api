@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\AdminPublishedCertificate;
-use App\Notifications\Discord;
+use App\Services\Discord as DiscordService;
 use Notification;
 
 class CertificatePublished
@@ -29,10 +29,8 @@ class CertificatePublished
             $certifiable_type === "App\Models\ChallengeUser" &&
             $event->certificate->status === 'published'
         ) {
-            new Discord(
-                "Certificado ID: {$certificate->id}\nStatus atualizado. Projeto aprovado ✅",
-                'pedidos-certificados'
-            );
+            $message = "Certificado ID: {$certificate->id}\nStatus atualizado. Projeto aprovado ✅";
+            DiscordService::sendMessage($message, 'pedidos-certificados');
 
             Notification::send(
                 $certifiable->user,
@@ -45,10 +43,8 @@ class CertificatePublished
             $certifiable_type === 'App\\Models\\ChallengeUser' &&
             $event->certificate->status !== 'published'
         ) {
-            new Discord(
-                "Certificado ID: {$certificate->id}\nStatus atualizado para {$event->certificate->status} ❌",
-                'pedidos-certificados'
-            );
+            $message = "Certificado ID: {$certificate->id}\nStatus atualizado para {$event->certificate->status} ❌";
+            DiscordService::sendMessage($message, 'pedidos-certificados');
         }
     }
 }

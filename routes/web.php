@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\OpenClosedChallengeLessonsRobot;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +21,4 @@ Route::get('/', function () {
 Route::fallback(function () {
     return response()->json(['message' => 'Not Found'], 404);
 });
+

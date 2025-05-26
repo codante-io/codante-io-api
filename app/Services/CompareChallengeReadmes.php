@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Challenge;
-use App\Notifications\Discord;
 use Mistralys\Diff\Diff;
 
 class CompareChallengeReadmes
