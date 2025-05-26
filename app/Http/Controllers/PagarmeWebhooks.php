@@ -26,11 +26,11 @@ class PagarmeWebhooks
             $request->post('data')['customer']['metadata']['coupon_code'] ??
             null;
 
-        Discord::sendMessage("Entrando nos Webhooks... (Evento $eventType) - Coupon: $couponCode");
+        Discord::sendMessage("Entrando nos Webhooks... (Evento $eventType) - Coupon: $couponCode", 'notificacoes-compras');
 
         // Se não for uma transaction, não vamos fazer nada.
         if (! Str::of($eventType)->contains('order.')) {
-            Discord::sendMessage('Erro, evento não trackeado');
+            Discord::sendMessage('Erro, evento não trackeado', 'notificacoes-compras');
 
             return new Response();
         }
@@ -42,7 +42,7 @@ class PagarmeWebhooks
         )->first();
 
         if (! $subscription) {
-            Discord::sendMessage("Erro, não há subscription com o id {$pagarmeOrderId}");
+            Discord::sendMessage("Erro, não há subscription com o id {$pagarmeOrderId}", 'notificacoes-compras');
 
             return new Response();
         }
@@ -88,7 +88,7 @@ class PagarmeWebhooks
         User $user,
         ?string $couponCode = null
     ) {
-        Discord::sendMessage('chamando handlePaid');
+        Discord::sendMessage('chamando handlePaid', 'notificacoes-compras');
         // se status anterior é ativo, não faz nada.
         if ($subscription->status === 'active') {
             return;
@@ -112,7 +112,7 @@ class PagarmeWebhooks
 
         event(new PurchaseCompleted($user, $subscription));
 
-        Discord::sendMessage('Pagarme: O novo status é Pago');
+        Discord::sendMessage('Pagarme: O novo status é Pago', 'notificacoes-compras');
     }
 
     public function handleCanceled(
@@ -120,7 +120,7 @@ class PagarmeWebhooks
         Subscription $subscription,
         User $user
     ) {
-        Discord::sendMessage('chamando handle canceled');
+        Discord::sendMessage('chamando handle canceled', 'notificacoes-compras');
 
         // Muda status para refunded
         $subscription->changeStatus('canceled');
@@ -139,12 +139,12 @@ class PagarmeWebhooks
         Subscription $subscription,
         User $user
     ) {
-        Discord::sendMessage('chamando handlePending');
+        Discord::sendMessage('chamando handlePending', 'notificacoes-compras');
 
         $this->savePhoneNumber($request, $user);
 
         // manda no discord dados do usuário
-        Discord::sendMessage('Usuário: '.$user->name.' - Email: '.$user->email);
+        Discord::sendMessage('Usuário: '.$user->name.' - Email: '.$user->email, 'notificacoes-compras');
 
         $this->sendPhoneNumberDiscordNotification($user);
         // Muda status para chargedback
@@ -162,8 +162,8 @@ class PagarmeWebhooks
         $this->savePhoneNumber($request, $user);
         $this->sendPhoneNumberDiscordNotification($user);
 
-        Discord::sendMessage('chamando handleOrderClosed');
-        Discord::sendMessage('🎉 Nova assinatura: '.$user->name);
+        Discord::sendMessage('chamando handleOrderClosed', 'notificacoes-compras');
+        Discord::sendMessage('🎉 Nova assinatura: '.$user->name, 'notificacoes-compras');
 
         $paymentMethod = $request->post('data')['charges'][0]['payment_method'];
         $boletoBarcode = null;
@@ -199,7 +199,7 @@ class PagarmeWebhooks
         $planName = $subscription->plan->name ?? 'Indefinido';
         $planPrice = $subscription->plan->price ?? 0;
 
-        Discord::sendMessage('🔒 Assinatura: '.$planName.' - '.$planPrice);
+        Discord::sendMessage('🔒 Assinatura: '.$planName.' - '.$planPrice, 'notificacoes-compras');
     }
 
     private function savePhoneNumber($request, $user)
@@ -223,14 +223,14 @@ class PagarmeWebhooks
     private function sendPhoneNumberDiscordNotification($user)
     {
         if (! $user->mobile_phone) {
-            Discord::sendMessage('📵 Usuário não tem telefone');
+            Discord::sendMessage('📵 Usuário não tem telefone', 'notificacoes-compras');
 
             return;
         }
 
-        Discord::sendMessage('☎️ Telefone: '.$user->mobile_phone);
+        Discord::sendMessage('☎️ Telefone: '.$user->mobile_phone, 'notificacoes-compras');
         Discord::sendMessage('☎️ Whatsapp Click to Chat: <https://wa.me/'.
                 $user->mobile_phone.
-                '>');
+                '>', 'notificacoes-compras');
     }
 }
