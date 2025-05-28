@@ -19,7 +19,7 @@ class Discord
             ]);
         } catch (Exception $e) {
             Mail::raw($e->getMessage(), function ($message) {
-                $message->to('contato@trilhante.com.br')
+                $message->to('contato@codante.com.br')
                     ->subject('CODANTE - Erro na notificação do Discord');
             });
         }
