@@ -241,6 +241,7 @@ Route::get('/my-subscription', [
     'showSubscription',
 ]);
 
+
 Route::get('plan-details', [SubscriptionController::class, 'getPlanDetails']);
 
 Route::post('/comments', [CommentController::class, 'create'])->middleware(

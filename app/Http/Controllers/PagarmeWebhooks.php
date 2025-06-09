@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Notifications\Discord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Log;
 use Mail;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,6 +31,13 @@ class PagarmeWebhooks
             "Entrando nos Webhooks... (Evento $eventType) - Coupon: $couponCode",
             'notificacoes-compras'
         );
+
+        Log::info('Pagarme Webhook recebido', [
+            'eventType' => $eventType,
+            'pagarmeOrderId' => $pagarmeOrderId,
+            'couponCode' => $couponCode,
+            'request' => $request->post('data')
+        ]);
 
         // Se não for uma transaction, não vamos fazer nada.
         if (! Str::of($eventType)->contains('order.')) {
@@ -67,6 +75,7 @@ class PagarmeWebhooks
         }
 
         $newStatus = Str::of($request->post('data')['status'])->lower();
+
 
         switch ($newStatus) {
             case 'paid':

@@ -7,6 +7,8 @@ use App\Http\Resources\PlanResource;
 use App\Http\Resources\SubscriptionResource;
 use App\Models\Coupon;
 use App\Models\Plan;
+use App\Models\Subscription;
+use App\Services\PagarmeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +18,47 @@ class SubscriptionController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['except' => ['getPlanDetails']]);
+    }
+
+    public function subscribe(Request $request)
+    {
+        if (! $request->user()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $planSlug = $request->input('planSlug');
+        $paymentInfo = $request->input('paymentInfo');
+
+        $user = Auth::user();
+
+        $plan = Plan::where('slug', $planSlug)->first();
+
+        $pagarmeService = new PagarmeService();
+        $pagarmeOrder = $pagarmeService->createOrder($user, $plan, $paymentInfo);
+
+        if (! $pagarmeOrder || $pagarmeOrder['status'] !== 'pending') {
+            return response()->json([
+                'message' => 'Erro ao criar pedido',
+            ], 400);
+        }
+
+        $subscription = $user->subscribeToPlan(
+            $plan->id,
+            $pagarmeOrder['id'],
+            'purchase',
+            'pending',
+            $paymentInfo['paymentMethod'],
+            null,
+            $pagarmeOrder['amount']
+        );
+
+        return response()->json([
+            'pagarmeOrder' => $pagarmeOrder,
+            'paymentInfo' => $paymentInfo,
+            'plan' => $plan,
+            'subscription' => $subscription,
+        ]);
+    
     }
 
     public function showSubscription()
