@@ -279,13 +279,13 @@ class ChallengeCrudController extends CrudController
     {
         $challenge = Challenge::findOrFail($challengeId);
         $message = "Fala pessoal (@here)! Acabamos de lançar mais um Mini Projeto no Codante:\n ​ \n**{$challenge->name}!** 🚀\n ​ \nAcesse o link abaixo para acessar o Mini-Projeto e para participar! 👇 \n ​ \n";
-        Discord::sendMessage($message);
+        Discord::sendMessage($message, 'comunicados');
     }
 
     protected function notifyDiscordChallengeSolutionLaunched($challengeId)
     {
         $challenge = Challenge::findOrFail($challengeId);
         $message = "Fala pessoal (@here)! Acabamos de disponibilizar no Codante:\n ​ \nResolução do Mini Projeto: **{$challenge->name}!**\n ​ \nNo link abaixo você encontra tanto a resolução em vídeo como o código da resolução! 👇 \n ​ \n";
-        Discord::sendMessage($message);
+        Discord::sendMessage($message, 'comunicados');
     }
 }
