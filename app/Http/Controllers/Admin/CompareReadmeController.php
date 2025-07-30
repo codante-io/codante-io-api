@@ -8,11 +8,11 @@ class CompareReadmeController
 {
     public function test(string $slug)
     {
-        (new CompareChallengeReadmes())->testChallengeDescription($slug);
+        (new CompareChallengeReadmes)->testChallengeDescription($slug);
     }
 
     public function compare(string $slug)
     {
-        (new CompareChallengeReadmes())->getDiffHtml($slug);
+        (new CompareChallengeReadmes)->getDiffHtml($slug);
     }
 }

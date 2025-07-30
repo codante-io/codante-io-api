@@ -12,7 +12,7 @@ class SaveAvatarsFromGithub extends Seeder
      */
     public function run(): void
     {
-        $service = new SaveAvatarsFromGithubService();
+        $service = new SaveAvatarsFromGithubService;
         $service->handle();
     }
 }

@@ -28,6 +28,6 @@ class UserStatusUpdated implements ShouldQueue
 
     private function updateUserInEmailList($user): void
     {
-        (new \App\Services\Mail\EmailOctopusService())->updateUser($user);
+        (new \App\Services\Mail\EmailOctopusService)->updateUser($user);
     }
 }

@@ -6,7 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class NewWorkshopEventResource extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -15,19 +14,18 @@ class NewWorkshopEventResource extends JsonResource
      */
     public function toArray($request)
     {
-        
+
         $event = [
-            'id' => $this->id . '-' . 'workshop',
+            'id' => $this->id.'-'.'workshop',
             'title' => $this->title ?? $this->name,
             'description' => $this->short_description,
             'slug' => $this->slug,
-            'url' => '/workshops/' . $this->slug,
+            'url' => '/workshops/'.$this->slug,
             'type' => 'workshop',
             'datetime' => $this->published_at,
             'image_url' => $this->image_url,
         ];
 
-
         return $event;
     }
-} 
+}

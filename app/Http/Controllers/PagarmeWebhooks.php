@@ -32,7 +32,7 @@ class PagarmeWebhooks
         if (! Str::of($eventType)->contains('order.')) {
             Discord::sendMessage('Erro, evento não trackeado', 'notificacoes-compras');
 
-            return new Response();
+            return new Response;
         }
 
         // Se não encontrarmos uma subscription com o provider_id, não vamos fazer nada.
@@ -44,7 +44,7 @@ class PagarmeWebhooks
         if (! $subscription) {
             Discord::sendMessage("Erro, não há subscription com o id {$pagarmeOrderId}", 'notificacoes-compras');
 
-            return new Response();
+            return new Response;
         }
 
         $user = User::find($subscription->user_id);
@@ -79,7 +79,7 @@ class PagarmeWebhooks
                 break;
         }
 
-        return new Response();
+        return new Response;
     }
 
     public function handlePaid(

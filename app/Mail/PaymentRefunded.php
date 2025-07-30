@@ -17,8 +17,7 @@ class PaymentRefunded extends Mailable
     public function __construct(
         public User $user,
         public Subscription $subscription
-    ) {
-    }
+    ) {}
 
     public function envelope(): Envelope
     {

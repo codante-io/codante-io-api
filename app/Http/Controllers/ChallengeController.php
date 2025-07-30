@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\ChallengeCompleted;
 use App\Events\ChallengeForked;
 use App\Events\ChallengeJoined;
+use App\Helpers\CacheKeyBuilder;
 use App\Http\Resources\ChallengeCardResource;
 use App\Http\Resources\ChallengeResource;
 use App\Http\Resources\ChallengeUserResource;
@@ -24,7 +25,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\File;
-use App\Helpers\CacheKeyBuilder;
 
 class ChallengeController extends Controller
 {
@@ -42,7 +42,7 @@ class ChallengeController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $challengeRepository = new ChallengeRepository();
+        $challengeRepository = new ChallengeRepository;
         $query = $challengeRepository->challengeCardsQuery($user);
         $techFilter = $request->input('tecnologia');
         $textQuery = $request->input('q');
@@ -64,19 +64,18 @@ class ChallengeController extends Controller
         if ($textQuery) {
             $query->where('name', 'like', '%'.$textQuery.'%');
         }
-        
+
         if ($difficultyFilter) {
             $query->where('difficulty', $difficultyFilter);
         }
-        
+
         if ($freeFilter) {
             $query->where('is_premium', $freeFilter == 'true' ? false : true);
         }
-        
+
         if ($orderBy) {
             $query->orderByCustom($orderBy);
         }
-
 
         // se há user logado, não vamos pegar cachear e vamos adicionar o
         // current_user_id (para evitar muitas chamadas ao banco de dados)
@@ -87,14 +86,14 @@ class ChallengeController extends Controller
             });
         } else {
             $challenges = Cache::remember(
-                CacheKeyBuilder::buildCacheKey("challenges", [$techFilter, $textQuery, $difficultyFilter, $freeFilter, $orderBy]),
-            1800,
-            function () use ($query) {
-                return $query->get();
-            }
-        );
+                CacheKeyBuilder::buildCacheKey('challenges', [$techFilter, $textQuery, $difficultyFilter, $freeFilter, $orderBy]),
+                1800,
+                function () use ($query) {
+                    return $query->get();
+                }
+            );
         }
-        
+
         $featuredChallenge = $challengeRepository->getFeaturedChallenge($user);
 
         return [
@@ -557,5 +556,4 @@ class ChallengeController extends Controller
 
         return $challenge;
     }
-
 }

@@ -20,8 +20,7 @@ class UserJoinedChallenge extends Mailable
     public function __construct(
         public User $user,
         public Challenge $challenge
-    ) {
-    }
+    ) {}
 
     /**
      * Get the message envelope.

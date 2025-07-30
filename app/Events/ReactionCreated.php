@@ -14,9 +14,7 @@ class ReactionCreated
     /**
      * Create a new event instance.
      */
-    public function __construct(public $reactionId, public $reactable)
-    {
-    }
+    public function __construct(public $reactionId, public $reactable) {}
 
     /**
      * Get the channels the event should broadcast on.

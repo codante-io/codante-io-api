@@ -47,7 +47,7 @@ class SendEventToMetaPixel
             ->setFbp($fbp, '_fbp')
             ->setFbc($fbc, '_fbc');
         $eventId = uniqid('prefix_');
-        $customData = new CustomData();
+        $customData = new CustomData;
 
         MetaPixel::send('Lead', $eventId, $customData, $userData);
     }
@@ -62,7 +62,7 @@ class SendEventToMetaPixel
             ->setFbp($fbp, '_fbp')
             ->setFbc($fbc, '_fbc');
         $eventId = uniqid('prefix_');
-        $customData = new CustomData();
+        $customData = new CustomData;
 
         MetaPixel::send(
             'CompleteRegistration',
@@ -82,12 +82,12 @@ class SendEventToMetaPixel
             ->setFbp($fbp, '_fbp')
             ->setFbc($fbc, '_fbc');
 
-        $content = (new Content())
+        $content = (new Content)
             ->setProductId($event->subscription->id)
             ->setItemPrice($event->subscription->price_paid_in_cents / 100)
             ->setQuantity(1);
 
-        $customData = (new CustomData())
+        $customData = (new CustomData)
             ->setContents([$content])
             ->setCurrency('brl')
             ->setValue($event->subscription->price_paid_in_cents / 100);

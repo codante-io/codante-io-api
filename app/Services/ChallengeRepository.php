@@ -55,6 +55,7 @@ class ChallengeRepository
     {
         $query = Challenge::query();
         $query = $this->challengeCardsBaseQuery($query, $currentUser);
+
         return $query;
     }
 

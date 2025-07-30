@@ -325,7 +325,8 @@ class Challenge extends Model
         }
     }
 
-    public function scopeOrderByCustom($query, $orderBy) {
+    public function scopeOrderByCustom($query, $orderBy)
+    {
         switch ($orderBy) {
             case 'facil':
                 $query->orderBy('difficulty', 'asc');
@@ -353,21 +354,23 @@ class Challenge extends Model
         return $query;
     }
 
-    private function hideDescription($description) {
+    private function hideDescription($description)
+    {
         $description = substr($description, 0, 400);
         $description = substr($description, 0, strrpos($description, "\n") + 1);
+
         return $description;
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         $isPro = auth()->check() && auth()->user()->is_pro;
         $isPremiumChallenge = $this->is_premium;
 
-        if ($isPro || !$isPremiumChallenge || $this->isWeeklyFeatured()) {
+        if ($isPro || ! $isPremiumChallenge || $this->isWeeklyFeatured()) {
             return $this->description;
         }
 
         return $this->hideDescription($this->description);
     }
 }
-

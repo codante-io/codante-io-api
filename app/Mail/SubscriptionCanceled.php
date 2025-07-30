@@ -20,8 +20,7 @@ class SubscriptionCanceled extends Mailable
     public function __construct(
         public User $user,
         public Subscription $subscription
-    ) {
-    }
+    ) {}
 
     /**
      * Get the message envelope.

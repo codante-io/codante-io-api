@@ -24,7 +24,7 @@ class EmailOctopus
      */
     public function handle(object $event): void
     {
-        $emailOctopus = new EmailOctopusService();
+        $emailOctopus = new EmailOctopusService;
 
         if ($event instanceof ChallengeJoined) {
             $event->user->id;

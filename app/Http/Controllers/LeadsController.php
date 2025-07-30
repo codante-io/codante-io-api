@@ -26,7 +26,7 @@ class LeadsController extends Controller
                 ]
             );
 
-            $emailOctopus = new EmailOctopusService();
+            $emailOctopus = new EmailOctopusService;
             $existingLead = Leads::where('email', $request->email)->first();
             $existingLeadByTag = Leads::where('email', $request->email)->where('tag', $request->tags[0])->first();
 
@@ -34,7 +34,7 @@ class LeadsController extends Controller
                 return response()->json(['error' => 'Esse e-mail já foi cadastrado anteriormente.'], 409);
             }
 
-            $lead = new Leads();
+            $lead = new Leads;
             $lead->email = $request->email;
             $lead->name = $request->name;
             $lead->phone = $request->phone;

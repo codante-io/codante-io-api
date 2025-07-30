@@ -71,7 +71,7 @@ class CertificateController extends Controller
             throw new \Exception('Já existe um certificado.');
         }
 
-        $certificate = new Certificate();
+        $certificate = new Certificate;
         $certificate->user_id = $user->id;
         $certifiableClass = $certificate->certifiable_type = Certificate::validateCertifiable(
             $request->certifiable_type

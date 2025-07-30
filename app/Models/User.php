@@ -132,7 +132,7 @@ class User extends Authenticatable
     ): Subscription {
         $plan = Plan::findOrFail($planId);
 
-        $subscription = new Subscription();
+        $subscription = new Subscription;
         $subscription->user_id = $this->id;
         $subscription->plan_id = $planId;
         $subscription->provider_id = $providerId;
@@ -189,7 +189,7 @@ class User extends Authenticatable
 
     public function removeFromEmailLists()
     {
-        $emailOctopus = new EmailOctopusService();
+        $emailOctopus = new EmailOctopusService;
         $emailOctopus->deleteUser($this);
     }
 
@@ -200,7 +200,7 @@ class User extends Authenticatable
 
     public function changeAvatar(UploadedFile $avatar)
     {
-        $base62 = new Base62();
+        $base62 = new Base62;
         $encodedEmail = $base62->encode($this->email);
 
         // reduce image size

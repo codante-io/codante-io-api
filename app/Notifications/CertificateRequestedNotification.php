@@ -43,7 +43,7 @@ class CertificateRequestedNotification extends Notification
                 ? "Recebemos a sua solicitação de certificado para o Mini Projeto {$this->certificate->certifiable->challenge->name}!"
                 : "Seu certificado com ID {$this->certificate->id} foi solicitado e em breve estará disponível!";
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->from('contato@codante.io', 'Codante')
             ->subject('[Codante] Recebemos sua solicitação de certificado!')
             ->greeting("Olá $firstName")

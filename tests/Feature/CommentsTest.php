@@ -15,7 +15,7 @@ class CommentsTest extends TestCase
     use RefreshDatabase;
 
     //setup
-    public function setUp(): void
+    protected function setUp(): void
     {
         // mock Discord
         parent::setUp();
@@ -23,7 +23,7 @@ class CommentsTest extends TestCase
     }
 
     //teardown
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         \Mockery::close();
         parent::tearDown();

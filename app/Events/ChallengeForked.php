@@ -18,8 +18,7 @@ class ChallengeForked
         public $challengeUser,
         public $challenge,
         public $user
-    ) {
-    }
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.

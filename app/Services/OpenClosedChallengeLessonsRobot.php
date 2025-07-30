@@ -12,9 +12,7 @@ class OpenClosedChallengeLessonsRobot
 
     private static $mainTechnologyHackatonId = 225;
 
-    public function __construct(protected Discord $discord)
-    {
-    }
+    public function __construct(protected Discord $discord) {}
 
     public function handle()
     {

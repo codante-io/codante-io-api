@@ -58,7 +58,7 @@ class CertificatePublishedNotification extends Notification implements ShouldQue
             $message = "Seu certificado com ID {$this->certificate->id} foi publicado!";
         }
 
-        return (new MailMessage())
+        return (new MailMessage)
             ->from('contato@codante.io', 'Codante')
             ->subject('[Codante] Seu certificado foi publicado!')
             ->greeting("Olá $firstName")
