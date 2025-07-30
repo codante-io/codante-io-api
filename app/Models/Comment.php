@@ -98,10 +98,18 @@ class Comment extends Model
 
         if ($this->commentable_type == "App\Models\Lesson") {
             $lesson = $this->commentable;
-            $workshop = $lesson->lessonable;
+            $lessonable = $lesson->lessonable;
             $lessonSlug = $lesson->slug;
 
-            return '/workshops/'.$workshop->slug.'/'.$lessonSlug;
+            // Check if the lesson belongs to a Challenge (mini-projeto)
+            if ($lessonable instanceof \App\Models\Challenge) {
+                return '/mini-projetos/'.$lessonable->slug.'/resolucao/'.$lessonSlug;
+            }
+
+            // Check if the lesson belongs to a Workshop
+            if ($lessonable instanceof \App\Models\Workshop) {
+                return '/workshops/'.$lessonable->slug.'/'.$lessonSlug;
+            }
         }
     }
 
