@@ -19,7 +19,7 @@ set('keep_releases', 3);
 //     ->set('remote_user', 'robertotcestari')
 //     ->set('deploy_path', '/var/www/codante-io-api');
 
-host('216.238.108.237')
+host('216.238.103.47')
     ->set('remote_user', 'robertotcestari')
     ->set('deploy_path', '/var/www/codante-io-api');
 
