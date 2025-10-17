@@ -88,7 +88,7 @@ class HomeController extends Controller
                                         'users.is_admin'
                                     )
                                     ->whereNotNull('avatar_url')
-                                    ->inRandomOrder()
+                                    ->orderBy('challenge_user.created_at', 'desc')
                                     ->limit(5);
                             }, // nao ordena por usuário logado pois informaçoes estão cacheadas
                         ])

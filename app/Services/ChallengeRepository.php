@@ -45,7 +45,7 @@ class ChallengeRepository
                                 $currentUser->id,
                             ]);
                         })
-                        ->inRandomOrder()
+                        ->orderBy('challenge_user.created_at', 'desc')
                         ->limit(5);
                 },
             ]);
