@@ -42,6 +42,7 @@ class GithubLoginController extends AuthenticatedSessionController
                     'github_user' => $githubUserData->getNickname(),
                     'avatar_url' => $githubUserData->getAvatar(),
                     'email_verified_at' => now(),
+                    'settings' => ['avatar_analysis' => ['type' => 'unknown']],
                 ]);
 
                 $isNewSignup = true;
@@ -57,6 +58,11 @@ class GithubLoginController extends AuthenticatedSessionController
                 ! isset($user->settings['changed_avatar'])
             ) {
                 $user->avatar_url = $githubUserData->getAvatar();
+
+                // Mark GitHub avatar for analysis by the DetectGitHubGeneratedAvatars service
+                $settings = $user->settings ?? [];
+                $settings['avatar_analysis'] = ['type' => 'unknown'];
+                $user->settings = $settings;
             }
 
             $user->github_id = $githubUserData->getId();

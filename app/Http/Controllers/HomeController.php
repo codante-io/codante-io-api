@@ -28,10 +28,7 @@ class HomeController extends Controller
                 'avatar_section' => [
                     'user_count' => User::count(),
                     'avatars' => UserAvatarResource::collection(
-                        User::select('avatar_url', 'is_pro', 'is_admin')
-                            ->inRandomOrder()
-                            ->take(16)
-                            ->get()
+                        $this->getUsersForAvatarSection()
                     ),
                 ],
                 'live_streaming_workshop' => Workshop::where(
@@ -133,6 +130,48 @@ class HomeController extends Controller
                 'plan_info' => new PlanResource(Plan::find(1)),
             ];
         });
+    }
+
+    /**
+     * Get users for avatar section, prioritizing real photos over GitHub-generated avatars.
+     */
+    protected function getUsersForAvatarSection()
+    {
+        // First, try to get 16 users with real avatars
+        $realAvatarUsers = User::whereNotNull('avatar_url')
+            ->whereRaw(
+                "JSON_UNQUOTE(JSON_EXTRACT(settings, '$.avatar_analysis.type')) = ?",
+                ['real']
+            )
+            ->select('id', 'avatar_url', 'is_pro', 'is_admin', 'settings')
+            ->inRandomOrder()
+            ->take(16)
+            ->get();
+
+        // If we have enough users with real avatars, return them
+        if ($realAvatarUsers->count() >= 16) {
+            return $realAvatarUsers;
+        }
+
+        // Otherwise, supplement with unanalyzed users or those without avatars
+        $remaining = 16 - $realAvatarUsers->count();
+
+        $supplementalUsers = User::whereNotNull('avatar_url')
+            ->where(function ($query) {
+                $query
+                    ->whereRaw("JSON_EXTRACT(settings, '$.avatar_analysis') IS NULL")
+                    ->orWhereRaw(
+                        "JSON_UNQUOTE(JSON_EXTRACT(settings, '$.avatar_analysis.type')) != ?",
+                        ['generated']
+                    );
+            })
+            ->whereNotIn('id', $realAvatarUsers->pluck('id'))
+            ->select('id', 'avatar_url', 'is_pro', 'is_admin', 'settings')
+            ->inRandomOrder()
+            ->take($remaining)
+            ->get();
+
+        return $realAvatarUsers->merge($supplementalUsers);
     }
 
     public function sitemap()

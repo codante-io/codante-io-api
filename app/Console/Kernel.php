@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Services\CompareChallengeReadmes;
+use App\Services\DetectGitHubGeneratedAvatars;
 use App\Services\ExpiredPlanService;
 use App\Services\SyncIsProWithPlans;
 use Illuminate\Console\Scheduling\Schedule;
@@ -55,6 +56,12 @@ class Kernel extends ConsoleKernel
                 (new \App\Services\OpenClosedChallengeLessonsRobot(new \App\Services\Discord()))->handle();
             })
             ->weeklyOn(1, '05:00');
+
+        $schedule
+            ->call(function () {
+                (new DetectGitHubGeneratedAvatars())->handle();
+            })
+            ->weeklyOn(1, '05:30');
     }
 
     /**

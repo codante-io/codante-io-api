@@ -83,7 +83,9 @@ class HomeTest extends TestCase
 
         User::factory()
             ->count(50)
-            ->create();
+            ->create([
+                'avatar_url' => 'https://avatars.githubusercontent.com/u/123456?v=4',
+            ]);
 
         $response = $this->get('/api/home');
         $responseJson = $response->json();
