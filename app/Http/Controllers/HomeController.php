@@ -110,7 +110,10 @@ class HomeController extends Controller
                                     'users.id',
                                     'users.avatar_url',
                                     'users.name',
-                                    'users.github_user'
+                                    'users.github_user',
+                                    'users.is_pro',
+                                    'users.is_admin',
+                                    'users.settings'
                                 );
                             },
                         ])
@@ -193,7 +196,7 @@ class HomeController extends Controller
             ->withCount('lessons')
             ->with([
                 'lessons' => function ($query) {
-                    $query->select('workshop_id', 'slug', 'updated_at');
+                    $query->select('id', 'lessonable_id', 'lessonable_type', 'slug', 'updated_at');
                 },
             ])
             ->get();
