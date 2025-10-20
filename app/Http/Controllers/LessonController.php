@@ -10,7 +10,7 @@ class LessonController extends Controller
 {
     public function show(string $slug)
     {
-        $lesson = Lesson::where('slug', $slug)->first();
+        $lesson = Lesson::where('slug', $slug)->firstOrFail();
 
         return new LessonResource($lesson);
     }
