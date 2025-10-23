@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PagarmeWebhooks
 {
+    private const CODANDO_COM_IA_PRODUCT_SLUG = 'curso-ao-vivo-codando-com-ia-v1';
+
     public function handleWebhook(Request $request)
     {
         $eventType = $request->post('type');
@@ -42,6 +44,18 @@ class PagarmeWebhooks
         )->first();
 
         if (! $subscription) {
+            $orderMetadata = $request->post('data')['metadata']['product_slug'] ?? null;
+            $customerMetadata = $request->post('data')['customer']['metadata']['product_slug'] ?? null;
+
+            if (
+                $orderMetadata === self::CODANDO_COM_IA_PRODUCT_SLUG ||
+                $customerMetadata === self::CODANDO_COM_IA_PRODUCT_SLUG
+            ) {
+                Discord::sendMessage("Webhook recebido para pedido {$pagarmeOrderId} do produto Codando com IA (fluxo sem subscription)", 'notificacoes-compras');
+
+                return new Response();
+            }
+
             Discord::sendMessage("Erro, não há subscription com o id {$pagarmeOrderId}", 'notificacoes-compras');
 
             return new Response();

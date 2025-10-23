@@ -81,6 +81,16 @@ Route::get('/pagarme/get-subscription-by-order-id/{pagarmeOrderID}', [
     'getSubscriptionByPagarmeOrderId',
 ])->middleware('auth:sanctum');
 
+Route::post('/pagarme/codando-com-ia/checkout', [
+    PagarmeController::class,
+    'createCodandoComIaCheckout',
+]);
+
+Route::get('/pagarme/codando-com-ia/orders/{orderId}', [
+    PagarmeController::class,
+    'getCodandoComIaOrderStatus',
+]);
+
 Route::get('/workshops', [WorkshopController::class, 'index'])->middleware(
     'cache.headers:public;max_age=120;etag'
 );

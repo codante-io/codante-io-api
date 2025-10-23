@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Events\LeadRegistered;
 use App\Models\Leads;
 use App\Services\Mail\EmailOctopusService;
+use App\Services\Mail\EmailOctopusV2Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class LeadsController extends Controller
@@ -26,9 +28,19 @@ class LeadsController extends Controller
                 ]
             );
 
-            $emailOctopus = new EmailOctopusService();
+            $tags = $request->input('tags', []);
+            $primaryTag = $tags[0] ?? null;
+
+            $emailOctopus = $this->shouldUseEmailOctopusV2($tags)
+                ? new EmailOctopusV2Service()
+                : new EmailOctopusService();
+
             $existingLead = Leads::where('email', $request->email)->first();
-            $existingLeadByTag = Leads::where('email', $request->email)->where('tag', $request->tags[0])->first();
+            $existingLeadByTag = $primaryTag === null
+                ? null
+                : Leads::where('email', $request->email)
+                    ->where('tag', $primaryTag)
+                    ->first();
 
             if ($existingLeadByTag) {
                 return response()->json(['error' => 'Esse e-mail já foi cadastrado anteriormente.'], 409);
@@ -38,7 +50,7 @@ class LeadsController extends Controller
             $lead->email = $request->email;
             $lead->name = $request->name;
             $lead->phone = $request->phone;
-            $lead->tag = $request->tags[0];
+            $lead->tag = $primaryTag;
             $lead->save();
 
             if ($existingLead) {
@@ -64,5 +76,16 @@ class LeadsController extends Controller
 
             return response()->json(['error' => $errors], $status);
         }
+    }
+
+    private function shouldUseEmailOctopusV2(array $tags): bool
+    {
+        foreach ($tags as $tag) {
+            if (is_string($tag) && Str::startsWith($tag, 'curso-ao-vivo-codando-com-ia')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
