@@ -8,18 +8,18 @@ use App\Mail\PaymentConfirmed;
 use App\Mail\SubscriptionCanceled;
 use App\Mail\UserSubscribedToPlan;
 use App\Models\Coupon;
+use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Services\Discord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class PagarmeWebhooks
 {
-    private const CODANDO_COM_IA_PRODUCT_SLUG = 'curso-ao-vivo-codando-com-ia-v1';
-
     public function handleWebhook(Request $request)
     {
         $eventType = $request->post('type');
@@ -34,7 +34,7 @@ class PagarmeWebhooks
         if (! Str::of($eventType)->contains('order.')) {
             Discord::sendMessage('Erro, evento não trackeado', 'notificacoes-compras');
 
-            return new Response();
+            return new Response;
         }
 
         // Se não encontrarmos uma subscription com o provider_id, não vamos fazer nada.
@@ -44,24 +44,47 @@ class PagarmeWebhooks
         )->first();
 
         if (! $subscription) {
-            $orderMetadata = $request->post('data')['metadata']['product_slug'] ?? null;
-            $customerMetadata = $request->post('data')['customer']['metadata']['product_slug'] ?? null;
+            // Verificar se é o produto "Codando com IA - Nesse caso vamos criar a subscription e o usuário"
+            $productDescription = $request->post('data')['items'][0]['description'] ?? null;
 
-            if (
-                $orderMetadata === self::CODANDO_COM_IA_PRODUCT_SLUG ||
-                $customerMetadata === self::CODANDO_COM_IA_PRODUCT_SLUG
-            ) {
-                Discord::sendMessage("Webhook recebido para pedido {$pagarmeOrderId} do produto Codando com IA (fluxo sem subscription)", 'notificacoes-compras');
+            if (! Str::contains($productDescription, 'Codando com IA')) {
+                Discord::sendMessage("Erro, não há subscription com o id {$pagarmeOrderId}", 'notificacoes-compras');
 
-                return new Response();
+                return new Response;
             }
 
-            Discord::sendMessage("Erro, não há subscription com o id {$pagarmeOrderId}", 'notificacoes-compras');
+            // Criar/buscar usuário
+            $user = $this->findOrCreateUserFromWebhook($request->post('data'));
 
-            return new Response();
+            if (! $user) {
+                Discord::sendMessage("Erro ao criar/buscar usuário para order {$pagarmeOrderId}", 'notificacoes-compras');
+
+                return new Response;
+            }
+
+            // Criar subscription
+            $subscription = $this->findOrCreateSubscriptionFromWebhook(
+                $pagarmeOrderId,
+                $user,
+                $request->post('data')
+            );
+
+            if (! $subscription) {
+                Discord::sendMessage("Erro ao criar subscription para order {$pagarmeOrderId} - Plano não encontrado", 'notificacoes-compras');
+
+                return new Response;
+            }
+
+            Discord::sendMessage("✨ Subscription criada via webhook para {$user->email}", 'notificacoes-compras');
+        } else {
+            $user = User::find($subscription->user_id);
         }
 
-        $user = User::find($subscription->user_id);
+        if (! $user) {
+            Discord::sendMessage("Erro, usuário não encontrado para subscription {$pagarmeOrderId}", 'notificacoes-compras');
+
+            return new Response;
+        }
 
         // Vamos chamar os métodos de acordo com o status da transação.
 
@@ -93,7 +116,7 @@ class PagarmeWebhooks
                 break;
         }
 
-        return new Response();
+        return new Response;
     }
 
     public function handlePaid(
@@ -105,6 +128,19 @@ class PagarmeWebhooks
         Discord::sendMessage('chamando handlePaid', 'notificacoes-compras');
         // se status anterior é ativo, não faz nada.
         if ($subscription->status === 'active') {
+            return;
+        }
+
+        // Verificar se é o produto "Codando com IA"
+        $isCodandoComIA = $subscription->plan && Str::contains($subscription->plan->name, 'Codando com IA');
+
+        if ($isCodandoComIA) {
+            // Para o produto "Codando com IA", apenas atualiza o status sem promover a PRO
+            $subscription->status = 'active';
+            $subscription->save();
+
+            Discord::sendMessage('Pagarme: Pagamento confirmado para Codando com IA (sem upgrade PRO)', 'notificacoes-compras');
+
             return;
         }
 
@@ -136,6 +172,19 @@ class PagarmeWebhooks
     ) {
         Discord::sendMessage('chamando handle canceled', 'notificacoes-compras');
 
+        // Verificar se é o produto "Codando com IA"
+        $isCodandoComIA = $subscription->plan && Str::contains($subscription->plan->name, 'Codando com IA');
+
+        if ($isCodandoComIA) {
+            // Para o produto "Codando com IA", apenas atualiza o status
+            $subscription->status = 'canceled';
+            $subscription->save();
+
+            Discord::sendMessage('Pagarme: Assinatura cancelada para Codando com IA', 'notificacoes-compras');
+
+            return;
+        }
+
         // Muda status para refunded
         $subscription->changeStatus('canceled');
 
@@ -158,7 +207,7 @@ class PagarmeWebhooks
         $this->savePhoneNumber($request, $user);
 
         // manda no discord dados do usuário
-        Discord::sendMessage('Usuário: '.$user->name.' - Email: '.$user->email, 'notificacoes-compras');
+        Discord::sendMessage('Usuário: ' . $user->name . ' - Email: ' . $user->email, 'notificacoes-compras');
 
         $this->sendPhoneNumberDiscordNotification($user);
         // Muda status para chargedback
@@ -177,7 +226,7 @@ class PagarmeWebhooks
         $this->sendPhoneNumberDiscordNotification($user);
 
         Discord::sendMessage('chamando handleOrderClosed', 'notificacoes-compras');
-        Discord::sendMessage('🎉 Nova assinatura: '.$user->name, 'notificacoes-compras');
+        Discord::sendMessage('🎉 Nova assinatura: ' . $user->name, 'notificacoes-compras');
 
         $paymentMethod = $request->post('data')['charges'][0]['payment_method'];
         $boletoBarcode = null;
@@ -205,15 +254,20 @@ class PagarmeWebhooks
             'boleto_barcode' => "$boletoBarcode",
         ]);
 
-        // Nesse momento vamos agradecer por se inscrever.
-        Mail::to($user->email)->send(
-            new UserSubscribedToPlan($user, $subscription)
-        );
-
         $planName = $subscription->plan->name ?? 'Indefinido';
         $planPrice = $subscription->plan->price ?? 0;
 
-        Discord::sendMessage('🔒 Assinatura: '.$planName.' - '.$planPrice, 'notificacoes-compras');
+        // Verificar se é o produto "Codando com IA" para não enviar email
+        $isCodandoComIA = $subscription->plan && Str::contains($subscription->plan->name, 'Codando com IA');
+
+        if (! $isCodandoComIA) {
+            // Nesse momento vamos agradecer por se inscrever.
+            Mail::to($user->email)->send(
+                new UserSubscribedToPlan($user, $subscription)
+            );
+        }
+
+        Discord::sendMessage('🔒 Assinatura: ' . $planName . ' - ' . $planPrice, 'notificacoes-compras');
     }
 
     private function savePhoneNumber($request, $user)
@@ -222,16 +276,50 @@ class PagarmeWebhooks
             return;
         }
 
-        if (
-            ! isset($request->post('data')['customer']['phones']['mobile_phone'])
-        ) {
+        $data = $request->post('data') ?? [];
+        $mobilePhone = data_get($data, 'customer.phones.mobile_phone');
+
+        $candidate = '';
+
+        // Try to extract from customer.phones.mobile_phone
+        if (is_array($mobilePhone)) {
+            $candidate = ($mobilePhone['country_code'] ?? '') .
+                ($mobilePhone['area_code'] ?? '') .
+                ($mobilePhone['number'] ?? '');
+        }
+
+        $candidate = preg_replace('/\D/', '', $candidate ?? '');
+
+        // Fallback to metadata fields if not found
+        if ($candidate === '') {
+            $candidate = preg_replace(
+                '/\D/',
+                '',
+                (string) data_get($data, 'metadata.lead_phone_digits', '')
+            );
+        }
+
+        if ($candidate === '') {
+            $candidate = preg_replace(
+                '/\D/',
+                '',
+                (string) data_get($data, 'metadata.lead_phone', '')
+            );
+        }
+
+        if ($candidate === '') {
             return;
         }
 
-        $user->mobile_phone =
-            $request->post('data')['customer']['phones']['mobile_phone']['area_code'].
-            $request->post('data')['customer']['phones']['mobile_phone']['number'];
-        $user->save();
+        // Remove country code if present
+        if (Str::startsWith($candidate, '55') && strlen($candidate) > 11) {
+            $candidate = substr($candidate, 2);
+        }
+
+        if ($candidate !== '') {
+            $user->mobile_phone = $candidate;
+            $user->save();
+        }
     }
 
     private function sendPhoneNumberDiscordNotification($user)
@@ -242,9 +330,118 @@ class PagarmeWebhooks
             return;
         }
 
-        Discord::sendMessage('☎️ Telefone: '.$user->mobile_phone, 'notificacoes-compras');
-        Discord::sendMessage('☎️ Whatsapp Click to Chat: <https://wa.me/'.
-                $user->mobile_phone.
-                '>', 'notificacoes-compras');
+        Discord::sendMessage('☎️ Telefone: ' . $user->mobile_phone, 'notificacoes-compras');
+        Discord::sendMessage('☎️ Whatsapp Click to Chat: <https://wa.me/' .
+            $user->mobile_phone .
+            '>', 'notificacoes-compras');
+    }
+
+    private function findOrCreateUserFromWebhook(array $data): ?User
+    {
+        $email = $data['customer']['email'] ?? null;
+
+        if (! $email) {
+            return null;
+        }
+
+        // Buscar usuário existente
+        $user = User::where('email', $email)->first();
+
+        // Extrair telefone
+        $mobilePhone = data_get($data, 'customer.phones.mobile_phone');
+        $candidate = '';
+
+        if (is_array($mobilePhone)) {
+            $candidate = ($mobilePhone['country_code'] ?? '') .
+                ($mobilePhone['area_code'] ?? '') .
+                ($mobilePhone['number'] ?? '');
+        }
+
+        $candidate = preg_replace('/\D/', '', $candidate ?? '');
+
+        // Fallback para metadata
+        if ($candidate === '') {
+            $candidate = preg_replace(
+                '/\D/',
+                '',
+                (string) data_get($data, 'metadata.lead_phone_digits', '')
+            );
+        }
+
+        if ($candidate === '') {
+            $candidate = preg_replace(
+                '/\D/',
+                '',
+                (string) data_get($data, 'metadata.lead_phone', '')
+            );
+        }
+
+        // Remover código do país se presente
+        if (Str::startsWith($candidate, '55') && strlen($candidate) > 11) {
+            $candidate = substr($candidate, 2);
+        }
+
+        $phoneNumber = $candidate !== '' ? $candidate : null;
+
+        if ($user) {
+            // Atualizar telefone se estiver vazio
+            if (! $user->mobile_phone && $phoneNumber) {
+                $user->mobile_phone = $phoneNumber;
+                $user->save();
+            }
+
+            return $user;
+        }
+
+        // Criar novo usuário
+        $user = new User;
+        $user->name = $data['customer']['name'] ?? 'Usuário';
+        $user->email = $email;
+        $user->password = Hash::make(Str::random(32));
+        $user->mobile_phone = $phoneNumber;
+        $user->email_verified_at = null;
+        $user->save();
+
+        return $user;
+    }
+
+    private function findOrCreateSubscriptionFromWebhook(
+        string $pagarmeOrderId,
+        User $user,
+        array $data
+    ): ?Subscription {
+        // Buscar subscription existente
+        $subscription = Subscription::where('provider_id', $pagarmeOrderId)->first();
+
+        if ($subscription) {
+            return $subscription;
+        }
+
+        // Extrair nome do produto
+        $productName = $data['items'][0]['description'] ?? null;
+
+        if (! $productName) {
+            return null;
+        }
+
+        // Buscar plano pelo nome
+        $plan = Plan::where('name', $productName)->first();
+
+        if (! $plan) {
+            return null;
+        }
+
+        // Criar subscription
+        $subscription = $user->subscribeToPlan(
+            $plan->id,
+            $pagarmeOrderId,
+            'purchase',
+            'pending',
+            null,
+            null,
+            $data['amount'] ?? null
+        );
+
+        return $subscription;
     }
 }
