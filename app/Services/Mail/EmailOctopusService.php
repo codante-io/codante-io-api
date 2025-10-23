@@ -18,13 +18,20 @@ class EmailOctopusService
 
     public function registerEmailOctopusContact($email, $fields, $tags = [])
     {
-        Http::post(
+        // Convert tags array to object format expected by API
+        // ['tag1', 'tag2'] becomes ['tag1' => true, 'tag2' => true]
+        $tagsObject = [];
+        foreach ($tags as $tag) {
+            $tagsObject[$tag] = true;
+        }
+
+        Http::contentType('application/json')->post(
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts",
             [
                 'api_key' => $this->api_key,
                 'email_address' => $email,
                 'fields' => $fields,
-                'tags' => $tags,
+                'tags' => $tagsObject,
             ]
         );
     }
@@ -32,13 +39,31 @@ class EmailOctopusService
     public function updateEmailOctopusContact($email, $fields, $tags = [])
     {
         $emailHash = md5(strtolower(trim($email)));
-        Http::put(
+
+        // Convert tags array to object format expected by API
+        // ['tag1', 'tag2'] becomes ['tag1' => true, 'tag2' => true]
+        $tagsObject = [];
+        foreach ($tags as $tag) {
+            $tagsObject[$tag] = true;
+        }
+
+        $payload = [
+            'api_key' => $this->api_key,
+        ];
+
+        // Only add fields if not empty
+        if (! empty($fields)) {
+            $payload['fields'] = $fields;
+        }
+
+        // Only add tags if not empty
+        if (! empty($tagsObject)) {
+            $payload['tags'] = $tagsObject;
+        }
+
+        Http::contentType('application/json')->put(
             "https://emailoctopus.com/api/1.6/lists/$this->listId/contacts/$emailHash",
-            [
-                'api_key' => $this->api_key,
-                'fields' => $fields,
-                'tags' => $tags,
-            ]
+            $payload
         );
     }
 

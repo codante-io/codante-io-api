@@ -81,6 +81,21 @@ Route::get('/pagarme/get-subscription-by-order-id/{pagarmeOrderID}', [
     'getSubscriptionByPagarmeOrderId',
 ])->middleware('auth:sanctum');
 
+Route::post('/pagarme/codando-com-ia/checkout', [
+    PagarmeController::class,
+    'createCodandoComIaCheckout',
+]);
+
+Route::get('/pagarme/codando-com-ia/orders/{orderId}', [
+    PagarmeController::class,
+    'getCodandoComIaOrderStatus',
+]);
+
+Route::post('/pagarme/checkout-link-v2', [
+    PagarmeController::class,
+    'createCheckoutLinkV2',
+]);
+
 Route::get('/workshops', [WorkshopController::class, 'index'])->middleware(
     'cache.headers:public;max_age=120;etag'
 );
@@ -265,7 +280,7 @@ Route::put('/custom-admin/workshops/{id}', [
     'editWorkshop',
 ]);
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::fallback(function () {
     return response()->json(['message' => 'Not Found'], 404);
