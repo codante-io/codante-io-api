@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\LeadRegistered;
 use App\Events\UserJoinedWorkshop as UserJoinedWorkshopEvent;
 use App\Events\UsersFirstWorkshop;
 use App\Http\Resources\WorkshopCardResource;
 use App\Http\Resources\WorkshopResource;
+use App\Models\Leads;
 use App\Models\Workshop;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -99,6 +101,11 @@ class WorkshopController extends Controller
         // checks if user is joining the workshop for the first time
         if (! $user->workshops->contains($workshop)) {
             event(new UserJoinedWorkshopEvent($user, $workshop));
+
+            // Se o workshop está com status "soon", salva o lead
+            if ($workshop->status === 'soon') {
+                $this->createLeadForWorkshop($user, $workshop);
+            }
         }
 
         $user->workshops()->syncWithoutDetaching($workshop->id);
@@ -112,6 +119,34 @@ class WorkshopController extends Controller
         }
 
         return response()->json(['message' => 'User entered workshop']);
+    }
+
+    private function createLeadForWorkshop($user, $workshop)
+    {
+        $tag = 'workshop-' . $workshop->slug;
+
+        // Verifica se já existe um lead com esse email e tag
+        $existingLead = Leads::where('email', $user->email)
+            ->where('tag', $tag)
+            ->first();
+
+        if ($existingLead) {
+            return; // Já existe, não cria outro
+        }
+
+        // Cria o lead
+        $lead = new Leads();
+        $lead->email = $user->email;
+        $lead->name = $user->name;
+        $lead->tag = $tag;
+        $lead->save();
+
+        // Verifica se é o primeiro lead deste usuário
+        $isFirstLead = Leads::where('email', $user->email)->count() === 1;
+
+        if ($isFirstLead) {
+            event(new LeadRegistered($lead->email));
+        }
     }
 
     protected function workshopQueryWithFilters(
